@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Backend/etc/menu.xsd">
+    <menu>
+        <add
+                id="Packlink_PacklinkPro::packlink"
+                title="Packlink PRO"
+                module="Packlink_PacklinkPro"
+                sortOrder="51"
+                resource="Packlink_PacklinkPro::packlink"
+                action="packlink/content/dashboard"
+                parent="Magento_Sales::sales_operation"
+        />
+    </menu>
+</config>

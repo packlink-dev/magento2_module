@@ -1,0 +1,28 @@
+<!--
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <link src="Packlink_PacklinkPro::js/core/AjaxService.js"/>
+        <link src="Packlink_PacklinkPro::location/js/LocationPicker.js"/>
+        <link src="Packlink_PacklinkPro::location/js/Translations.js"/>
+        <link src="Packlink_PacklinkPro::js/CheckoutShippingMethods.js"/>
+        <link src="Packlink_PacklinkPro::js/MapModalController.js"/>
+
+        <css src="Packlink_PacklinkPro::location/css/locationPicker.css"/>
+        <css src="Packlink_PacklinkPro::css/checkout.css"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Packlink\PacklinkPro\Block\Checkout\Config" name="packlink.checkout.config"
+                   template="Packlink_PacklinkPro::checkout/shipping.phtml"
+                   cacheable="false">
+            </block>
+        </referenceContainer>
+    </body>
+</page>

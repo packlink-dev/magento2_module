@@ -1,0 +1,52 @@
+<?php
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+
+/** @var \Packlink\PacklinkPro\Block\Checkout\Config $block */
+include __DIR__ . '/template.phtml';
+?>
+<script>
+    (function () {
+        require(
+            [
+                'Magento_Checkout/js/model/quote'
+            ],
+            function (quote) {
+                let logos = [];
+                logos['backup'] = '<?= $block->getDefaultCarrierLogoUrl() ?>';
+
+                <?php foreach ($block->getMethodsWithEnabledLogos() as $id => $logoUrl) : ?>
+                logos['<?= $id ?>'] = '<?= $logoUrl ?>';
+                <?php endforeach; ?>
+
+                // wait until shipping methods containers are rendered
+                let timer = setInterval(assignControllers, 200);
+
+                function assignControllers() {
+                    let block = document.querySelector('.table-checkout-shipping-method');
+                    if (block) {
+                        clearInterval(timer);
+
+                        let controller = new Packlink.CheckoutShippingMethods();
+                        controller.init(
+                            block,
+                            quote,
+                            <?= current($block->getQuoteItemWeights()) ?>,
+                            '<?= $block->getUrl('packlink/frontend/location') ?>',
+                            '.actions-toolbar button.continue,.actions-toolbar button.checkout',
+                            false,
+                            logos,
+                            '<?= $block->getCurrentLanguageCode() ?>'
+                        );
+                    }
+                }
+            },
+            function (error) {
+                console.log(error);
+            }
+        );
+    })();
+</script>

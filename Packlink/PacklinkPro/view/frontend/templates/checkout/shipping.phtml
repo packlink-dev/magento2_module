@@ -1,0 +1,53 @@
+<?php
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+
+/** @var \Packlink\PacklinkPro\Block\Checkout\Config $block */
+include __DIR__ . '/template.phtml';
+?>
+
+<script>
+    (function () {
+        let logos = [],
+            quoteItemWeights = <?= json_encode($block->getQuoteItemWeights()) ?>,
+            quoteAddresses = <?= json_encode($block->getQuoteAddresses()) ?>;
+
+        logos['backup'] = '<?= $block->getDefaultCarrierLogoUrl() ?>';
+        <?php foreach ($block->getMethodsWithEnabledLogos() as $id => $logoUrl) : ?>
+        logos['<?= $id ?>'] = '<?= $logoUrl ?>';
+        <?php endforeach; ?>
+
+        // wait until shipping methods containers are rendered
+        let timer = setInterval(assignControllers, 200);
+
+        function assignControllers() {
+            let blocks = document.querySelectorAll('.box.box-shipping-method');
+            if (blocks) {
+                clearInterval(timer);
+
+                for (let i = 0; i < blocks.length; i++) {
+                    let controller = new Packlink.CheckoutShippingMethods(),
+                        addressId = parseInt(blocks[i].querySelector('.choice [type=radio]').id.split('_')[2]);
+
+                    controller.init(
+                        blocks[i],
+                        {
+                            shippingAddress: function () {
+                                return quoteAddresses[addressId];
+                            }
+                        },
+                        quoteItemWeights[addressId],
+                        '<?= $block->getUrl('packlink/frontend/location') ?>',
+                        '.actions-toolbar button.continue',
+                        true,
+                        logos,
+                        '<?= $block->getCurrentLanguageCode() ?>'
+                    );
+                }
+            }
+        }
+    })();
+</script>
