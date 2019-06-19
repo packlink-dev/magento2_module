@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="empty"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block
+                    class="Packlink\PacklinkPro\Block\Adminhtml\Tracking\Popup"
+                    name="shipping.tracking.popup"
+                    template="Packlink_PacklinkPro::tracking/popup.phtml"
+                    cacheable="false"
+            />
+        </referenceContainer>
+    </body>
+</page>

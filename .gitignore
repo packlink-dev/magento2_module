@@ -1,0 +1,10 @@
+.idea/*
+!.idea/encodings.xml
+!.idea/codeStyles
+!.idea/inspectionProfiles
+vendor
+Packlink/PacklinkPro/IntegrationCore
+!PluginInstallation/**/*.zip
+Packlink.zip
+magento-coding-standard
+marketplace-tools
