@@ -4,9 +4,9 @@ version="$1"
 
 cleanup(){
     # Cleanup any leftovers
-    rm -f ./packlink-manual.zip
-    rm -f ./PacklinkPro.zip
-    rm -f ./packlink
+    rm -rf ./packlink-manual.zip
+    rm -rf ./PacklinkPro.zip
+    rm -rf ./packlink
 }
 
 createTempSource() {

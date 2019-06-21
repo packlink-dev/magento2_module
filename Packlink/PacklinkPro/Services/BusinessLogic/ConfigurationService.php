@@ -155,4 +155,16 @@ class ConfigurationService extends Configuration
     {
         return $this->productMetadata->getVersion();
     }
+
+    /**
+     * Determines whether the configuration entry is system specific.
+     *
+     * @param string $name Configuration entry name.
+     *
+     * @return bool
+     */
+    protected function isSystemSpecific($name)
+    {
+        return $name !== 'taskRunnerStatus';
+    }
 }
