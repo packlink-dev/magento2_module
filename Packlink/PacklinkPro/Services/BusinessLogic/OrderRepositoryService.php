@@ -926,7 +926,7 @@ class OrderRepositoryService implements OrderRepository
     }
 
     /**
-     * Sets order state on source order on Magento.
+     * Sets order state on source Magento order if mapping for the state exists.
      *
      * @param int $orderId ID of the order.
      * @param string $shippingStatus Shipping status from Packlink.
@@ -944,15 +944,12 @@ class OrderRepositoryService implements OrderRepository
         $stateMappings = $configService->getOrderStatusMappings();
 
         if (!array_key_exists($shippingStatus, $stateMappings)) {
-            Logger::logWarning(
-                __('Order state mapping not found.'),
-                'Integration'
-            );
+            Logger::logWarning(__('Order state mapping not found.'), 'Integration');
 
             return;
         }
 
-        if ($order->getState() !== $stateMappings[$shippingStatus]) {
+        if (!empty($stateMappings[$shippingStatus]) && $order->getState() !== $stateMappings[$shippingStatus]) {
             $order->setState($stateMappings[$shippingStatus]);
             $this->orderRepository->save($order);
         }
