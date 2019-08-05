@@ -1,0 +1,174 @@
+<?php
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+
+/** @var Packlink\PacklinkPro\Block\Adminhtml\Order\View\Info $block */
+?>
+
+<section class="admin__page-section order-view-billing-shipping">
+    <div class="admin__page-section-item order-shipping-method">
+        <div class="admin__page-section-item-title">
+            <span class="title"><?= $block->escapeQuote(__('Shipping and Tracking Information')) ?></span>
+        </div>
+
+        <!-- DEFAULT MAGENTO CONTENT -->
+        <div class="shipping-description-title">
+            <?= $block->escapeHtml($block->getCurrentOrder()->getShippingDescription()) ?>
+        </div>
+
+        <?= $block->escapeQuote(__('Total Shipping Charges')) ?>:
+        <?= $block->displayShippingPriceInclTax($block->getCurrentOrder()) ?>
+
+        <!-- PACKLINK CONTENT -->
+        <div class="pl-shipping">
+            <?php if ($block->isUserLoggedIn()) : ?>
+                <?php if (!$block->isDraftCreated()) : ?>
+                    <div class="admin__page-section-item-content">
+                        <button
+                                id="create-draft"
+                                title="Create Packlink PRO Draft"
+                                type="button"
+                                data-create-draft-url="<?= $block->escapeHtml($block->getDraftControllerUrl()) ?>"
+                                data-order="<?= $block->escapeHtml($block->getCurrentOrder()->getId()) ?>"
+                                class="action- scalable primary"
+                                onclick="plCreateOrderDraft(this)"
+                        >
+                            <span><?= $block->escapeQuote(__('Create order draft in Packlink PRO')) ?></span>
+                        </button>
+                    </div>
+                    <div id="pl-create-draft-error" class="message message-warning warning" hidden></div>
+                    <span id="pl-create-draft-error-text" hidden>
+                        <?= $block->escapeQuote(__('Error: ')) ?>
+                    </span>
+                    <span id="pl-create-draft-default-msg" hidden>
+                        <?= $block->escapeQuote(__('There has been an error creating order draft.')) ?>
+                    </span>
+                <?php else : ?>
+                    <?php if ($block->labelExists()) : ?>
+                        <div class="admin__field">
+                            <label for="pl-print-label" class="admin__field-label pl-order-page-item">
+                                <?= $block->escapeQuote(__('Shipment label')) ?>
+                            </label>
+                            <button
+                                    type="button"
+                                    name="pl-print-label"
+                                    data-link="<?= $block->escapeHtml($block->getLabelLink()) ?>"
+                                    data-order-id="<?= $block->escapeHtml($block->getCurrentOrder()->getId()) ?>"
+                                    data-controller-url="<?= $block->escapeHtml($block->getLabelControllerUrl()) ?>"
+                                    class="
+                            <?php if (!$block->labelPrinted()) : ?>
+                            primary
+                            <?php endif; ?> pl-print-label-button"
+                                    onclick="plPrintShipmentLabel(this)"
+                            >
+                                <?php if ($block->labelPrinted()) : ?>
+                                    <?= $block->escapeQuote(__('Printed')) ?>
+                                <?php else : ?>
+                                    <?= $block->escapeQuote(__('Print')) ?>
+                                <?php endif; ?>
+                            </button>
+                            <div class="pl-printed-label" hidden><?= $block->escapeQuote(__('Printed')) ?></div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($block->getShippingMethodTitle() !== '') : ?>
+                        <div class="admin__field">
+                            <label class="admin__field-label pl-order-page-item">
+                                <?= $block->escapeQuote(__('Shipment details')) ?>
+                            </label>
+                            <table class="data-table admin__control-table pl-shipment-details"
+                                   id="shipment_tracking_info">
+                                <thead>
+                                <tr class="headings">
+                                    <th class="col-carrier-logo">
+                                        <?= $block->escapeQuote(__('Carrier logo')) ?>
+                                    </th>
+                                    <th class="col-carrier">
+                                        <?= $block->escapeQuote(__('Carrier')) ?>
+                                    </th>
+                                    <th class="col-tracking-numbers">
+                                        <?= $block->escapeQuote(__('Carrier tracking numbers')) ?>
+                                    </th>
+                                    <th class="col"></th>
+                                </tr>
+                                </thead>
+                                <tfoot>
+                                <tr>
+                                    <td class="col-carrier-logo">
+                                        <img
+                                                src="<?= $block->escapeHtml($block->getCarrierLogo()) ?>"
+                                                alt="<?= $block->escapeHtml($block->getShippingMethodTitle()) ?>"
+                                        />
+                                    </td>
+                                    <td class="col-carrier">
+                                        <?= $block->escapeHtml($block->getShippingMethodTitle()) ?>
+                                    </td>
+                                    <td class="col-tracking-numbers">
+                                        <?php if (!empty($block->getOrderDetails()->getCarrierTrackingNumbers())) : ?>
+                                            <?= $block->getCarrierTrackingNumbers() ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="col">
+                                        <?php if (!empty($block->getOrderDetails()->getCarrierTrackingNumbers())) : ?>
+                                            <a
+                                                    href="<?= $block->escapeHtml(
+                                                        $block->getOrderDetails()->getCarrierTrackingUrl()
+                                                    ) ?>"
+                                                    target="_blank"
+                                            >
+                                                <button type="button" class="pl-order-page-item">
+                                                    <?= $block->escapeQuote(__('Track it!')) ?>
+                                                </button>
+                                            </a>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($block->getOrderDetails()->getShippingStatus()) : ?>
+                        <div class="admin__field">
+                            <label class="admin__field-label pl-order-page-item">
+                                <?= $block->escapeQuote(__('Status')) ?>
+                            </label>
+                            <span style="color: grey">
+                            <i class="fa fa-calendar"></i> <?= $block->escapeHtml($block->getLastStatusUpdateTime()) ?>
+                        </span> - <b><?= $block->escapeHtml($block->getOrderDetails()->getShippingStatus()) ?></b>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($block->getOrderDetails()->getShipmentReference()) : ?>
+                        <div class="admin__field">
+                            <label class="admin__field-label pl-order-page-item">
+                                <?= $block->escapeQuote(__('Packlink reference number')) ?>
+                            </label>
+                            <span>
+                            <?= $block->escapeHtml($block->getOrderDetails()->getShipmentReference()) ?>
+                        </span>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($block->getOrderDetails()->getPacklinkShippingPrice()) : ?>
+                        <div class="admin__field">
+                            <label class="admin__field-label pl-order-page-item">
+                                <?= $block->escapeQuote(__('Packlink shipping cost')) ?>
+                            </label>
+                            <span>
+                            €<?= $block->escapeHtml($block->getOrderDetails()->getPacklinkShippingPrice()) ?>
+                        </span>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($block->getOrderDetails()->getShipmentReference()
+                        && !$block->getOrderDetails()->isDeleted()) : ?>
+                        <a href="<?= $block->escapeHtml($block->getDraftUrl()) ?>" target="_blank">
+                            <button type="button" class="pl-order-page-item">
+                                <?= $block->escapeQuote(__('View on Packlink PRO')) ?>
+                            </button>
+                        </a>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>

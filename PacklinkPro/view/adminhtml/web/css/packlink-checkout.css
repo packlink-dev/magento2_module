@@ -1,0 +1,38 @@
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+
+#pl-picker-modal {
+    position: fixed;
+    display: none;
+    top: 10%;
+    left: 10%;
+    height: 80%;
+    width: 80%;
+    z-index: 999999;
+    border: 2px solid;
+}
+
+#pl-drop-off-iframe {
+    display: inherit;
+    width: 100%;
+    height: 100%;
+}
+
+.pl-checkout-carrier-image {
+    display: inline-block;
+    height: 30px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+#pl-picker-modal svg {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+}

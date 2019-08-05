@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carriers>
+            <packlink>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Packlink\PacklinkPro\Model\Carrier</model>
+                <name>Packlink PRO Shipping</name>
+                <title>Packlink Shipping</title>
+                <type>I</type>
+                <specificerrmsg>This shipping method is not available.</specificerrmsg>
+            </packlink>
+        </carriers>
+    </default>
+</config>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="./PacklinkPro/Test/autoload.php" colors="true">
+    <testsuites>
+        <testsuite name="Magento Test Suite">
+            <directory>./PacklinkPro/Test/Unit</directory>
+        </testsuite>
+        <testsuite name="Core Test Suite">
+            <directory>./PacklinkPro/IntegrationCore/Tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
