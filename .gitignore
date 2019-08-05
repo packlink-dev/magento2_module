@@ -3,7 +3,7 @@
 !.idea/codeStyles
 !.idea/inspectionProfiles
 vendor
-Packlink/PacklinkPro/IntegrationCore
+PacklinkPro/IntegrationCore
 !PluginInstallation/**/*.zip
 Packlink.zip
 magento-coding-standard

@@ -17,8 +17,8 @@ Go to `Run > Edit configuration` menu and add new PHPUnit configuration.
 For Test Runner options select `Defined in configuration file` and add specific phpunit configuration 
 file path to the `./phpunit.xml` file in module's root directory.
 
-Create new file `./Packlink/PacklinkPro/Test/autoload.php` by copying the file
-`./Packlink/PacklinkPro/Test/autoload-sample.php`. In the newly created file change path to the magento's root folder,
+Create new file `./PacklinkPro/Test/autoload.php` by copying the file
+`./PacklinkPro/Test/autoload-sample.php`. In the newly created file change path to the magento's root folder,
 for example `/var/www/html/magento/app/bootstrap.php`.
 
 Now test configuration is set and you can run tests by activating run command from the 
@@ -35,7 +35,7 @@ composer create-project --repository=https://repo.magento.com magento/marketplac
 ### Run code fixer
 Run code fixer on base code.
 ```
-magento-coding-standard/vendor/bin/phpcbf ./Packlink/PacklinkPro/ --standard=MEQP2
+magento-coding-standard/vendor/bin/phpcbf ./PacklinkPro/ --standard=MEQP2
 
 ```
 This will fix all common problems. 
@@ -43,7 +43,7 @@ This will fix all common problems.
 ### Run code sniffer
 Run code sniffer.
 ```
-magento-coding-standard/vendor/bin/phpcs ./Packlink/PacklinkPro/ --standard=MEQP2 --severity=10
+magento-coding-standard/vendor/bin/phpcs ./PacklinkPro/ --standard=MEQP2 --severity=10
 ```
 If there is no output, all is fine. Otherwise, correct the reported errors. Ignore errors in `Tests` folder 
 since it will not be a part of the final release.
@@ -51,10 +51,10 @@ since it will not be a part of the final release.
 ## Release new version
 
 ### Prepare module
-Make sure that version in `./Packlink/PacklinkPro/composer.json` file is set to a new version number.
-Make sure DB "setup_version" in `./Packlink/PacklinkPro/etc/module.xml` file is set to a new version number.
+Make sure that version in `./PacklinkPro/composer.json` file is set to a new version number.
+Make sure DB "setup_version" in `./PacklinkPro/etc/module.xml` file is set to a new version number.
 
-Add change log / release notes in `./PluginInstalations/CHANGELOG.md` file.
+Add change log - release notes in `./PluginInstalations/CHANGELOG.md` file.
 
 ### Create module package
 Run 
