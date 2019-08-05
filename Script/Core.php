@@ -11,6 +11,7 @@ class Core
 {
     public static function postComposer()
     {
+        self::removeDirectory(__DIR__ . '/../PacklinkPro/IntegrationCore');
         self::fixAndCopyDirectory('src', 'IntegrationCore');
         self::fixAndCopyDirectory('tests', 'IntegrationCore/Tests');
         self::copyResources();
@@ -20,7 +21,7 @@ class Core
     {
         self::copyDirectory(__DIR__ . '/../vendor/packlink/integration-core/' . $from, __DIR__ . '/../tmp');
         self::renameNamespaces(__DIR__ . '/../tmp');
-        self::copyDirectory(__DIR__ . '/../tmp', __DIR__ . '/../Packlink/PacklinkPro/' . $to);
+        self::copyDirectory(__DIR__ . '/../tmp', __DIR__ . '/../PacklinkPro/' . $to);
         self::removeDirectory(__DIR__ . '/../tmp');
     }
 
@@ -68,6 +69,10 @@ class Core
 
     private static function removeDirectory($directory)
     {
+        if (!file_exists($directory)) {
+            return;
+        }
+
         $iterator = new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS);
         $files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 
@@ -89,23 +94,23 @@ class Core
     {
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/js',
-            __DIR__ . '/../Packlink/PacklinkPro/view/adminhtml/web/js/core'
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/js/core'
         );
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/js',
-            __DIR__ . '/../Packlink/PacklinkPro/view/frontend/web/js/core'
+            __DIR__ . '/../PacklinkPro/view/frontend/web/js/core'
         );
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/LocationPicker',
-            __DIR__ . '/../Packlink/PacklinkPro/view/frontend/web/location'
+            __DIR__ . '/../PacklinkPro/view/frontend/web/location'
         );
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/img/carriers',
-            __DIR__ . '/../Packlink/PacklinkPro/view/adminhtml/web/images/carriers'
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/images/carriers'
         );
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/img/carriers',
-            __DIR__ . '/../Packlink/PacklinkPro/view/frontend/web/images/carriers'
+            __DIR__ . '/../PacklinkPro/view/frontend/web/images/carriers'
         );
     }
 }

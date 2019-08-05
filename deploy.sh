@@ -2,8 +2,7 @@
 
 version="$1"
 
-cleanup(){
-    # Cleanup any leftovers
+cleanup() {
     rm -rf ./packlink-manual.zip
     rm -rf ./PacklinkPro.zip
     rm -rf ./packlink
@@ -13,10 +12,10 @@ createTempSource() {
     # Create deployment source
     echo -e "\e[32mSTEP 1:\e[39m Copying plugin source..."
     mkdir packlink
-    cp -r ./Packlink packlink/
-    cp -r ./Script packlink/
-    cp -r ./composer.json packlink/
-    rm -rf packlink/Packlink/PacklinkPro/IntegrationCore
+    cp -r ./PacklinkPro packlink
+    cp -r ./Script packlink
+    cp -r ./composer.json packlink
+    rm -rf packlink/PacklinkPro/IntegrationCore
 }
 
 composerInstall() {
@@ -34,31 +33,27 @@ removeUnnecessaryFiles() {
     rm -rf packlink/vendor
     rm -rf packlink/composer.json
     rm -rf packlink/composer.lock
-    rm -rf packlink/Packlink/PacklinkPro/Test
-    rm -rf packlink/Packlink/PacklinkPro/IntegrationCore/Tests
+    rm -rf packlink/PacklinkPro/Test
+    rm -rf packlink/PacklinkPro/IntegrationCore/Tests
 }
 
-createManualZipArchive() {
-    # Create plugin archive
-    echo -e "\e[32mSTEP 4:\e[39m Creating new archive..."
+createZipArchives() {
+    echo -e "\e[32mSTEP 4:\e[39m Creating new marketplace archive..."
     cd packlink
+    zip -r -q  PacklinkPro.zip ./PacklinkPro
+    mv ./PacklinkPro.zip ../PacklinkPro.zip
+
+    echo -e "\e[32mSTEP 5:\e[39m Creating new archive for manual install..."
+    mkdir Packlink
+    mv ./PacklinkPro ./Packlink/PacklinkPro
     zip -r -q  packlink-manual.zip ./Packlink
     cd ..
     mv ./packlink/packlink-manual.zip ./packlink-manual.zip
 }
 
-createMarketplaceZipArchive() {
-    echo -e "\e[32mSTEP 5:\e[39m Creating new marketplace archive..."
-    cd packlink
-    mv ./Packlink/PacklinkPro ./PacklinkPro
-    zip -r -q  PacklinkPro.zip ./PacklinkPro
-    cd ..
-    mv ./packlink/PacklinkPro.zip ./PacklinkPro.zip
-}
-
 readVersion() {
     if [[ "$version" = "" ]]; then
-        version=$(php -r "echo json_decode(file_get_contents('Packlink/PacklinkPro/composer.json'), true)['version'];")
+        version=$(php -r "echo json_decode(file_get_contents('PacklinkPro/composer.json'), true)['version'];")
         if [[ "$version" = "" ]]; then
             echo "Please enter new plugin version (leave empty to use root folder as destination) [ENTER]:"
             read version
@@ -97,8 +92,7 @@ cleanup
 createTempSource
 composerInstall
 removeUnnecessaryFiles
-createManualZipArchive
-createMarketplaceZipArchive
+createZipArchives
 readVersion
 moveArchivesToDirectory
-rm -fR ./packlink
+cleanup

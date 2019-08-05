@@ -9,4 +9,4 @@ require '/REAL-PATH-TO-MAGENTO-ROOT/app/bootstrap.php';
 $bootstrap = Bootstrap::create(BP, $_SERVER);
 $bootstrap->createApplication(Cron::class);
 
-require __DIR__ . '/../../../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
