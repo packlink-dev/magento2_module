@@ -26,16 +26,20 @@ top right toolbar.
 
 **All tests must pass.**
 
+*Note*: Tests will fail if you already have installed the module in Magento, because Magento will load both your local 
+module and the module from Magento. In such a configuration, you need to rename the module folder in Magento,
+run tests, and rename it back.
+
 ### Install coding standards tool
 If you haven't done so, install Magento Code Sniffer.
 ```
-composer create-project --repository=https://repo.magento.com magento/marketplace-eqp magento-coding-standard
+composer create-project magento/magento-coding-standard --stability=dev magento-coding-standard
 ```
 
 ### Run code fixer
 Run code fixer on base code.
 ```
-magento-coding-standard/vendor/bin/phpcbf ./PacklinkPro/ --standard=MEQP2
+magento-coding-standard/vendor/bin/phpcbf ./PacklinkPro/ --standard=Magento2
 
 ```
 This will fix all common problems. 
@@ -43,7 +47,7 @@ This will fix all common problems.
 ### Run code sniffer
 Run code sniffer.
 ```
-magento-coding-standard/vendor/bin/phpcs ./PacklinkPro/ --standard=MEQP2 --severity=10
+magento-coding-standard/vendor/bin/phpcs ./PacklinkPro/ --standard=Magento2 --severity=10
 ```
 If there is no output, all is fine. Otherwise, correct the reported errors. Ignore errors in `Tests` folder 
 since it will not be a part of the final release.

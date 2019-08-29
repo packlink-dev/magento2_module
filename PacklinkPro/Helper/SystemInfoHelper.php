@@ -24,6 +24,7 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\Shi
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Entity;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\QueryFilter\Operators;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\QueryFilter\QueryFilter;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
@@ -40,14 +41,14 @@ use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 class SystemInfoHelper
 {
     const PHP_INFO_FILE_NAME = 'phpinfo.html';
-    const SYSTEM_INFO_FILE_NAME = 'system-info.txt';
+    const SYSTEM_INFO_FILE_NAME = 'system-info.json';
     const SYSTEM_LOG_FILE_NAME = 'system-logs.txt';
     const DEBUG_LOG_FILE_NAME = 'debug-logs.txt';
-    const USER_INFO_FILE_NAME = 'packlink-user-info.txt';
-    const QUEUE_INFO_FILE_NAME = 'queue.txt';
-    const PARCEL_WAREHOUSE_FILE_NAME = 'parcel-warehouse.txt';
-    const ENTITY_TABLE_FILE_NAME = 'entity-table.txt';
-    const SERVICE_INFO_FILE_NAME = 'services.txt';
+    const USER_INFO_FILE_NAME = 'packlink-user-info.json';
+    const QUEUE_INFO_FILE_NAME = 'queue.json';
+    const PARCEL_WAREHOUSE_FILE_NAME = 'parcel-warehouse.json';
+    const ENTITY_TABLE_FILE_NAME = 'entity-table.json';
+    const SERVICE_INFO_FILE_NAME = 'services.json';
     const MODULE_NAME = 'Packlink_PacklinkPro';
     /**
      * @var ProductMetadataInterface
@@ -82,6 +83,10 @@ class SystemInfoHelper
      */
     protected $directoryList;
     /**
+     * @var \Packlink\PacklinkPro\Helper\UrlHelper
+     */
+    protected $urlHelper;
+    /**
      * @var ConfigurationService
      */
     private $configService;
@@ -97,6 +102,7 @@ class SystemInfoHelper
      * @param \Magento\Framework\App\DeploymentConfig $deploymentConfig
      * @param \Magento\Framework\Module\ModuleListInterface $moduleList
      * @param \Magento\Framework\Filesystem\DirectoryList $directoryList
+     * @param \Packlink\PacklinkPro\Helper\UrlHelper $urlHelper
      */
     public function __construct(
         ProductMetadataInterface $productMetadata,
@@ -106,7 +112,8 @@ class SystemInfoHelper
         Data $backendHelper,
         DeploymentConfig $deploymentConfig,
         ModuleListInterface $moduleList,
-        DirectoryList $directoryList
+        DirectoryList $directoryList,
+        UrlHelper $urlHelper
     ) {
         $this->productMetadata = $productMetadata;
         $this->scopeConfig = $scopeConfig;
@@ -116,6 +123,7 @@ class SystemInfoHelper
         $this->deploymentConfig = $deploymentConfig;
         $this->moduleList = $moduleList;
         $this->directoryList = $directoryList;
+        $this->urlHelper = $urlHelper;
     }
 
     /**
@@ -172,16 +180,17 @@ class SystemInfoHelper
      */
     protected function getMagentoInfo()
     {
-        $result = 'Magento version: ' . $this->productMetadata->getVersion();
-        $result .= "\ntheme: " . $this->getThemeCode();
-        $result .= "\nbase admin url: " . $this->backendHelper->getHomePageUrl();
-        $result .= "\ndatabase: " . $this->deploymentConfig->get(
-                ConfigOptionsListConstants::CONFIG_PATH_DB_CONNECTION_DEFAULT
-                . '/' . ConfigOptionsListConstants::KEY_NAME
-            );
-        $result .= "\nplugin version: " . $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
+        $result['Magento version'] = $this->productMetadata->getVersion();
+        $result['Theme'] = $this->getThemeCode();
+        $result['Base admin URL'] = $this->backendHelper->getHomePageUrl();
+        $result['Database'] = $this->deploymentConfig->get(
+            ConfigOptionsListConstants::CONFIG_PATH_DB_CONNECTION_DEFAULT . '/' . ConfigOptionsListConstants::KEY_NAME
+        );
+        $result['Plugin version'] = $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
+        $result['Async process URL'] = $this->getConfigService()->getAsyncProcessUrl('test');
+        $result['Auto-test URL'] = $this->urlHelper->getBackendUrl('packlink/content/autotest');
 
-        return $result;
+        return json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -215,11 +224,11 @@ class SystemInfoHelper
      */
     protected function getUserInfo()
     {
-        $result = 'user info :' . json_encode($this->getConfigService()->getUserInfo());
+        $user = $this->getConfigService()->getUserInfo();
+        $result = $user ? $user->toArray() : [];
+        $result['API Key'] = $this->getConfigService()->getAuthorizationToken();
 
-        $result .= "\n\napi key: " . $this->getConfigService()->getAuthorizationToken();
-
-        return $result;
+        return json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -238,10 +247,7 @@ class SystemInfoHelper
             $repository = RepositoryRegistry::getRepository(QueueItem::CLASS_NAME);
 
             $query = new QueryFilter();
-            $query->orWhere('status', '=', QueueItem::QUEUED);
-            $query->orWhere('status', '=', QueueItem::CREATED);
-            $query->orWhere('status', '=', QueueItem::IN_PROGRESS);
-            $query->orWhere('status', '=', QueueItem::FAILED);
+            $query->where('status', Operators::NOT_EQUALS, QueueItem::COMPLETED);
 
             $result = $repository->select($query);
         } catch (RepositoryNotRegisteredException $e) {
@@ -258,10 +264,10 @@ class SystemInfoHelper
      */
     protected function getParcelAndWarehouseInfo()
     {
-        $result = 'default parcel: ' . json_encode($this->getConfigService()->getDefaultParcel() ?: []);
-        $result .= "\n\ndefault warehouse: " . json_encode($this->getConfigService()->getDefaultWarehouse() ?: []);
+        $result['Default parcel'] = $this->getConfigService()->getDefaultParcel() ?: [];
+        $result['Default warehouse'] = $this->getConfigService()->getDefaultWarehouse() ?: [];
 
-        return $result;
+        return json_encode($result, JSON_PRETTY_PRINT);
     }
 
     /**
@@ -283,7 +289,7 @@ class SystemInfoHelper
         } catch (RepositoryNotRegisteredException $e) {
         }
 
-        return "[\n" . $this->formatJsonOutput($result) . "\n]";
+        return $this->formatJsonOutput($result);
     }
 
     /**
@@ -298,12 +304,15 @@ class SystemInfoHelper
         try {
             /** @var BaseRepository $repository */
             $repository = RepositoryRegistry::getRepository(Entity::CLASS_NAME);
-            $result = $repository->encodeAllEntities();
+            $entities = $repository->selectAll();
+            foreach ($entities as $item) {
+                $result[] = json_decode($item['data'], true);
+            }
         } catch (RepositoryNotRegisteredException $e) {
         } catch (LocalizedException $e) {
         }
 
-        return $result;
+        return json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -322,15 +331,13 @@ class SystemInfoHelper
             $logs = file_get_contents($logPath);
         }
 
-        return $logs . "\n]";
+        return $logs . "\n";
     }
 
     /**
      * Returns theme code.
      *
      * @return string Theme code.
-     *
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getThemeCode()
     {
@@ -347,25 +354,20 @@ class SystemInfoHelper
     }
 
     /**
-     * Formats json output.
+     * Formats json for output.
      *
-     * @param array $items
+     * @param Entity[] $items
      *
      * @return string
      */
     private function formatJsonOutput(array &$items)
     {
-        $result = '';
-
+        $result = [];
         foreach ($items as $item) {
-            if (is_array($item)) {
-                $result .= json_encode($item) . ",\n\n";
-            } else {
-                $result .= json_encode($item->toArray()) . ",\n\n";
-            }
+            $result[] = $item->toArray();
         }
 
-        return rtrim($result, ",\n");
+        return json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**

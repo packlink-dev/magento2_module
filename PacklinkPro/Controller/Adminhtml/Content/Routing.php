@@ -14,9 +14,7 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\User\UserAccountService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Interfaces\TaskRunnerWakeup;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
@@ -66,8 +64,6 @@ class Routing extends Action
      * Note: Request will be added as operation argument in future
      *
      * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     *
-     * @throws QueueStorageUnavailableException
      */
     public function execute()
     {
@@ -77,13 +73,10 @@ class Routing extends Action
     }
 
     /**
-     * @throws QueueStorageUnavailableException
+     * Redirects to a proper action if needed.
      */
-    private function redirectHandler()
+    protected function redirectHandler()
     {
-        /** @var Http $request */
-        $request = $this->getRequest();
-
         /** @var ConfigurationService $configService */
         $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
         $apiToken = $configService->getAuthorizationToken();
@@ -93,59 +86,21 @@ class Routing extends Action
             $wakeupService = ServiceRegister::getService(TaskRunnerWakeup::CLASS_NAME);
             $wakeupService->wakeup();
 
-            return $this->redirectIfNecessary(self::DASHBOARD_STATE_CODE, 'packlink/content/dashboard');
+            $this->redirectIfNecessary(self::DASHBOARD_STATE_CODE, 'packlink/content/dashboard');
+        } else {
+            $this->redirectIfNecessary(self::LOGIN_STATE_CODE, 'packlink/content/login');
         }
-
-        if ($request->has('api_key')) {
-            if ($this->login($request)) {
-                return $this->redirectIfNecessary(self::DASHBOARD_STATE_CODE, 'packlink/content/dashboard');
-            }
-
-            $this->messageManager->addErrorMessage(__('API key was incorrect.'));
-        }
-
-        return $this->redirectIfNecessary(self::LOGIN_STATE_CODE, 'packlink/content/login');
     }
 
     /**
-     * @param Http $request Magento HTTP request.
-     *
-     * @return bool Returns TRUE if login finished successfully. Otherwise, returns FALSE.
-     *
-     * @throws QueueStorageUnavailableException
+     * @param string $currentAction
+     * @param string $redirectUrl
      */
-    private function login($request)
-    {
-        $apiKey = $request->get('api_key');
-        $result = false;
-        try {
-            /** @var UserAccountService $userAccountService */
-            $userAccountService = ServiceRegister::getService(UserAccountService::CLASS_NAME);
-            $result = $userAccountService->login($apiKey);
-        } catch (\RuntimeException $e) {
-            /** @var ConfigurationService $configService */
-            $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-            if ($configService->getAuthorizationToken() !== null) {
-                $configService->setAuthorizationToken(null);
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param $currentAction
-     * @param $redirectUrl
-     *
-     * @return \Magento\Framework\App\ResponseInterface
-     */
-    private function redirectIfNecessary($currentAction, $redirectUrl)
+    protected function redirectIfNecessary($currentAction, $redirectUrl)
     {
         $actionName = $this->request->getActionName();
         if ($actionName !== $currentAction) {
-            return $this->_redirect($redirectUrl);
+            $this->_redirect($redirectUrl);
         }
-
-        return null;
     }
 }

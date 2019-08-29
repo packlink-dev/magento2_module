@@ -16,8 +16,10 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\Schedule
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Http\CurlHttpClient;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Http\HttpClient;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Interfaces\ShopLoggerAdapter;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\LogData;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Entity;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
@@ -28,7 +30,6 @@ use Packlink\PacklinkPro\Repository\QueueItemRepository;
 use Packlink\PacklinkPro\Services\BusinessLogic\CarrierService;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
-use Packlink\PacklinkPro\Services\Infrastructure\HttpClientService;
 use Packlink\PacklinkPro\Services\Infrastructure\LoggerService;
 
 /**
@@ -45,7 +46,7 @@ class Bootstrap extends BootstrapComponent
      */
     protected static $instance;
     /**
-     * @var HttpClientService
+     * @var CurlHttpClient
      */
     private $httpClientService;
     /**
@@ -68,14 +69,14 @@ class Bootstrap extends BootstrapComponent
     /**
      * Bootstrap constructor.
      *
-     * @param HttpClientService $httpClientService
+     * @param CurlHttpClient $httpClientService
      * @param LoggerService $loggerService
      * @param ConfigurationService $configService
      * @param OrderRepositoryService $orderRepositoryService
      * @param CarrierService $carrierService
      */
     public function __construct(
-        HttpClientService $httpClientService,
+        CurlHttpClient $httpClientService,
         LoggerService $loggerService,
         ConfigurationService $configService,
         OrderRepositoryService $orderRepositoryService,
@@ -125,6 +126,7 @@ class Bootstrap extends BootstrapComponent
         RepositoryRegistry::registerRepository(ShippingMethod::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(QuoteCarrierDropOffMapping::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(Entity::CLASS_NAME, BaseRepository::getClassName());
+        RepositoryRegistry::registerRepository(LogData::CLASS_NAME, BaseRepository::getClassName());
     }
 
     /**
