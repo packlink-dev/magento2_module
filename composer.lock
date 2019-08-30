@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-  "content-hash": "d41608cbc66a1a7bc82b11149b9e9267",
+  "content-hash": "799d6fb1b57ad34bb9182baae979c965",
     "packages": [
         {
             "name": "packlink/integration-core",
