@@ -35,6 +35,7 @@ removeUnnecessaryFiles() {
     rm -rf packlink/composer.lock
     rm -rf packlink/PacklinkPro/Test
     rm -rf packlink/PacklinkPro/IntegrationCore/Tests
+    rm packlink/PacklinkPro/IntegrationCore/Infrastructure/Serializer/Concrete/NativeSerializer.php
 }
 
 createZipArchives() {

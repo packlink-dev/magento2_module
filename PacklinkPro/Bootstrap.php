@@ -22,6 +22,8 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Interfaces\ShopLo
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\LogData;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Entity;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Serializer\Concrete\JsonSerializer;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Serializer\Serializer;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Process;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
@@ -135,6 +137,13 @@ class Bootstrap extends BootstrapComponent
     protected function initInstanceServices()
     {
         $instance = static::$instance;
+
+        ServiceRegister::registerService(
+            Serializer::CLASS_NAME,
+            function () {
+                return new JsonSerializer();
+            }
+        );
 
         ServiceRegister::registerService(
             ShopLoggerAdapter::CLASS_NAME,
