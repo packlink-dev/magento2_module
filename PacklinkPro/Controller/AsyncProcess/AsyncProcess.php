@@ -13,6 +13,7 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\AutoTest\AutoTestService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\AsyncProcessStarterService;
@@ -56,7 +57,15 @@ class AsyncProcess extends Action
     public function execute()
     {
         $guid = $this->getRequest()->getParam('guid');
-        Logger::logDebug('Received async process request.', 'Integration', ['guid' => $guid]);
+        $autoTest = $this->getRequest()->getParam('auto-test');
+
+        if ($autoTest) {
+            $autoTestService = new AutoTestService();
+            $autoTestService->setAutoTestMode();
+            Logger::logInfo('Received auto-test async process request.', 'Integration', ['guid' => $guid]);
+        } else {
+            Logger::logDebug('Received async process request.', 'Integration', ['guid' => $guid]);
+        }
 
         if (!$guid) {
             $result = $this->resultJsonFactory->create();
@@ -71,9 +80,11 @@ class AsyncProcess extends Action
             return $result;
         }
 
-        /** @var AsyncProcessStarterService $asyncProcessService */
-        $asyncProcessService = ServiceRegister::getService(AsyncProcessService::CLASS_NAME);
-        $asyncProcessService->runProcess($guid);
+        if ($guid !== 'auto-configure') {
+            /** @var AsyncProcessStarterService $asyncProcessService */
+            $asyncProcessService = ServiceRegister::getService(AsyncProcessService::CLASS_NAME);
+            $asyncProcessService->runProcess($guid);
+        }
 
         return $this->resultJsonFactory->create()->setData(['success' => true]);
     }

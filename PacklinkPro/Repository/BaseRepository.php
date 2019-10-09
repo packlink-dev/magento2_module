@@ -74,15 +74,13 @@ class BaseRepository implements RepositoryInterface
     /**
      * Selects all Packlink entities in the system.
      *
-     * @return string Encoded entities.
+     * @return array All entities as arrays.
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function encodeAllEntities()
+    public function selectAll()
     {
-        $records = $this->resourceEntity->selectAll();
-
-        return !empty($records) ? json_encode($records) : '';
+        return $this->resourceEntity->selectAll();
     }
 
     /**

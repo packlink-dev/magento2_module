@@ -68,9 +68,9 @@ class CarrierLogoHelper
 
         $this->assetRepo->getUrl('Packlink_PacklinkPro::images/logo.png');
         $carrierLogoDir = $this->moduleReader->getModuleDir(
-                Dir::MODULE_VIEW_DIR,
-                'Packlink_PacklinkPro'
-            ) . '/adminhtml/web/images/carriers/' . strtolower($userInfo->country);
+            Dir::MODULE_VIEW_DIR,
+            'Packlink_PacklinkPro'
+        ) . '/adminhtml/web/images/carriers/' . strtolower($userInfo->country);
 
         /** @var ShippingMethodService $shippingMethodService */
         $shippingMethodService = ServiceRegister::getService(ShippingMethodService::CLASS_NAME);
