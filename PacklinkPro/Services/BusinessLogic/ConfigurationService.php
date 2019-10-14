@@ -24,6 +24,10 @@ class ConfigurationService extends Configuration
      */
     const MAX_TASK_INACTIVITY_PERIOD = 60;
     /**
+     * Default HTTP method to use for async call.
+     */
+    const ASYNC_CALL_METHOD = 'GET';
+    /**
      * Singleton instance of this class.
      *
      * @var static
