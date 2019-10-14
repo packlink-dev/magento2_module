@@ -51,6 +51,8 @@ magento-coding-standard/vendor/bin/phpcs ./PacklinkPro/ --standard=Magento2 --se
 ```
 If there is no output, all is fine. Otherwise, correct the reported errors. Ignore errors in `Tests` folder 
 since it will not be a part of the final release.
+Ignore errors in file `/IntegrationCore/Infrastructure/Serializer/Concrete/NativeSerializer.php` since this file
+is removed during the deployment process.
 
 ## Release new version
 
@@ -63,7 +65,7 @@ Add change log - release notes in `./PluginInstalations/CHANGELOG.md` file.
 ### Create module package
 Run 
 ```
-sh deploy.sh
+./deploy.sh
 ```
 ### Validate package for release
 If you haven't done so, install Magento Marketplace Tools:

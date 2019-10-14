@@ -60,7 +60,7 @@ class ShipmentLabels extends Action
         return $result->setData(
             [
                 'success' => false,
-                'message' => __('Order ID and/or link missing'),
+                'message' => __('Order ID and/or link missing.'),
             ]
         );
     }
