@@ -154,6 +154,12 @@ class Carrier extends AbstractCarrier implements CarrierInterface
         }
 
         foreach ($activeMethods as $activeMethod) {
+            if (!$activeMethod->isShipToAllCountries()
+                && !in_array($data['dest_country_id'], $activeMethod->getShippingCountries(), true)
+            ) {
+                continue;
+            }
+
             if (isset($calculatedCosts[$activeMethod->getId()])) {
                 $result->append($this->getRateMethod($activeMethod, $calculatedCosts[$activeMethod->getId()]));
             }

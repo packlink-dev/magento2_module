@@ -458,6 +458,35 @@
     height: 100%;
 }
 
+.pl-increased-padding {
+    padding-top: 60px;
+}
+
+.pl-modal-button-wrapper {
+    padding: 0 70px 10px 70px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid;
+}
+
+.pl-modal-button-wrapper > button {
+    float: right;
+}
+
+.pl-button-separator {
+    margin-right: 10px !important;
+}
+
+.pl-close-modal-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #5d5d5d;
+}
+
 .pl-disable-methods-modal {
     position: absolute;
     max-width: 550px;
@@ -658,6 +687,21 @@
     margin-top: 10px !important;
 }
 
+.pl-shipping-countries {
+    margin-top: 20px !important;
+}
+
+.pl-destination-countries-selector {
+    width: 100%;
+    border: 2px solid #dcdcdc;
+    padding: 10px;
+}
+
+.pl-destination-countries-selector > option{
+    font-size: 16px;
+    color: #5d5d5d;
+}
+
 .pl-form-tax {
     margin-top: 10px !important;
 }
@@ -758,6 +802,18 @@
     font-size: 14px;
     font-weight: normal !important;
     color: #5d5d5d;
+}
+
+.pl-checkbox-sub-action {
+    display: inherit;
+    color: #2095f2;
+    margin-left: 25px;
+    margin-top: 5px;
+    font-size: 11px;
+}
+
+.pl-checkbox-sub-action > span {
+    cursor: pointer;
 }
 
 .pl-price-increase-wrapper {
@@ -1196,6 +1252,10 @@
 }
 
 /* UTILITY */
+
+.pl-full-width {
+    width: 100%;
+}
 
 .pl-template-section {
     display: none;

@@ -22,6 +22,7 @@
         <link src="Packlink_PacklinkPro::js/core/StateController.js"/>
         <link src="Packlink_PacklinkPro::js/core/TemplateService.js"/>
         <link src="Packlink_PacklinkPro::js/core/UtilityService.js"/>
+        <link src="Packlink_PacklinkPro::js/core/CountrySelectorController.js"/>
     </head>
     <body>
         <referenceContainer name="page.messages">
