@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b3fa54b0b81fe7f7b083f3850f290a8",
+    "content-hash": "8fafc2a1493d568d1432707e1291a61a",
     "packages": [
         {
             "name": "packlink/integration-core",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:logeecom/pl_module_core.git",
-                "reference": "7bb9bf8f63de71ea99d3310d96ca86bda45ce10f"
+                "reference": "a24504718f7fdf3aecc7cb6b2a8958985993e084"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/7bb9bf8f63de71ea99d3310d96ca86bda45ce10f",
-                "reference": "7bb9bf8f63de71ea99d3310d96ca86bda45ce10f",
+                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/a24504718f7fdf3aecc7cb6b2a8958985993e084",
+                "reference": "a24504718f7fdf3aecc7cb6b2a8958985993e084",
                 "shasum": ""
             },
             "require": {
@@ -44,7 +44,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2019-10-17T11:32:59+00:00"
+            "time": "2019-11-01T10:36:48+00:00"
         }
     ],
     "packages-dev": [

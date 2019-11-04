@@ -8,6 +8,7 @@
 namespace Packlink\PacklinkPro\Test\Unit;
 
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\ResourceConnection;
 use Magento\Setup\Module\Setup;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
