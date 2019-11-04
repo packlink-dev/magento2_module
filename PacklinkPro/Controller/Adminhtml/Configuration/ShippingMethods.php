@@ -10,13 +10,15 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
-use Magento\Tax\Model\TaxClass\Source\Product as ProductTaxClassSource;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodConfiguration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodResponse;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ShippingMethodController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\UpdateShippingServicesTaskStatusController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Exceptions\BaseException;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 
 /**
  * Class ShippingMethods
@@ -25,10 +27,6 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
  */
 class ShippingMethods extends Configuration
 {
-    /**
-     * @var ProductTaxClassSource
-     */
-    private $productTaxClassSource;
     /**
      * @var CarrierLogoHelper
      */
@@ -44,19 +42,16 @@ class ShippingMethods extends Configuration
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
-     * @param \Magento\Tax\Model\TaxClass\Source\Product $productTaxClassSource
      * @param \Packlink\PacklinkPro\Helper\CarrierLogoHelper $logoHelper
      */
     public function __construct(
         Context $context,
         Bootstrap $bootstrap,
         JsonFactory $jsonFactory,
-        ProductTaxClassSource $productTaxClassSource,
         CarrierLogoHelper $logoHelper
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
-        $this->productTaxClassSource = $productTaxClassSource;
         $this->carrierLogoHelper = $logoHelper;
 
         $this->allowedActions = [
@@ -64,6 +59,7 @@ class ShippingMethods extends Configuration
             'activate',
             'deactivate',
             'save',
+            'getTaskStatus',
         ];
     }
 
@@ -75,6 +71,21 @@ class ShippingMethods extends Configuration
         $shippingMethods = $this->getShippingMethodController()->getAll();
 
         return $this->result->setData($this->formatCollectionJsonResponse($shippingMethods));
+    }
+
+    /**
+     * Gets the status of the task for updating shipping services.
+     */
+    protected function getTaskStatus()
+    {
+        $status = QueueItem::FAILED;
+        try {
+            $controller = new UpdateShippingServicesTaskStatusController();
+            $status = $controller->getLastTaskStatus();
+        } catch (BaseException $e) {
+        }
+
+        return $this->result->setData(['status' => $status]);
     }
 
     /**

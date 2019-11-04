@@ -1,0 +1,95 @@
+<?php
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+
+/** @var Packlink\PacklinkPro\Block\Adminhtml\Content\AutoTest $block */
+?>
+
+<div class="container-fluid pl-main-wrapper" id="pl-main-page-holder">
+    <div class="pl-logo-wrapper">
+        <img src="<?php echo $block->getViewFileUrl('Packlink_PacklinkPro::images/logo-pl.svg'); ?>"
+             class="pl-dashboard-logo"
+             alt="<?php echo $block->escapeQuote(__('Packlink PRO Shipping')); ?>">
+    </div>
+    <div class="pl-auto-test-panel">
+        <div class="pl-auto-test-header">
+            <div class="pl-auto-test-title">
+                <?php echo $block->escapeQuote(__('PacklinkPRO module auto-test')); ?>
+            </div>
+            <div class="pl-auto-test-subtitle">
+                <?php echo $block->escapeQuote(
+                    __(
+                        'Use this page to test the system configuration and PacklinkPRO module services.'
+                    )
+                ); ?>
+            </div>
+        </div>
+
+        <div class="pl-auto-test-content col-10" id="pl-auto-test-progress">
+            <button type="button" name="start-test" id="pl-auto-test-start"
+                    class="button button-primary btn-lg"><?php echo $block->escapeQuote(__('Start')); ?></button>
+            <div class="pl-auto-test-log-panel" id="pl-auto-test-log-panel">
+                ...
+            </div>
+        </div>
+        <div class="pl-auto-test-content" id="pl-spinner-box">
+            <div class="pl-spinner" id="pl-spinner">
+                <div></div>
+            </div>
+        </div>
+
+        <div class="pl-auto-test-content" id="pl-auto-test-done">
+            <div class="pl-auto-test-content col-10">
+                <div class="pl-flash-msg success" id="pl-flash-message-success">
+                    <div class="pl-flash-msg-text-section">
+                        <i class="material-icons success">
+                        </i>
+                        <span id="pl-flash-message-text">
+                            <?php echo $block->escapeQuote(__('Auto-test passed successfully!')); ?>
+                        </span>
+                    </div>
+                </div>
+                <div class="pl-flash-msg danger" id="pl-flash-message-fail">
+                    <div class="pl-flash-msg-text-section">
+                        <i class="material-icons danger">
+                        </i>
+                        <span id="pl-flash-message-text">
+                            <?php echo $block->escapeQuote(__('The test did not complete successfully.')); ?>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="<?php echo $block->getControllerUrl('AutoTest', 'exportLogs'); ?>" value="auto-test-log.json"
+               download>
+                <button type="button" name="download-log"
+                        class="button btn-info btn-lg"><?php echo $block->escapeQuote(
+                            __('Download test log')
+                        ); ?></button>
+            </a>
+            <a href="<?php echo $block->getControllerUrl('Debug', 'getSystemInfo'); ?>" value="packlink-debug-data.zip"
+               download>
+                <button type="button" name="download-system-info-file"
+                        class="button btn-info btn-lg"><?php echo $block->escapeQuote(
+                            __('Download system info file')
+                        ); ?></button>
+            </a>
+            <a href="<?php echo $block->urlHelper->getBackendUrl('packlink/content/dashboard'); ?>">
+                <button type="button" name="open-module" class="button btn-success btn-lg">
+                    <?php echo $block->escapeQuote(__('Open PacklinkPRO module')); ?>
+                </button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Packlink.AutoTestController(
+            "<?php echo $block->getControllerUrl('AutoTest', 'start'); ?>",
+            "<?php echo $block->getControllerUrl('AutoTest', 'checkStatus'); ?>");
+    }, false);
+</script>

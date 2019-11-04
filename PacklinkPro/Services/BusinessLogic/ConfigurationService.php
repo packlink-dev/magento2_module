@@ -20,6 +20,14 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 class ConfigurationService extends Configuration
 {
     /**
+     * Max inactivity period for a task in seconds
+     */
+    const MAX_TASK_INACTIVITY_PERIOD = 60;
+    /**
+     * Default HTTP method to use for async call.
+     */
+    const ASYNC_CALL_METHOD = 'GET';
+    /**
      * Singleton instance of this class.
      *
      * @var static
@@ -64,6 +72,17 @@ class ConfigurationService extends Configuration
     }
 
     /**
+     * Gets max inactivity period for a task in seconds.
+     * After inactivity period is passed, system will fail such task as expired.
+     *
+     * @return int Max task inactivity period in seconds if set; otherwise, self::MAX_TASK_INACTIVITY_PERIOD.
+     */
+    public function getMaxTaskInactivityPeriod()
+    {
+        return parent::getMaxTaskInactivityPeriod() ?: self::MAX_TASK_INACTIVITY_PERIOD;
+    }
+
+    /**
      * Retrieves integration name.
      *
      * @return string Integration name.
@@ -98,7 +117,12 @@ class ConfigurationService extends Configuration
         $params = [
             'guid' => $guid,
             'ajax' => 1,
+            '_nosid' => true, // ignore session ID
         ];
+
+        if ($this->isAutoTestMode()) {
+            $params['auto-test'] = 1;
+        }
 
         return $this->urlHelper->getFrontendUrl('packlink/asyncprocess/asyncprocess', $params);
     }
