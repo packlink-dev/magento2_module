@@ -258,7 +258,7 @@ class PacklinkEntity extends AbstractDb
             $conditionValue = IndexHelper::castFieldValue($condition->getValue(), $condition->getValueType());
         }
 
-        if (in_array($condition->getOperator(), array(\Logeecom\Infrastructure\ORM\QueryFilter\Operators::NOT_IN, Operators::IN), true)) {
+        if (in_array($condition->getOperator(), [Operators::NOT_IN, Operators::IN], true)) {
             $values = array_map(function ($item) {
                 if (is_string($item)) {
                     return "'$item'";
@@ -279,7 +279,7 @@ class PacklinkEntity extends AbstractDb
         }
 
         return $columnName . ' ' . $condition->getOperator()
-            . (!in_array($condition->getOperator(), array(Operators::NULL, Operators::NOT_NULL), true)
+            . (!in_array($condition->getOperator(), [Operators::NULL, Operators::NOT_NULL], true)
                 ? $conditionValue : ''
             );
     }
