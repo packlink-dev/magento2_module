@@ -227,19 +227,11 @@ class ShopOrderDetails extends Entity
     /**
      * Sets order shipment labels from array of links to PDF.
      *
-     * @param array $links Array of links to PDF.
+     * @param ShipmentLabel[] $shipmentLabels Array of links to PDF.
      */
-    public function setShipmentLabels(array $links)
+    public function setShipmentLabels(array $shipmentLabels)
     {
-        if (empty($this->shipmentLabels)) {
-            $shipmentLabels = [];
-
-            foreach ($links as $link) {
-                $shipmentLabels[] = new ShipmentLabel($link);
-            }
-
-            $this->shipmentLabels = $shipmentLabels;
-        }
+        $this->shipmentLabels = $shipmentLabels;
     }
 
     /**

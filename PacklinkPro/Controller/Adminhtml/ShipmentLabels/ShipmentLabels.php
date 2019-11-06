@@ -12,7 +12,9 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ShipmentLabel;
 use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 class ShipmentLabels extends Action
@@ -47,12 +49,30 @@ class ShipmentLabels extends Action
         $result = $this->resultJsonFactory->create();
         $request = json_decode(file_get_contents('php://input'));
 
-        if (property_exists($request, 'orderId') && property_exists($request, 'link')) {
+        if (property_exists($request, 'orderId')) {
             /** @var OrderRepositoryService $orderRepository */
             $orderRepository = ServiceRegister::getService(OrderRepository::CLASS_NAME);
-            $orderRepository->setLabelPrinted($request->orderId, $request->link);
+            $orderDetails = $orderRepository->getOrderDetailsById((int) $request->orderId);
 
-            return $result->setData(['success' => true]);
+            if ($orderDetails) {
+                $labels = $orderDetails->getShipmentLabels();
+                if (empty($labels)) {
+                    /** @var OrderService $orderService */
+                    $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
+                    $labels = $orderService->getShipmentLabels($orderDetails->getShipmentReference());
+                    $labels = array_map(function (ShipmentLabel $label) {
+                        $label->setPrinted(true);
+
+                        return $label;
+                    }, $labels);
+                    $orderDetails->setShipmentLabels($labels);
+                }
+
+                if (!empty($labels)) {
+                    $orderRepository->saveOrderDetails($orderDetails);
+                    return $result->setData(['labelLink' => $labels[0]->getLink()]);
+                }
+            }
         }
 
         $result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
@@ -60,7 +80,7 @@ class ShipmentLabels extends Action
         return $result->setData(
             [
                 'success' => false,
-                'message' => __('Order ID and/or link missing.'),
+                'message' => __('Order ID missing.'),
             ]
         );
     }
