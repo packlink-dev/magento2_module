@@ -481,12 +481,14 @@
 .pl-close-modal-btn {
     position: absolute;
     top: 20px;
-    right: 25px;
-    font-size: 20px;
+    right: 20px;
     cursor: pointer;
     color: #5d5d5d;
 }
 
+.pl-close-modal-btn:hover {
+    color: #2095f2;
+}
 .pl-disable-methods-modal {
     position: absolute;
     max-width: 550px;
