@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-  "content-hash": "2ca69a701ccd7695e286a0c598f3f36e",
+    "content-hash": "8fafc2a1493d568d1432707e1291a61a",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "dev-release/v1.4.1",
+            "version": "dev-release/v1.5.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:logeecom/pl_module_core.git",
-              "reference": "9dcc5a13dda255ef6ea886687aabe107cc3f5e16"
+                "reference": "b481eeeab4cb61a43ffd949d109a4ba3ba9207ad"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/9dcc5a13dda255ef6ea886687aabe107cc3f5e16",
-              "reference": "9dcc5a13dda255ef6ea886687aabe107cc3f5e16",
+                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/b481eeeab4cb61a43ffd949d109a4ba3ba9207ad",
+                "reference": "b481eeeab4cb61a43ffd949d109a4ba3ba9207ad",
                 "shasum": ""
             },
             "require": {
@@ -44,7 +44,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-          "time": "2019-10-10T12:48:07+00:00"
+            "time": "2019-11-12T10:37:48+00:00"
         }
     ],
     "packages-dev": [
@@ -250,22 +250,22 @@
         },
         {
             "name": "phpspec/prophecy",
-          "version": "1.9.0",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-              "reference": "f6811d96d97bdf400077a0cc100ae56aa32b9203"
+                "reference": "f6811d96d97bdf400077a0cc100ae56aa32b9203"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/phpspec/prophecy/zipball/f6811d96d97bdf400077a0cc100ae56aa32b9203",
-              "reference": "f6811d96d97bdf400077a0cc100ae56aa32b9203",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/f6811d96d97bdf400077a0cc100ae56aa32b9203",
+                "reference": "f6811d96d97bdf400077a0cc100ae56aa32b9203",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.0.2",
                 "php": "^5.3|^7.0",
-              "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0|^5.0",
+                "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0|^5.0",
                 "sebastian/comparator": "^1.1|^2.0|^3.0",
                 "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
@@ -309,7 +309,7 @@
                 "spy",
                 "stub"
             ],
-          "time": "2019-10-03T11:07:50+00:00"
+            "time": "2019-10-03T11:07:50+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1120,16 +1120,16 @@
         },
         {
             "name": "symfony/yaml",
-          "version": "v3.4.32",
+            "version": "v3.4.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-              "reference": "768f817446da74a776a31eea335540f9dcb53942"
+                "reference": "768f817446da74a776a31eea335540f9dcb53942"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/symfony/yaml/zipball/768f817446da74a776a31eea335540f9dcb53942",
-              "reference": "768f817446da74a776a31eea335540f9dcb53942",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/768f817446da74a776a31eea335540f9dcb53942",
+                "reference": "768f817446da74a776a31eea335540f9dcb53942",
                 "shasum": ""
             },
             "require": {
@@ -1175,7 +1175,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-          "time": "2019-09-10T10:38:46+00:00"
+            "time": "2019-09-10T10:38:46+00:00"
         },
         {
             "name": "webmozart/assert",

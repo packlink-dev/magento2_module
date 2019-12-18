@@ -17,14 +17,15 @@ use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Framework\Module\Dir\Reader;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\ShipmentRepository;
-use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
+use Magento\Sales\Model\ResourceModel\Order\Shipment\CollectionFactory;
 use Magento\Ui\Component\MassAction\Filter;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Entity\ShopOrderDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
+use Packlink\PacklinkPro\Model\ShipmentLabel;
 use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 /**
@@ -155,8 +156,6 @@ class BulkPrint extends Action
                     'application/pdf'
                 );
 
-                $this->markLabelsPrinted($shipmentIds);
-
                 return $result;
             } catch (\Exception $e) {
                 Logger::logError(__('Unable to create bulk labels file. Error: ') . $e->getMessage(), 'Integration');
@@ -181,39 +180,26 @@ class BulkPrint extends Action
     private function saveFilesLocally(array $shipmentIds)
     {
         $orders = $this->getAllOrderDetails($shipmentIds);
+        $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
 
         foreach ($orders as $orderDetails) {
             $labels = $orderDetails->getShipmentLabels();
+
+            if (empty($labels)) {
+                /** @var OrderService $orderService */
+                $labels = $orderService->getShipmentLabels($orderDetails->getShipmentReference());
+                $labels = array_map(function (ShipmentLabel $label) {
+                    $label->setPrinted(true);
+
+                    return $label;
+                }, $labels);
+                $orderDetails->setShipmentLabels($labels);
+                $this->orderRepositoryService->saveOrderDetails($orderDetails);
+            }
+
             foreach ($labels as $label) {
                 $this->savePDF($label->getLink());
             }
-        }
-    }
-
-    /**
-     * Marks labels for orders with provided IDs as printed.
-     *
-     * @param array $orderIds Array of order IDs.
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
-     */
-    private function markLabelsPrinted(array $orderIds)
-    {
-        $orderDetailsRepository = RepositoryRegistry::getRepository(ShopOrderDetails::getClassName());
-        $orders = $this->getAllOrderDetails($orderIds);
-
-        foreach ($orders as $orderDetails) {
-            $labels = $orderDetails->getShipmentLabels();
-
-            foreach ($labels as $label) {
-                if (!$label->isPrinted()) {
-                    $label->setPrinted(true);
-                }
-            }
-
-            $orderDetailsRepository->update($orderDetails);
         }
     }
 

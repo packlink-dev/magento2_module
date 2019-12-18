@@ -13,30 +13,27 @@ var Packlink = window.Packlink || {};
  */
 function plPrintShipmentLabel(element) {
     let printedLabel = document.getElementsByClassName('pl-printed-label')[0],
-        labelLink = element.dataset.link,
         controllerUrl = element.dataset.controllerUrl,
         orderId = parseInt(element.dataset.orderId),
         ajaxService = Packlink.ajaxService;
 
-    if (element.classList.contains('primary')) {
-        element.disabled = true;
+    element.disabled = true;
 
-        ajaxService.post(
-            controllerUrl,
-            {
-                orderId: orderId,
-                link: labelLink
-            },
-            function () {
-                element.classList.remove('primary');
+    ajaxService.post(
+        controllerUrl,
+        {
+            orderId: orderId
+        },
+        function (response) {
+            if (response.labelLink) {
+                window.open(response.labelLink, '_blank');
                 element.innerText = printedLabel.innerText;
-                element.disabled = false;
-            },
-            function () {
-                element.disabled = false;
             }
-        )
-    }
-
-    window.open(labelLink, '_blank');
+            element.classList.remove('primary');
+            element.disabled = false;
+        },
+        function () {
+            element.disabled = false;
+        }
+    )
 }

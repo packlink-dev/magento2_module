@@ -327,6 +327,10 @@
 
     <div id="pl-shipping-methods-page-template">
 
+        <!-- Allowed  shipping countries section -->
+
+        <div id="pl-allowed-shipping-countries-ep"></div>
+
         <!-- DELETE SHIPPING METHODS MODAL -->
 
         <div class="pl-dashboard-modal-wrapper hidden" id="pl-disable-methods-modal-wrapper">
@@ -624,6 +628,31 @@
                                                     __('Show carrier logo to my customers')
                                                 ); ?>
                                             </label>
+                                        </div>
+                                        <div class="row">
+                                            <div class="pl-form-section-title-wrapper pl-shipping-countries">
+                                                <div class="pl-form-section-title">
+                                                    <?php echo $block->escapeQuote(__('Service availability per destination country')); ?>
+                                                </div>
+                                                <div class="pl-form-section-title-line">
+                                                    <hr>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="md-checkbox">
+                                            <label class="pl-form-section-input-checkbox-label">
+                                                <input type="checkbox" name="method-all-countries-input" id="pl-country-selector-checkbox">
+                                                <?php echo $block->escapeQuote(
+                                                    __('Service available for all destination countries')
+                                                ); ?>
+                                            </label>
+                                            <div class="pl-checkbox-sub-action">
+                                                <span id="pl-country-list-btn">
+                                                    <?php echo $block->escapeQuote(
+                                                        __('See countries list')
+                                                    ); ?>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1121,6 +1150,34 @@
         </div>
     </div>
 
+    <div id="pl-allowed-countries-modal-template">
+        <div class="pl-dashboard-modal-wrapper">
+            <div class="pl-dashboard-modal pl-increased-padding">
+                <div class="pl-close-modal-btn" id="pl-close-modal-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" focusable="false" role="presentation">
+                        <path d="M12 10.586L6.707 5.293a1 1 0 0 0-1.414 1.414L10.586 12l-5.293 5.293a1 1 0 0 0 1.414 1.414L12 13.414l5.293 5.293a1 1 0 0 0 1.414-1.414L13.414 12l5.293-5.293a1 1 0 1 0-1.414-1.414L12 10.586z"
+                              fill="currentColor"></path>
+                    </svg>
+                </div>
+                <div class="pl-shipping-modal-title pl-full-width">
+                    <?php echo $block->escapeQuote(__('Select allowed destination countries for this service')); ?>
+                </div>
+                <div class="pl-shipping-modal-body pl-full-width">
+                    <select class="pl-destination-countries-selector" name="pl-destination-countries-selector" multiple size="15" id="pl-countries-selector">
+                    </select>
+                </div>
+                <div class="pl-modal-button-wrapper">
+                    <button type="button" class="button btn-outline-secondary btn-lg" id="pl-countries-selector-cancel-btn">
+                        <?php echo $block->escapeQuote(__('Cancel')); ?>
+                    </button>
+                    <button type="button" class="button button-primary btn-lg pl-button-separator" id="pl-countries-selector-save-btn">
+                        <?php echo $block->escapeQuote(__('Save')); ?>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -1133,7 +1190,8 @@
             titleLength: "<?php echo $block->escapeQuote(__('Title can have at most 64 characters.')); ?>",
             greaterThanZero: "<?php echo $block->escapeQuote(__('Value must be greater than 0.')); ?>",
             numberOfDecimalPlaces: "<?php echo $block->escapeQuote(__('Field must have 2 decimal places.')); ?>",
-            integer: "<?php echo $block->escapeQuote(__('Field must be an integer.')); ?>"
+            integer: "<?php echo $block->escapeQuote(__('Field must be an integer.')); ?>",
+            invalidCountryList: "<?php echo $block->escapeQuote(__('You must select destination countries.')); ?>"
         };
 
         Packlink.successMsgs = {
@@ -1148,6 +1206,7 @@
                 },
 
                 hasTaxConfiguration: false,
+                hasCountryConfiguration: true,
 
                 dashboardGetStatusUrl: "<?php echo $block->getControllerUrl('Dashboard', 'getStatus'); ?>",
                 defaultParcelGetUrl: "<?php echo $block->getControllerUrl('DefaultParcel', 'getDefaultParcel'); ?>",
@@ -1189,7 +1248,8 @@
                 ); ?>",
                 debugGetStatusUrl: "<?php echo $block->getControllerUrl('Debug', 'getStatus'); ?>",
                 debugSetStatusUrl: "<?php echo $block->getControllerUrl('Debug', 'setStatus'); ?>",
-                autoConfigureStartUrl: "<?php echo $block->getControllerUrl('AutoConfigure', 'start'); ?>"
+                autoConfigureStartUrl: "<?php echo $block->getControllerUrl('AutoConfigure', 'start'); ?>",
+                getShippingCountriesUrl: "<?php echo $block->getControllerUrl('ShippingCountries', 'getAll'); ?>"
             }
         );
 

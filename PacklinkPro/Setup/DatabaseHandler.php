@@ -131,7 +131,7 @@ class DatabaseHandler
     {
         $tableInstance = $this->installer->getTable($tableName);
         if ($this->installer->getConnection()->isTableExists($tableInstance)) {
-            $this->installer->getConnection()->dropTable($tableName);
+            $this->installer->getConnection()->dropTable($tableInstance);
         }
     }
 }

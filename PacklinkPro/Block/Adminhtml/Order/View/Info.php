@@ -22,6 +22,7 @@ use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
 use Packlink\PacklinkPro\Helper\UrlHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Utility\TimeProvider;
@@ -183,8 +184,10 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     public function labelExists()
     {
         $orderDetails = $this->getOrderDetails();
+        /** @var \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService $orderService */
+        $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
 
-        return $orderDetails !== null && !empty($orderDetails->getShipmentLabels());
+        return $orderService->isReadyToFetchShipmentLabels($orderDetails->getShippingStatus());
     }
 
     /**
@@ -194,21 +197,10 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
      */
     public function labelPrinted()
     {
-        $label = $this->getShipmentLabel();
+        $details = $this->getOrderDetails();
+        $labels = $details->getShipmentLabels();
 
-        return $label ? $label->isPrinted() : false;
-    }
-
-    /**
-     * Returns link to shipment label PDF file.
-     *
-     * @return string Link to PDF label.
-     */
-    public function getLabelLink()
-    {
-        $label = $this->getShipmentLabel();
-
-        return $label ? $label->getLink() : '';
+        return !empty($labels) && $labels[0]->isPrinted();
     }
 
     /**

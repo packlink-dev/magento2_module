@@ -96,7 +96,7 @@
             quoteAddresses = <?= json_encode($block->getQuoteAddresses()) ?>;
 
         logos['backup'] = '<?= $block->getDefaultCarrierLogoUrl() ?>';
-        <?php foreach ($block->getMethodsWithEnabledLogos() as $id => $logoUrl) : ?>
+        <?php foreach ($block->getMethodsWithEnabledLogos() as $id => $logoUrl): ?>
         logos['<?= $id ?>'] = '<?= $logoUrl ?>';
         <?php endforeach; ?>
 

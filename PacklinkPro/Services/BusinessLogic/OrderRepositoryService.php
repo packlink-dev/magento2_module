@@ -160,6 +160,36 @@ class OrderRepositoryService implements OrderRepository
     }
 
     /**
+     * Retrieves list of order references where order is in one of the provided statuses.
+     *
+     * @param array $statuses List of order statuses.
+     *
+     * @return string[] Array of shipment references.
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getOrderReferencesWithStatus(array $statuses)
+    {
+        $filter = new QueryFilter();
+
+        foreach ($statuses as $status) {
+            $filter->orWhere('status', Operators::EQUALS, $status);
+        }
+
+        $orders = $this->getOrderDetailsRepository()->select($filter);
+
+        $result = [];
+        /** @var ShopOrderDetails $order */
+        foreach ($orders as $order) {
+            $result[] =$order->getReference();
+        }
+
+        return $result;
+    }
+
+    /**
      * Fetches and returns system order by its unique identifier.
      *
      * @param string $orderId $orderId Unique order id.
