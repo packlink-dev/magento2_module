@@ -82,9 +82,6 @@ In case of Magento version less than 2.3, static content needs to be deployed wi
 php bin/magento setup:static-content:deploy
 ```
 
-## Version
-1.0.1
-
 ## Compatibility
 Magento 2.1.x, 2.2.x and 2.3.x versions
 

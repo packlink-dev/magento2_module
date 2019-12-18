@@ -10,7 +10,9 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\DailySch
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\HourlySchedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\Schedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\WeeklySchedule;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\ScheduleCheckTask;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Utility\ShipmentStatus;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\TaskCleanupTask;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\UpdateShipmentDataTask;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\UpdateShippingServicesTask;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Configuration\Configuration;
@@ -18,6 +20,7 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
@@ -49,6 +52,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '1.0.1', '<')) {
             $this->changeShipmentDataUpdateInterval();
+        }
+
+        if (version_compare($context->getVersion(), '1.1.0', '<')) {
+            $this->addTaskCleanupSchedule();
         }
     }
 
@@ -118,5 +125,35 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $repository->save($shippingServicesSchedule);
 
         Logger::logInfo('Update script V1.0.1 has been successfully completed.');
+    }
+
+    /**
+     * Enqueues task for cleaning up completed queue items.
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     */
+    protected function addTaskCleanupSchedule()
+    {
+        Logger::logInfo('Started executing V1.1.0 update script.');
+
+        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
+        try {
+            $repository = RepositoryRegistry::getRepository(Schedule::getClassName());
+        } catch (RepositoryNotRegisteredException $e) {
+            Logger::logError("V1.1.0 update script failed because: {$e->getMessage()}");
+
+            throw $e;
+        }
+
+        $schedule = new HourlySchedule(
+            new TaskCleanupTask(ScheduleCheckTask::getClassName(), array(QueueItem::COMPLETED), 3600),
+            $configuration->getDefaultQueueName()
+        );
+
+        $schedule->setMinute(10);
+        $schedule->setNextSchedule();
+        $repository->save($schedule);
+
+        Logger::logInfo('Update script V1.1.0 has been successfully completed.');
     }
 }
