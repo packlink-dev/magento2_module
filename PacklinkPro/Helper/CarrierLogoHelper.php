@@ -10,10 +10,7 @@ namespace Packlink\PacklinkPro\Helper;
 use Magento\Framework\Module\Dir;
 use Magento\Framework\Module\Dir\Reader;
 use Magento\Framework\View\Asset\Repository;
-use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
@@ -37,26 +34,23 @@ class CarrierLogoHelper
      * CarrierLogoHelper constructor.
      *
      * @param Reader $reader
-     * @param Bootstrap $bootstrap
      * @param Repository $assetRepo
      */
-    public function __construct(Reader $reader, Bootstrap $bootstrap, Repository $assetRepo)
+    public function __construct(Reader $reader, Repository $assetRepo)
     {
         $this->moduleReader = $reader;
         $this->assetRepo = $assetRepo;
-
-        $bootstrap->initInstance();
     }
 
     /**
      * Returns carrier logo file path of shipping method with provided ID.
      * If logo doesn't exist returns default carrier logo.
      *
-     * @param int $shippingMethodId ID of the shipping method.
+     * @param string $carrierName Name of the carrier.
      *
      * @return string Logo file path.
      */
-    public function getCarrierLogoFilePath($shippingMethodId)
+    public function getCarrierLogoFilePath($carrierName)
     {
         /** @var ConfigurationService $configService */
         $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
@@ -72,12 +66,7 @@ class CarrierLogoHelper
             'Packlink_PacklinkPro'
         ) . '/adminhtml/web/images/carriers/' . strtolower($userInfo->country);
 
-        /** @var ShippingMethodService $shippingMethodService */
-        $shippingMethodService = ServiceRegister::getService(ShippingMethodService::CLASS_NAME);
-        /** @var ShippingMethod $shippingMethod */
-        $shippingMethod = $shippingMethodService->getShippingMethod($shippingMethodId);
-
-        $carrierLogoFile = strtolower(str_replace(' ', '-', $shippingMethod->getCarrierName())) . '.png';
+        $carrierLogoFile = strtolower(str_replace(' ', '-', $carrierName)) . '.png';
 
         $logoPath = $carrierLogoDir . '/' . $carrierLogoFile;
         if (!file_exists($logoPath)) {

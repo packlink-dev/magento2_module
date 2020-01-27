@@ -1,25 +1,25 @@
 {
-  "_readme": [
-    "This file locks the dependencies of your project to a known state",
-    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-    "This file is @generated automatically"
-  ],
-  "content-hash": "6a68b049b2f1306946b4238be0c35886",
-  "packages": [
-    {
-      "name": "packlink/integration-core",
-      "version": "dev-release/v2.0.0",
-      "source": {
-        "type": "git",
-        "url": "git@github.com:logeecom/pl_module_core.git",
-        "reference": "c7377797419c70b5478c993c7cf491594c480e70"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/c7377797419c70b5478c993c7cf491594c480e70",
-        "reference": "c7377797419c70b5478c993c7cf491594c480e70",
-        "shasum": ""
-      },
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "6a68b049b2f1306946b4238be0c35886",
+    "packages": [
+        {
+            "name": "packlink/integration-core",
+            "version": "dev-release/v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:logeecom/pl_module_core.git",
+                "reference": "a9706afa99a520cdb5ad42d105464d50e1301517"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/a9706afa99a520cdb5ad42d105464d50e1301517",
+                "reference": "a9706afa99a520cdb5ad42d105464d50e1301517",
+                "shasum": ""
+            },
             "require": {
                 "php": ">=5.3.29"
             },
@@ -44,7 +44,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-      "time": "2019-12-18T16:27:57+00:00"
+            "time": "2020-01-24T12:43:53+00:00"
         }
     ],
     "packages-dev": [
@@ -248,35 +248,35 @@
             ],
             "time": "2017-07-14T14:27:02+00:00"
         },
-      {
-        "name": "phpspec/prophecy",
-        "version": "1.10.0",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/phpspec/prophecy.git",
-          "reference": "d638ebbb58daba25a6a0dc7969e1358a0e3c6682"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/phpspec/prophecy/zipball/d638ebbb58daba25a6a0dc7969e1358a0e3c6682",
-          "reference": "d638ebbb58daba25a6a0dc7969e1358a0e3c6682",
-          "shasum": ""
-        },
+        {
+            "name": "phpspec/prophecy",
+            "version": "1.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpspec/prophecy.git",
+                "reference": "d638ebbb58daba25a6a0dc7969e1358a0e3c6682"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/d638ebbb58daba25a6a0dc7969e1358a0e3c6682",
+                "reference": "d638ebbb58daba25a6a0dc7969e1358a0e3c6682",
+                "shasum": ""
+            },
             "require": {
-              "doctrine/instantiator": "^1.0.2",
-              "php": "^5.3|^7.0",
-              "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0|^5.0",
-              "sebastian/comparator": "^1.2.3|^2.0|^3.0",
-              "sebastian/recursion-context": "^1.0|^2.0|^3.0"
+                "doctrine/instantiator": "^1.0.2",
+                "php": "^5.3|^7.0",
+                "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0|^5.0",
+                "sebastian/comparator": "^1.2.3|^2.0|^3.0",
+                "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
             "require-dev": {
-              "phpspec/phpspec": "^2.5 || ^3.2",
-              "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5 || ^7.1"
+                "phpspec/phpspec": "^2.5 || ^3.2",
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5 || ^7.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                  "dev-master": "1.10.x-dev"
+                    "dev-master": "1.10.x-dev"
                 }
             },
             "autoload": {
@@ -309,7 +309,7 @@
                 "spy",
                 "stub"
             ],
-        "time": "2019-12-17T16:54:23+00:00"
+            "time": "2019-12-17T16:54:23+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1060,20 +1060,20 @@
             "homepage": "https://github.com/sebastianbergmann/version",
             "time": "2015-06-21T13:59:46+00:00"
         },
-      {
-        "name": "symfony/polyfill-ctype",
-        "version": "v1.13.1",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/symfony/polyfill-ctype.git",
-          "reference": "f8f0b461be3385e56d6de3dbb5a0df24c0c275e3"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/f8f0b461be3385e56d6de3dbb5a0df24c0c275e3",
-          "reference": "f8f0b461be3385e56d6de3dbb5a0df24c0c275e3",
-          "shasum": ""
-        },
+        {
+            "name": "symfony/polyfill-ctype",
+            "version": "v1.13.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-ctype.git",
+                "reference": "f8f0b461be3385e56d6de3dbb5a0df24c0c275e3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/f8f0b461be3385e56d6de3dbb5a0df24c0c275e3",
+                "reference": "f8f0b461be3385e56d6de3dbb5a0df24c0c275e3",
+                "shasum": ""
+            },
             "require": {
                 "php": ">=5.3.3"
             },
@@ -1083,7 +1083,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                  "dev-master": "1.13-dev"
+                    "dev-master": "1.13-dev"
                 }
             },
             "autoload": {
@@ -1116,22 +1116,22 @@
                 "polyfill",
                 "portable"
             ],
-        "time": "2019-11-27T13:56:44+00:00"
+            "time": "2019-11-27T13:56:44+00:00"
         },
-      {
-        "name": "symfony/yaml",
-        "version": "v3.4.36",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/symfony/yaml.git",
-          "reference": "dab657db15207879217fc81df4f875947bf68804"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/symfony/yaml/zipball/dab657db15207879217fc81df4f875947bf68804",
-          "reference": "dab657db15207879217fc81df4f875947bf68804",
-          "shasum": ""
-        },
+        {
+            "name": "symfony/yaml",
+            "version": "v3.4.36",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "dab657db15207879217fc81df4f875947bf68804"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/dab657db15207879217fc81df4f875947bf68804",
+                "reference": "dab657db15207879217fc81df4f875947bf68804",
+                "shasum": ""
+            },
             "require": {
                 "php": "^5.5.9|>=7.0.8",
                 "symfony/polyfill-ctype": "~1.8"
@@ -1175,39 +1175,39 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-        "time": "2019-10-24T15:33:53+00:00"
+            "time": "2019-10-24T15:33:53+00:00"
         },
-      {
-        "name": "webmozart/assert",
-        "version": "1.6.0",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/webmozart/assert.git",
-          "reference": "573381c0a64f155a0d9a23f4b0c797194805b925"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/webmozart/assert/zipball/573381c0a64f155a0d9a23f4b0c797194805b925",
-          "reference": "573381c0a64f155a0d9a23f4b0c797194805b925",
-          "shasum": ""
-        },
-        "require": {
-          "php": "^5.3.3 || ^7.0",
-          "symfony/polyfill-ctype": "^1.8"
-        },
-        "conflict": {
-          "vimeo/psalm": "<3.6.0"
-        },
-        "require-dev": {
-          "phpunit/phpunit": "^4.8.36 || ^7.5.13"
-        },
-        "type": "library",
-        "autoload": {
-          "psr-4": {
-            "Webmozart\\Assert\\": "src/"
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
+        {
+            "name": "webmozart/assert",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webmozart/assert.git",
+                "reference": "573381c0a64f155a0d9a23f4b0c797194805b925"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/573381c0a64f155a0d9a23f4b0c797194805b925",
+                "reference": "573381c0a64f155a0d9a23f4b0c797194805b925",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.3 || ^7.0",
+                "symfony/polyfill-ctype": "^1.8"
+            },
+            "conflict": {
+                "vimeo/psalm": "<3.6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.36 || ^7.5.13"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Webmozart\\Assert\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1223,7 +1223,7 @@
                 "check",
                 "validate"
             ],
-        "time": "2019-11-24T13:36:37+00:00"
+            "time": "2019-11-24T13:36:37+00:00"
         }
     ],
     "aliases": [],

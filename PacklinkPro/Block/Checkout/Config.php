@@ -14,6 +14,7 @@ use Magento\Quote\Model\Quote\Address;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException;
@@ -82,6 +83,8 @@ class Config extends Template
      * Returns the current quote.
      *
      * @return \Magento\Quote\Model\Quote Quote.
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getQuote()
     {
@@ -92,6 +95,9 @@ class Config extends Template
      * Returns the current quote.
      *
      * @return array
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getQuoteAddresses()
     {
@@ -113,6 +119,9 @@ class Config extends Template
      * Returns array of item weights in current quote grouped by address.
      *
      * @return array
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getQuoteItemWeights()
     {
@@ -144,6 +153,9 @@ class Config extends Template
      * Returns shipping address country code.
      *
      * @return string Shipping address country code.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getCountryCode()
     {
@@ -161,6 +173,9 @@ class Config extends Template
      * Returns shipping address postcode.
      *
      * @return string Shipping address postcode.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getPostcode()
     {
@@ -242,6 +257,9 @@ class Config extends Template
      */
     private function getCarrierLogoUrl($shippingMethodId)
     {
-        return $this->carrierLogoHelper->getCarrierLogoFilePath($shippingMethodId);
+        /** @var \Packlink\PacklinkPro\Services\BusinessLogic\CarrierService $carrierService */
+        $carrierService = ServiceRegister::getService(ShopShippingMethodService::CLASS_NAME);
+
+        return $carrierService->getCarrierLogoById($shippingMethodId);
     }
 }

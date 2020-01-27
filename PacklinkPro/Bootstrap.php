@@ -8,11 +8,12 @@
 namespace Packlink\PacklinkPro;
 
 use Packlink\PacklinkPro\Entity\QuoteCarrierDropOffMapping;
-use Packlink\PacklinkPro\Entity\ShopOrderDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\BootstrapComponent;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\ShopOrderService as ShopOrderServiceInterface;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\Schedule;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Models\OrderSendDraftTaskMap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
@@ -31,7 +32,7 @@ use Packlink\PacklinkPro\Repository\BaseRepository;
 use Packlink\PacklinkPro\Repository\QueueItemRepository;
 use Packlink\PacklinkPro\Services\BusinessLogic\CarrierService;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
+use Packlink\PacklinkPro\Services\BusinessLogic\ShopOrderService;
 use Packlink\PacklinkPro\Services\Infrastructure\LoggerService;
 
 /**
@@ -60,9 +61,9 @@ class Bootstrap extends BootstrapComponent
      */
     private $configService;
     /**
-     * @var OrderRepositoryService
+     * @var ShopOrderService
      */
-    private $orderRepositoryService;
+    private $shopOrderService;
     /**
      * @var CarrierService
      */
@@ -74,20 +75,20 @@ class Bootstrap extends BootstrapComponent
      * @param CurlHttpClient $httpClientService
      * @param LoggerService $loggerService
      * @param ConfigurationService $configService
-     * @param OrderRepositoryService $orderRepositoryService
+     * @param ShopOrderService $shopOrderService
      * @param CarrierService $carrierService
      */
     public function __construct(
         CurlHttpClient $httpClientService,
         LoggerService $loggerService,
         ConfigurationService $configService,
-        OrderRepositoryService $orderRepositoryService,
+        ShopOrderService $shopOrderService,
         CarrierService $carrierService
     ) {
         $this->httpClientService = $httpClientService;
         $this->loggerService = $loggerService;
         $this->configService = $configService;
-        $this->orderRepositoryService = $orderRepositoryService;
+        $this->shopOrderService = $shopOrderService;
         $this->carrierService = $carrierService;
 
         static::$instance = $this;
@@ -124,11 +125,12 @@ class Bootstrap extends BootstrapComponent
         RepositoryRegistry::registerRepository(ConfigEntity::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(QueueItem::CLASS_NAME, QueueItemRepository::getClassName());
         RepositoryRegistry::registerRepository(Schedule::CLASS_NAME, BaseRepository::getClassName());
-        RepositoryRegistry::registerRepository(ShopOrderDetails::CLASS_NAME, BaseRepository::getClassName());
+        RepositoryRegistry::registerRepository(OrderShipmentDetails::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(ShippingMethod::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(QuoteCarrierDropOffMapping::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(Entity::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(LogData::CLASS_NAME, BaseRepository::getClassName());
+        RepositoryRegistry::registerRepository(OrderSendDraftTaskMap::CLASS_NAME, BaseRepository::getClassName());
     }
 
     /**
@@ -167,9 +169,9 @@ class Bootstrap extends BootstrapComponent
         );
 
         ServiceRegister::registerService(
-            OrderRepository::CLASS_NAME,
+            ShopOrderServiceInterface::CLASS_NAME,
             function () use ($instance) {
-                return $instance->orderRepositoryService;
+                return $instance->shopOrderService;
             }
         );
 

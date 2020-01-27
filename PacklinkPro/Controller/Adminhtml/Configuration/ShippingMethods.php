@@ -11,13 +11,14 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodConfiguration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodResponse;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ShippingMethodController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\UpdateShippingServicesTaskStatusController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Exceptions\BaseException;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 
 /**
@@ -28,13 +29,13 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 class ShippingMethods extends Configuration
 {
     /**
-     * @var CarrierLogoHelper
-     */
-    private $carrierLogoHelper;
-    /**
      * @var ShippingMethodController
      */
     private $controller;
+    /**
+     * @var \Packlink\PacklinkPro\Services\BusinessLogic\CarrierService
+     */
+    private $carrierService;
 
     /**
      * ShippingMethods constructor.
@@ -42,17 +43,13 @@ class ShippingMethods extends Configuration
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
-     * @param \Packlink\PacklinkPro\Helper\CarrierLogoHelper $logoHelper
      */
     public function __construct(
         Context $context,
         Bootstrap $bootstrap,
-        JsonFactory $jsonFactory,
-        CarrierLogoHelper $logoHelper
+        JsonFactory $jsonFactory
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
-
-        $this->carrierLogoHelper = $logoHelper;
 
         $this->allowedActions = [
             'getAll',
@@ -136,7 +133,7 @@ class ShippingMethods extends Configuration
             return $this->result->setData(['message' => __('Failed to save shipping method.')]);
         }
 
-        $model->logoUrl = $model->id ? $this->carrierLogoHelper->getCarrierLogoFilePath($model->id) : '';
+        $model->logoUrl = $model->id ? $this->getCarrierService()->getCarrierLogoById($model->id) : '';
 
         if ($model->selected) {
             return $this->result->setData($model->toArray());
@@ -166,7 +163,7 @@ class ShippingMethods extends Configuration
 
         /** @var ShippingMethodResponse $shippingMethod */
         foreach ($data as $shippingMethod) {
-            $shippingMethod->logoUrl = $this->carrierLogoHelper->getCarrierLogoFilePath($shippingMethod->id);
+            $shippingMethod->logoUrl = $this->getCarrierService()->getCarrierLogoById($shippingMethod->id);
             $collection[] = $shippingMethod->toArray();
         }
 
@@ -199,5 +196,19 @@ class ShippingMethods extends Configuration
         }
 
         return $this->controller;
+    }
+
+    /**
+     * Returns an instance of carrier service.
+     *
+     * @return \Packlink\PacklinkPro\Services\BusinessLogic\CarrierService
+     */
+    private function getCarrierService()
+    {
+        if ($this->carrierService === null) {
+            $this->carrierService = ServiceRegister::getService(ShopShippingMethodService::CLASS_NAME);
+        }
+
+        return $this->carrierService;
     }
 }

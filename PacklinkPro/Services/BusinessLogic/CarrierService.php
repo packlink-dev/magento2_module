@@ -7,8 +7,11 @@
 
 namespace Packlink\PacklinkPro\Services\BusinessLogic;
 
+use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
  * Class CarrierService
@@ -17,6 +20,46 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\Shi
  */
 class CarrierService implements ShopShippingMethodService
 {
+    /**
+     * @var CarrierLogoHelper
+     */
+    private $carrierLogoHelper;
+
+    /**
+     * CarrierService constructor.
+     *
+     * @param \Packlink\PacklinkPro\Helper\CarrierLogoHelper $carrierLogoHelper
+     */
+    public function __construct(CarrierLogoHelper $carrierLogoHelper)
+    {
+        $this->carrierLogoHelper = $carrierLogoHelper;
+    }
+
+    /**
+     * Returns carrier logo file path for shipping method with a given ID.
+     *
+     * @param int $id Shipping method ID.
+     *
+     * @return string
+     */
+    public function getCarrierLogoById($id)
+    {
+        /** @var ShippingMethodService $shippingMethodService */
+        $shippingMethodService = ServiceRegister::getService(ShippingMethodService::CLASS_NAME);
+        /** @var ShippingMethod $shippingMethod */
+        $shippingMethod = $shippingMethodService->getShippingMethod($id);
+
+        return $this->getCarrierLogoFilePath($shippingMethod->getCarrierName());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCarrierLogoFilePath($carrierName)
+    {
+        return $this->carrierLogoHelper->getCarrierLogoFilePath($carrierName);
+    }
+
     /**
      * Adds / Activates shipping method in shop integration.
      *

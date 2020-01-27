@@ -11,9 +11,9 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\ShipmentDraftService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 /**
  * Class SalesOrderSaveAfter
@@ -37,7 +37,8 @@ class SalesOrderSaveAfter implements ObserverInterface
      *
      * @param Observer $observer Magento observer.
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Exceptions\DraftTaskMapExists
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Exceptions\DraftTaskMapNotFound
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
@@ -47,11 +48,10 @@ class SalesOrderSaveAfter implements ObserverInterface
         /** @var Order $order */
         $order = $observer->getEvent()->getOrder();
 
-        /** @var OrderRepositoryService $orderRepositoryService */
-        $orderRepositoryService = ServiceRegister::getService(OrderRepository::CLASS_NAME);
-
-        if ($this->draftShouldBeCreated($order, $orderRepositoryService)) {
-            $orderRepositoryService->createOrderDraft((int)$order->getId());
+        if ($this->draftShouldBeCreated($order)) {
+            /** @var ShipmentDraftService $shipmentDraftService */
+            $shipmentDraftService = ServiceRegister::getService(ShipmentDraftService::CLASS_NAME);
+            $shipmentDraftService->enqueueCreateShipmentDraftTask((string)$order->getId());
         }
     }
 
@@ -59,17 +59,14 @@ class SalesOrderSaveAfter implements ObserverInterface
      * Returns whether draft for the provided order should be created.
      *
      * @param Order $order Magento order entity.
-     * @param OrderRepositoryService $orderRepositoryService Order repository service.
      *
      * @return bool Returns TRUE if order draft should be created, otherwise returns FALSE.
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
      */
-    private function draftShouldBeCreated(Order $order, OrderRepositoryService $orderRepositoryService)
+    private function draftShouldBeCreated(Order $order)
     {
-        $orderDetails = $orderRepositoryService->getOrderDetailsById((int)$order->getId());
+        /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
+        $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
+        $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId($order->getId());
 
         return $orderDetails === null
             && in_array($order->getStatus(), [Order::STATE_PROCESSING, Order::STATE_COMPLETE], true);

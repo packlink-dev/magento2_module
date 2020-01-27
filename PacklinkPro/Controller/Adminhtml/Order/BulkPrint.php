@@ -20,13 +20,11 @@ use Magento\Sales\Model\Order\ShipmentRepository;
 use Magento\Sales\Model\ResourceModel\Order\Shipment\CollectionFactory;
 use Magento\Ui\Component\MassAction\Filter;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\Entity\ShopOrderDetails;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
-use Packlink\PacklinkPro\Model\ShipmentLabel;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 /**
  * Class BulkPrint
@@ -60,9 +58,9 @@ class BulkPrint extends Action
      */
     private $shipmentRepository;
     /**
-     * @var OrderRepositoryService
+     * @var OrderShipmentDetailsService
      */
-    private $orderRepositoryService;
+    private $orderShipmentDetailsService;
 
     /**
      * BulkPrint constructor.
@@ -128,6 +126,7 @@ class BulkPrint extends Action
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Exceptions\OrderShipmentDetailsNotFound
      */
     private function bulkPrintShipmentLabels(AbstractCollection $collection)
     {
@@ -173,9 +172,9 @@ class BulkPrint extends Action
      *
      * @param array $shipmentIds Array of shipment IDs.
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Exceptions\OrderShipmentDetailsNotFound
      */
     private function saveFilesLocally(array $shipmentIds)
     {
@@ -187,17 +186,16 @@ class BulkPrint extends Action
 
             if (empty($labels)) {
                 /** @var OrderService $orderService */
-                $labels = $orderService->getShipmentLabels($orderDetails->getShipmentReference());
-                $labels = array_map(function (ShipmentLabel $label) {
-                    $label->setPrinted(true);
-
-                    return $label;
-                }, $labels);
-                $orderDetails->setShipmentLabels($labels);
-                $this->orderRepositoryService->saveOrderDetails($orderDetails);
+                $labels = $orderService->getShipmentLabels($orderDetails->getReference());
+                $this->getOrderShipmentDetailsService()->setLabelsByReference(
+                    $orderDetails->getReference(),
+                    $labels
+                );
             }
 
             foreach ($labels as $label) {
+                $this->getOrderShipmentDetailsService()->markLabelPrinted($orderDetails->getReference(), $label->getLink());
+
                 $this->savePDF($label->getLink());
             }
         }
@@ -208,11 +206,9 @@ class BulkPrint extends Action
      *
      * @param array $shipmentIds Array of shipment IDs.
      *
-     * @return ShopOrderDetails[] Array of order details entities..
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @return OrderShipmentDetails[] Array of order details entities..
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getAllOrderDetails(array $shipmentIds)
     {
@@ -226,7 +222,7 @@ class BulkPrint extends Action
                 continue;
             }
 
-            $orderDetails = $this->getOrderRepositoryService()->getOrderDetailsById((int)$shipment->getOrderId());
+            $orderDetails = $this->getOrderShipmentDetailsService()->getDetailsByOrderId($shipment->getOrderId());
             if ($orderDetails !== null) {
                 $orders[] = $orderDetails;
             }
@@ -329,16 +325,16 @@ class BulkPrint extends Action
     }
 
     /**
-     * Returns an instance of order repository service.
+     * Returns an instance of order shipment details service.
      *
-     * @return OrderRepositoryService
+     * @return OrderShipmentDetailsService
      */
-    private function getOrderRepositoryService()
+    private function getOrderShipmentDetailsService()
     {
-        if ($this->orderRepositoryService === null) {
-            $this->orderRepositoryService = ServiceRegister::getService(OrderRepository::CLASS_NAME);
+        if ($this->orderShipmentDetailsService === null) {
+            $this->orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
         }
 
-        return $this->orderRepositoryService;
+        return $this->orderShipmentDetailsService;
     }
 }

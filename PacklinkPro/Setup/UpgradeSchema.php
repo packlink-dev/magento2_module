@@ -6,11 +6,13 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\DailySchedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\HourlySchedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\Schedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\WeeklySchedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\ScheduleCheckTask;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\OrderSendDraftTaskMapService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Utility\ShipmentStatus;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\TaskCleanupTask;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\UpdateShipmentDataTask;
@@ -21,6 +23,7 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\Repositor
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
+use Packlink\PacklinkPro\Model\ShipmentLabel;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
@@ -44,6 +47,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
      *
      * @return void
      *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Exceptions\DraftTaskMapExists
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
@@ -56,6 +60,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '1.1.0', '<')) {
             $this->addTaskCleanupSchedule();
+            $this->migrateShopOrderDetailsEntities($setup);
         }
     }
 
@@ -146,7 +151,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         }
 
         $schedule = new HourlySchedule(
-            new TaskCleanupTask(ScheduleCheckTask::getClassName(), array(QueueItem::COMPLETED), 3600),
+            new TaskCleanupTask(ScheduleCheckTask::getClassName(), [QueueItem::COMPLETED], 3600),
             $configuration->getDefaultQueueName()
         );
 
@@ -155,5 +160,56 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $repository->save($schedule);
 
         Logger::logInfo('Update script V1.1.0 has been successfully completed.');
+    }
+
+    /**
+     * Migrates all old shop order details entities from Magento integration to Core order shipment details entities.
+     *
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $installer
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Exceptions\DraftTaskMapExists
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     */
+    protected function migrateShopOrderDetailsEntities(SchemaSetupInterface $installer)
+    {
+        $connection = $installer->getConnection();
+
+        $select = $connection->select()
+            ->from(InstallSchema::PACKLINK_ENTITY_TABLE)
+            ->where('type = ?', 'ShopOrderDetails');
+
+        $entities = $connection->fetchAll($select);
+        if (!empty($entities)) {
+            $orderShipmentDetailsRepository = RepositoryRegistry::getRepository(OrderShipmentDetails::getClassName());
+            /** @var OrderSendDraftTaskMapService $orderSendDraftTaskMapService */
+            $orderSendDraftTaskMapService = ServiceRegister::getService(OrderSendDraftTaskMapService::CLASS_NAME);
+
+            foreach ($entities as $entity) {
+                $data = json_decode($entity['data'], true);
+                $orderShipmentDetails = new OrderShipmentDetails();
+                $orderShipmentDetails->setOrderId((string)$data['orderId']);
+                $orderShipmentDetails->setReference($data['shipmentReference']);
+                $orderShipmentDetails->setDropOffId($data['dropOffId']);
+                if (!empty($data['shipmentLabels'])) {
+                    $shipmentLabels = [];
+                    foreach ($data['shipmentLabels'] as $label) {
+                        $shipmentLabels[] = new ShipmentLabel($label['printed'], $label['link'], $label['createTime']);
+                    }
+
+                    $orderShipmentDetails->setShipmentLabels($shipmentLabels);
+                }
+
+                $orderShipmentDetails->setStatus($data['status']);
+                $orderShipmentDetails->setCarrierTrackingNumbers($data['carrierTrackingNumbers']);
+                $orderShipmentDetails->setCarrierTrackingUrl($data['carrierTrackingUrl']);
+                $orderShipmentDetails->setShippingCost($data['packlinkShippingPrice']);
+                $orderShipmentDetails->setDeleted($data['deleted']);
+
+                $orderShipmentDetailsRepository->save($orderShipmentDetails);
+                $orderSendDraftTaskMapService->createOrderTaskMap((string)$data['orderId'], $data['taskId']);
+            }
+
+            $connection->delete(InstallSchema::PACKLINK_ENTITY_TABLE, ['type = ?' => 'ShopOrderDetails']);
+        }
     }
 }

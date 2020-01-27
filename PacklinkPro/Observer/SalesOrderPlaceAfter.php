@@ -11,9 +11,8 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
+use Packlink\PacklinkPro\Services\BusinessLogic\ShopOrderService;
 
 /**
  * Class SalesOrderPlaceAfter
@@ -50,13 +49,15 @@ class SalesOrderPlaceAfter implements ObserverInterface
             return;
         }
 
-        /** @var OrderRepositoryService $orderRepositoryService */
-        $orderRepositoryService = ServiceRegister::getService(OrderRepository::CLASS_NAME);
+        /** @var ShopOrderService $shopOrderService */
+        $shopOrderService = ServiceRegister::getService(
+            \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\ShopOrderService::CLASS_NAME
+        );
         $methodId = (int)$order->getShippingMethod(true)->getDataByKey('method');
-        $dropOff = $orderRepositoryService->getDropOff($order, $methodId);
+        $dropOff = $shopOrderService->getDropOff($order, $methodId);
 
         if (!empty($dropOff)) {
-            $orderRepositoryService->setSourceOrderShippingAddress($order, $dropOff);
+            $shopOrderService->setOrderShippingAddress($order, $dropOff);
         }
     }
 }

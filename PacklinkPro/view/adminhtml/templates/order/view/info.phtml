@@ -46,7 +46,7 @@
                     <span id="pl-create-draft-default-msg" hidden>
                         <?= $block->escapeQuote(__('There has been an error creating order draft.')) ?>
                     </span>
-                <?php else : ?>
+                <?php elseif ($block->getOrderDetails() !== null) : ?>
                     <?php if ($block->labelExists()) : ?>
                         <div class="admin__field">
                             <label for="pl-print-label" class="admin__field-label pl-order-page-item">
@@ -138,27 +138,27 @@
                         </span> - <b><?= $block->escapeHtml($block->getOrderDetails()->getShippingStatus()) ?></b>
                         </div>
                     <?php endif; ?>
-                    <?php if ($block->getOrderDetails()->getShipmentReference()) : ?>
+                    <?php if ($block->getOrderDetails()->getReference()) : ?>
                         <div class="admin__field">
                             <label class="admin__field-label pl-order-page-item">
                                 <?= $block->escapeQuote(__('Packlink reference number')) ?>
                             </label>
                             <span>
-                            <?= $block->escapeHtml($block->getOrderDetails()->getShipmentReference()) ?>
+                            <?= $block->escapeHtml($block->getOrderDetails()->getReference()) ?>
                         </span>
                         </div>
                     <?php endif; ?>
-                    <?php if ($block->getOrderDetails()->getPacklinkShippingPrice()) : ?>
+                    <?php if ($block->getOrderDetails()->getShippingCost()) : ?>
                         <div class="admin__field">
                             <label class="admin__field-label pl-order-page-item">
                                 <?= $block->escapeQuote(__('Packlink shipping cost')) ?>
                             </label>
                             <span>
-                            €<?= $block->escapeHtml($block->getOrderDetails()->getPacklinkShippingPrice()) ?>
+                            €<?= $block->escapeHtml($block->getOrderDetails()->getShippingCost()) ?>
                         </span>
                         </div>
                     <?php endif; ?>
-                    <?php if ($block->getOrderDetails()->getShipmentReference()
+                    <?php if ($block->getOrderDetails()->getReference()
                         && !$block->getOrderDetails()->isDeleted()) : ?>
                         <a href="<?= $block->escapeHtml($block->getDraftUrl()) ?>" target="_blank">
                             <button type="button" class="pl-order-page-item">

@@ -12,10 +12,8 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\ShipmentDraftService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 /**
  * Class OrderDraft
@@ -50,10 +48,6 @@ class OrderDraft extends Action
      * Note: Request will be added as operation argument in future
      *
      * @return Json
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
      */
     public function execute()
     {
@@ -63,12 +57,12 @@ class OrderDraft extends Action
         if (property_exists($request, 'orderId')) {
             $orderId = $request->orderId;
 
-            /** @var OrderRepositoryService $orderRepositoryService */
-            $orderRepositoryService = ServiceRegister::getService(OrderRepository::CLASS_NAME);
+            /** @var ShipmentDraftService $shipmentDraftService */
+            $shipmentDraftService = ServiceRegister::getService(ShipmentDraftService::CLASS_NAME);
 
             try {
-                $orderRepositoryService->createOrderDraft($orderId);
-            } catch (QueueStorageUnavailableException $e) {
+                $shipmentDraftService->enqueueCreateShipmentDraftTask((string)$orderId);
+            } catch (\Exception $e) {
                 $result->setHttpResponseCode(Exception::HTTP_INTERNAL_ERROR);
 
                 return $result->setData(
