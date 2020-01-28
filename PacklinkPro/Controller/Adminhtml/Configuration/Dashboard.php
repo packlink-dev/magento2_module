@@ -41,6 +41,8 @@ class Dashboard extends Configuration
      * Returns current setup status.
      *
      * @return \Magento\Framework\Controller\Result\Json
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoNotRegisteredException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
      */
     protected function getStatus()
     {

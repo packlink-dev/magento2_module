@@ -49,7 +49,7 @@ class ShipmentLabels extends Action
         if (property_exists($request, 'orderId')) {
             /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
             $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetails::getClassName());
-            $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId($request->orderId);
+            $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId((string)$request->orderId);
 
             if ($orderDetails) {
                 $labels = $orderDetails->getShipmentLabels();

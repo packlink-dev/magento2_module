@@ -10,16 +10,15 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Webapi\Exception;
 use Magento\Shipping\Model\Config;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\User;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\Warehouse;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\Proxy;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Warehouse\Warehouse;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Location\LocationService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Warehouse\WarehouseService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
@@ -83,10 +82,16 @@ class DefaultWarehouse extends Configuration
      * Returns default warehouse data.
      *
      * @return \Magento\Framework\Controller\Result\Json
+     *
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
      */
     protected function getDefaultWarehouse()
     {
-        $warehouse = $this->getConfigService()->getDefaultWarehouse();
+        /** @var WarehouseService $warehouseService */
+        $warehouseService = ServiceRegister::getService(WarehouseService::CLASS_NAME);
+
+        $warehouse = $warehouseService->getWarehouse(false);
 
         if (!$warehouse) {
             $userInfo = $this->getConfigService()->getUserInfo();
@@ -96,6 +101,7 @@ class DefaultWarehouse extends Configuration
             }
 
             $warehouse = $this->getStoreWarehouseInfo($userInfo);
+            $this->getConfigService()->setDefaultWarehouse($warehouse);
         }
 
         return $this->result->setData($warehouse->toArray());
@@ -105,21 +111,18 @@ class DefaultWarehouse extends Configuration
      * Sets warehouse data.
      *
      * @return \Magento\Framework\Controller\Result\Json
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoNotRegisteredException
      */
     protected function setDefaultWarehouse()
     {
         $data = $this->getPacklinkPostData();
-
-        $validationResult = $this->validate($data);
-        if (!empty($validationResult)) {
-            $this->result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
-
-            return $this->result->setData($validationResult);
-        }
-
         $data['default'] = true;
-        $warehouse = Warehouse::fromArray($data);
-        $this->getConfigService()->setDefaultWarehouse($warehouse);
+
+        /** @var WarehouseService $warehouseService */
+        $warehouseService = ServiceRegister::getService(WarehouseService::CLASS_NAME);
+        $warehouseService->setWarehouse($data);
 
         return $this->result->setData($data);
     }
@@ -162,6 +165,9 @@ class DefaultWarehouse extends Configuration
      * @param User $userInfo User information object.
      *
      * @return Warehouse Default warehouse information.
+     *
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
      */
     private function getStoreWarehouseInfo($userInfo)
     {
@@ -206,54 +212,5 @@ class DefaultWarehouse extends Configuration
         $scopeConfigValue = $this->scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $store);
 
         return $scopeConfigValue ?: '';
-    }
-
-    /**
-     * Validates warehouse data.
-     *
-     * @param array $data Warehouse data.
-     *
-     * @return array Validation result.
-     */
-    private function validate(array $data)
-    {
-        $result = [];
-
-        foreach ($this->fields as $field) {
-            if (empty($data[$field])) {
-                $result[$field] = __('Field is required.');
-            }
-        }
-
-        if (!empty($data['country']) && !empty($data['postal_code'])) {
-            try {
-                $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
-                $postalCodes = $proxy->getPostalCodes($data['country'], $data['postal_code']);
-                if (empty($postalCodes)) {
-                    $result['postal_code'] = __('Postal code is not correct.');
-                }
-            } catch (\Exception $e) {
-                $result['postal_code'] = __('Postal code is not correct.');
-            }
-        }
-
-        if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $result['email'] = __('Field must be valid email.');
-        }
-
-        if (!empty($data['phone'])) {
-            $regex = '/^(\+|\/|\.|-|\(|\)|\d)+$/m';
-            $phoneError = !preg_match($regex, $data['phone']);
-
-            $digits = '/\d/m';
-            $match = preg_match_all($digits, $data['phone']);
-            $phoneError |= $match === false || $match < 3;
-
-            if ($phoneError) {
-                $result['phone'] = __('Field must be valid phone number.');
-            }
-        }
-
-        return $result;
     }
 }

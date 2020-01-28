@@ -222,7 +222,7 @@ class BulkPrint extends Action
                 continue;
             }
 
-            $orderDetails = $this->getOrderShipmentDetailsService()->getDetailsByOrderId($shipment->getOrderId());
+            $orderDetails = $this->getOrderShipmentDetailsService()->getDetailsByOrderId((string)$shipment->getOrderId());
             if ($orderDetails !== null) {
                 $orders[] = $orderDetails;
             }

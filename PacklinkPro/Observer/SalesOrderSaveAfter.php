@@ -66,7 +66,7 @@ class SalesOrderSaveAfter implements ObserverInterface
     {
         /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
         $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
-        $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId($order->getId());
+        $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId((string)$order->getId());
 
         return $orderDetails === null
             && in_array($order->getStatus(), [Order::STATE_PROCESSING, Order::STATE_COMPLETE], true);

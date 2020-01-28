@@ -81,7 +81,7 @@ class Popup extends MagentoShippingPopup
         /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
         $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetails::getClassName());
         try {
-            $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId($this->getOrderId());
+            $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId((string)$this->getOrderId());
 
             if ($orderDetails !== null && $orderDetails->getCarrierTrackingUrl() !== null) {
                 return $orderDetails->getCarrierTrackingUrl();

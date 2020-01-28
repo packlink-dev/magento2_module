@@ -9,7 +9,6 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
 
@@ -60,54 +59,23 @@ class DefaultParcel extends Configuration
             return $this->result;
         }
 
-        return $this->result->setData($this->getConfigService()->getDefaultParcel());
+        return $this->result->setData($parcel->toArray());
     }
 
     /**
      * Sets default parcel.
      *
      * @return \Magento\Framework\Controller\Result\Json
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
      */
     protected function setDefaultParcel()
     {
         $data = $this->getPacklinkPostData();
-
-        $validationResult = $this->validate($data);
-        if (!empty($validationResult)) {
-            $this->result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
-
-            return $this->result->setData($validationResult);
-        }
-
         $data['default'] = true;
+
         $parcelInfo = ParcelInfo::fromArray($data);
         $this->getConfigService()->setDefaultParcel($parcelInfo);
 
-        return $this->result->setData($data);
-    }
-
-    /**
-     * Validates default parcel data.
-     *
-     * @param array $data
-     *
-     * @return array Validation result.
-     */
-    private function validate(array $data)
-    {
-        $result = [];
-
-        foreach ($this->fields as $field) {
-            if (!empty($data[$field])) {
-                $value = (float)$data[$field];
-                if ($value <= 0 || !\is_float($value)) {
-                    $result[$field] = __('Field must be valid number.');
-                }
-            } else {
-                $result[$field] = __('Field is required.');
-            }
-        }
-
-        return $result;
+        return $this->result->setData($parcelInfo->toArray());
     }
 }
