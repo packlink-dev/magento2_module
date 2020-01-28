@@ -33,6 +33,8 @@ use Packlink\PacklinkPro\Repository\QueueItemRepository;
 use Packlink\PacklinkPro\Services\BusinessLogic\CarrierService;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 use Packlink\PacklinkPro\Services\BusinessLogic\ShopOrderService;
+use Packlink\PacklinkPro\Services\BusinessLogic\UserAccountService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\User\UserAccountService as BaseUserAccountService;
 use Packlink\PacklinkPro\Services\Infrastructure\LoggerService;
 
 /**
@@ -68,6 +70,10 @@ class Bootstrap extends BootstrapComponent
      * @var CarrierService
      */
     private $carrierService;
+    /**
+     * @var UserAccountService
+     */
+    private $userAccountService;
 
     /**
      * Bootstrap constructor.
@@ -77,19 +83,22 @@ class Bootstrap extends BootstrapComponent
      * @param ConfigurationService $configService
      * @param ShopOrderService $shopOrderService
      * @param CarrierService $carrierService
+     * @param UserAccountService $userAccountService
      */
     public function __construct(
         CurlHttpClient $httpClientService,
         LoggerService $loggerService,
         ConfigurationService $configService,
         ShopOrderService $shopOrderService,
-        CarrierService $carrierService
+        CarrierService $carrierService,
+        UserAccountService $userAccountService
     ) {
         $this->httpClientService = $httpClientService;
         $this->loggerService = $loggerService;
         $this->configService = $configService;
         $this->shopOrderService = $shopOrderService;
         $this->carrierService = $carrierService;
+        $this->userAccountService = $userAccountService;
 
         static::$instance = $this;
     }
@@ -179,6 +188,13 @@ class Bootstrap extends BootstrapComponent
             ShopShippingMethodService::CLASS_NAME,
             function () use ($instance) {
                 return $instance->carrierService;
+            }
+        );
+
+        ServiceRegister::registerService(
+            BaseUserAccountService::CLASS_NAME,
+            function () use ($instance) {
+                return $instance->userAccountService;
             }
         );
     }

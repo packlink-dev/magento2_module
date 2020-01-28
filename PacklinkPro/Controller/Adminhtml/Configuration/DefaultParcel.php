@@ -10,6 +10,7 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
 
 /**
@@ -66,14 +67,18 @@ class DefaultParcel extends Configuration
      * Sets default parcel.
      *
      * @return \Magento\Framework\Controller\Result\Json
-     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
      */
     protected function setDefaultParcel()
     {
         $data = $this->getPacklinkPostData();
         $data['default'] = true;
 
-        $parcelInfo = ParcelInfo::fromArray($data);
+        try {
+            $parcelInfo = ParcelInfo::fromArray($data);
+        } catch (FrontDtoValidationException $e) {
+            return $this->formatValidationErrorResponse($e->getValidationErrors());
+        }
+
         $this->getConfigService()->setDefaultParcel($parcelInfo);
 
         return $this->result->setData($parcelInfo->toArray());

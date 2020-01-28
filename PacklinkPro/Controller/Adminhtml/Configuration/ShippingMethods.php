@@ -15,7 +15,6 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingM
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodResponse;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ShippingMethodController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\UpdateShippingServicesTaskStatusController;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Exceptions\BaseException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
@@ -67,7 +66,7 @@ class ShippingMethods extends Configuration
     {
         $shippingMethods = $this->getShippingMethodController()->getAll();
 
-        return $this->result->setData($this->formatCollectionJsonResponse($shippingMethods));
+        return $this->formatDtoEntitiesResponse($shippingMethods);
     }
 
     /**
@@ -148,26 +147,6 @@ class ShippingMethods extends Configuration
         $model->selected = true;
 
         return $this->result->setData($model->toArray());
-    }
-
-    /**
-     * Transforms shipping method collection to JSON response.
-     *
-     * @param BaseDto[] $data DTO collection.
-     *
-     * @return array Transformed JSON response.
-     */
-    private function formatCollectionJsonResponse($data)
-    {
-        $collection = [];
-
-        /** @var ShippingMethodResponse $shippingMethod */
-        foreach ($data as $shippingMethod) {
-            $shippingMethod->logoUrl = $this->getCarrierService()->getCarrierLogoById($shippingMethod->id);
-            $collection[] = $shippingMethod->toArray();
-        }
-
-        return $collection;
     }
 
     /**

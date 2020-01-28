@@ -116,6 +116,42 @@ class Configuration extends Action
     }
 
     /**
+     * Formats a collection on front DTO entity to the response array.
+     *
+     * @param \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\BaseDto[] $entities
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
+    protected function formatDtoEntitiesResponse($entities)
+    {
+        $response = [];
+
+        foreach ($entities as $entity) {
+            $response[] = $entity->toArray();
+        }
+
+        return $this->result->setData($response);
+    }
+
+    /**
+     * @param $errors
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
+    protected function formatValidationErrorResponse($errors)
+    {
+        $response = [];
+
+        foreach ($errors as $error) {
+            $response[$error->field] = $error->message;
+        }
+
+        $this->result->setHttpResponseCode(400);
+
+        return $this->result->setData($response);
+    }
+
+    /**
      * Returns instance of configuration service.
      *
      * @return ConfigurationService
