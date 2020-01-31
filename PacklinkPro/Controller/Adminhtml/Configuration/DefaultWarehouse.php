@@ -41,17 +41,6 @@ class DefaultWarehouse extends Configuration
             'setDefaultWarehouse',
             'searchPostalCodes',
         ];
-
-        $this->fields = [
-            'alias',
-            'name',
-            'surname',
-            'country',
-            'postal_code',
-            'address',
-            'phone',
-            'email',
-        ];
     }
 
     /**

@@ -98,14 +98,14 @@ class UserAccountService extends BaseUserAccountService
             $warehouse = Warehouse::fromArray(
                 [
                     'alias' => $storeInfo->getData('name'),
-                    'name' => $user->getFirstName(),
-                    'surname' => $user->getLastName(),
+                    'name' => $user->getFirstName() ?: $userInfo->firstName,
+                    'surname' => $user->getLastName() ?: $userInfo->lastName,
                     'country' => $originCountry,
                     'postal_code' => $this->getScopeConfigValue(Config::XML_PATH_ORIGIN_POSTCODE, $store),
                     'city' => $this->getScopeConfigValue(Config::XML_PATH_ORIGIN_CITY, $store),
                     'address' => $originAddress,
                     'phone' => $storeInfo->getData('phone'),
-                    'email' => $user->getEmail(),
+                    'email' => $user->getEmail() ?: $userInfo->email,
                 ]
             );
         } catch (FrontDtoValidationException $e) {

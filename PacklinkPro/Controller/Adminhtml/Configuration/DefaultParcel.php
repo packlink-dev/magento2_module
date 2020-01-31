@@ -38,13 +38,6 @@ class DefaultParcel extends Configuration
             'getDefaultParcel',
             'setDefaultParcel',
         ];
-
-        $this->fields = [
-            'weight',
-            'width',
-            'height',
-            'length',
-        ];
     }
 
     /**
