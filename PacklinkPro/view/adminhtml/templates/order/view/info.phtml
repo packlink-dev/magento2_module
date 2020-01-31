@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 /** @var Packlink\PacklinkPro\Block\Adminhtml\Order\View\Info $block */
@@ -72,7 +72,7 @@
                             <div class="pl-printed-label" hidden><?= $block->escapeQuote(__('Printed')) ?></div>
                         </div>
                     <?php endif; ?>
-                    <?php if ($block->getShippingMethodTitle() !== '') : ?>
+                    <?php if ($block->getShippingMethod() !== null) : ?>
                         <div class="admin__field">
                             <label class="admin__field-label pl-order-page-item">
                                 <?= $block->escapeQuote(__('Shipment details')) ?>
@@ -97,12 +97,12 @@
                                 <tr>
                                     <td class="col-carrier-logo">
                                         <img
-                                                src="<?= $block->escapeHtml($block->getCarrierLogo()) ?>"
-                                                alt="<?= $block->escapeHtml($block->getShippingMethodTitle()) ?>"
+                                                src="<?= $block->escapeHtml($block->getShippingMethod()->getLogoUrl()) ?>"
+                                                alt="<?= $block->escapeHtml($block->getShippingMethod()->getTitle()) ?>"
                                         />
                                     </td>
                                     <td class="col-carrier">
-                                        <?= $block->escapeHtml($block->getShippingMethodTitle()) ?>
+                                        <?= $block->escapeHtml($block->getShippingMethod()->getTitle()) ?>
                                     </td>
                                     <td class="col-tracking-numbers">
                                         <?php if (!empty($block->getOrderDetails()->getCarrierTrackingNumbers())) : ?>

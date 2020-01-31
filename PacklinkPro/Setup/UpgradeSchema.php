@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2020 Packlink
+ */
 
 namespace Packlink\PacklinkPro\Setup;
 
@@ -23,7 +28,6 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\Repositor
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
-use Packlink\PacklinkPro\Model\ShipmentLabel;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
@@ -186,25 +190,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             foreach ($entities as $entity) {
                 $data = json_decode($entity['data'], true);
-                $orderShipmentDetails = new OrderShipmentDetails();
-                $orderShipmentDetails->setOrderId((string)$data['orderId']);
-                $orderShipmentDetails->setReference($data['shipmentReference']);
-                $orderShipmentDetails->setDropOffId($data['dropOffId']);
-                if (!empty($data['shipmentLabels'])) {
-                    $shipmentLabels = [];
-                    foreach ($data['shipmentLabels'] as $label) {
-                        $shipmentLabels[] = new ShipmentLabel($label['printed'], $label['link'], $label['createTime']);
-                    }
-
-                    $orderShipmentDetails->setShipmentLabels($shipmentLabels);
-                }
-
-                $orderShipmentDetails->setStatus($data['status']);
-                $orderShipmentDetails->setCarrierTrackingNumbers($data['carrierTrackingNumbers']);
-                $orderShipmentDetails->setCarrierTrackingUrl($data['carrierTrackingUrl']);
-                $orderShipmentDetails->setShippingCost($data['packlinkShippingPrice']);
-                $orderShipmentDetails->setDeleted($data['deleted']);
-
+                $orderShipmentDetails = OrderShipmentDetails::fromArray($data);
                 $orderShipmentDetailsRepository->save($orderShipmentDetails);
                 $orderSendDraftTaskMapService->createOrderTaskMap((string)$data['orderId'], $data['taskId']);
             }

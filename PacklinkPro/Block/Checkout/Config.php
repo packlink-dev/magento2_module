@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Block\Checkout;
@@ -12,14 +12,11 @@ use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
 use Magento\Quote\Model\Quote\Address;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
+use Packlink\PacklinkPro\Services\BusinessLogic\CarrierService;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
 /**
@@ -34,13 +31,13 @@ class Config extends Template
      */
     private $checkoutSession;
     /**
-     * @var CarrierLogoHelper
-     */
-    private $carrierLogoHelper;
-    /**
      * @var \Magento\Framework\Locale\Resolver
      */
     private $locale;
+    /**
+     * @var CarrierService
+     */
+    private $carrierService;
 
     /**
      * Config constructor.
@@ -49,7 +46,6 @@ class Config extends Template
      * @param \Magento\Checkout\Model\Session $session
      * @param \Magento\Framework\Locale\Resolver $locale
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
-     * @param \Packlink\PacklinkPro\Helper\CarrierLogoHelper $logoHelper
      * @param array $data
      */
     public function __construct(
@@ -57,14 +53,12 @@ class Config extends Template
         Session $session,
         Resolver $locale,
         Bootstrap $bootstrap,
-        CarrierLogoHelper $logoHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->checkoutSession = $session;
         $this->locale = $locale;
-        $this->carrierLogoHelper = $logoHelper;
 
         $bootstrap->initInstance();
     }
@@ -208,19 +202,14 @@ class Config extends Template
     {
         $result = [];
 
-        try {
-            $repository = RepositoryRegistry::getRepository(ShippingMethod::CLASS_NAME);
+        /** @var ShippingMethodService $shippingMethodService */
+        $shippingMethodService = ServiceRegister::getService(ShippingMethodService::CLASS_NAME);
+        $shippingMethods = $shippingMethodService->getAllMethods();
 
-            /** @var ShippingMethod[] $shippingMethods */
-            $shippingMethods = $repository->select();
-
-            foreach ($shippingMethods as $shippingMethod) {
-                if ($shippingMethod->isDisplayLogo()) {
-                    $result[$shippingMethod->getId()] = $this->getCarrierLogoUrl($shippingMethod->getId());
-                }
+        foreach ($shippingMethods as $shippingMethod) {
+            if ($shippingMethod->isDisplayLogo()) {
+                $result[$shippingMethod->getId()] = $shippingMethod->getLogoUrl();
             }
-        } catch (RepositoryNotRegisteredException $e) {
-            Logger::logError(__('Repository not registered'), 'Integration');
         }
 
         return $result;
@@ -233,7 +222,7 @@ class Config extends Template
      */
     public function getDefaultCarrierLogoUrl()
     {
-        return $this->carrierLogoHelper->getDefaultCarrierLogoPath();
+        return $this->getCarrierService()->getCarrierLogoFilePath('');
     }
 
     /**
@@ -248,18 +237,12 @@ class Config extends Template
         return $locale ? substr($locale, 0, 2) : 'en';
     }
 
-    /**
-     * Returns carrier logo URL for shipping method with provided ID.
-     *
-     * @param int $shippingMethodId ID of the shipping method.
-     *
-     * @return string Carrier logo URL.
-     */
-    private function getCarrierLogoUrl($shippingMethodId)
+    private function getCarrierService()
     {
-        /** @var \Packlink\PacklinkPro\Services\BusinessLogic\CarrierService $carrierService */
-        $carrierService = ServiceRegister::getService(ShopShippingMethodService::CLASS_NAME);
+        if ($this->carrierService === null) {
+            $this->carrierService = ServiceRegister::getService(ShopShippingMethodService::CLASS_NAME);
+        }
 
-        return $carrierService->getCarrierLogoById($shippingMethodId);
+        return $this->carrierService;
     }
 }

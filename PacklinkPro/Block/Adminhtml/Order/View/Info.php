@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Block\Adminhtml\Order\View;
@@ -24,12 +24,11 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Mode
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Objects\ShipmentDraftStatus;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\ShipmentDraftService;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Utility\TimeProvider;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
-use Packlink\PacklinkPro\Services\BusinessLogic\ShopOrderService;
 
 /**
  * Class Info
@@ -46,10 +45,6 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
      * @var OrderShipmentDetailsService
      */
     private $orderShipmentDetailsService;
-    /**
-     * @var ShopOrderService
-     */
-    private $shopOrderService;
     /**
      * @var ConfigurationService
      */
@@ -245,44 +240,23 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
         return $output;
     }
 
-    /**
-     * Returns title of the order shipping method.
-     *
-     * @return string Shipping method title.
-     *
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getShippingMethodTitle()
+    public function getShippingMethod()
     {
         $order = $this->getCurrentOrder();
 
-        if ($order === null) {
-            return '';
+        if (!$order) {
+            return null;
         }
 
-        return $this->getShopOrderService()->getShippingMethodTitle($order->getId());
-    }
-
-    /**
-     * Returns carrier logo file path for the order.
-     *
-     * @return string Path to carrier logo.
-     */
-    public function getCarrierLogo()
-    {
-        $order = $this->getCurrentOrder();
-
-        $id = 0;
-        if ($order !== null) {
-            $sourceShippingMethod = $order->getShippingMethod(true);
-            $id = $sourceShippingMethod ? (int)$sourceShippingMethod->getDataByKey('method') : 0;
+        $orderShippingMethod = $order->getShippingMethod(true);
+        if (!$orderShippingMethod) {
+            return null;
         }
 
-        /** @var \Packlink\PacklinkPro\Services\BusinessLogic\CarrierService $carrierService */
-        $carrierService = ServiceRegister::getService(ShopShippingMethodService::CLASS_NAME);
+        /** @var ShippingMethodService $shippingMethodService */
+        $shippingMethodService = ServiceRegister::getService(ShippingMethodService::CLASS_NAME);
 
-        return $carrierService->getCarrierLogoById($id);
+        return $shippingMethodService->getShippingMethod((int)$orderShippingMethod->getDataByKey('method'));
     }
 
     /**
@@ -356,22 +330,6 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
         }
 
         return $this->orderShipmentDetailsService;
-    }
-
-    /**
-     * Returns an instance of shop order service.
-     *
-     * @return \Packlink\PacklinkPro\Services\BusinessLogic\ShopOrderService
-     */
-    private function getShopOrderService()
-    {
-        if ($this->shopOrderService === null) {
-            $this->shopOrderService = ServiceRegister::getService(
-                \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\ShopOrderService::CLASS_NAME
-            );
-        }
-
-        return $this->shopOrderService;
     }
 
     /**

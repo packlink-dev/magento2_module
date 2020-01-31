@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Services\BusinessLogic;
@@ -167,13 +167,14 @@ class ShopOrderService implements ShopOrderServiceInterface
     {
         /** @var MagentoOrder $order */
         $order = $this->orderRepository->get($orderId);
+        $title = $this->getShippingMethodTitle($orderId);
         $tracks = [];
         foreach ($trackings as $trackingCode) {
             /** @var Track $track */
             $track = $this->trackFactory->create();
 
             $track->setCarrierCode('packlink');
-            $track->setTitle($this->getShippingMethodTitle($orderId));
+            $track->setTitle($title);
             $track->setTrackNumber($trackingCode);
             $track->setOrderId($orderId);
 

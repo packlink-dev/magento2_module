@@ -2,15 +2,17 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Services\BusinessLogic;
 
-use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
+use Magento\Framework\Module\Dir;
+use Magento\Framework\Module\Dir\Reader;
+use Magento\Framework\View\Asset\Repository;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
@@ -21,43 +23,60 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 class CarrierService implements ShopShippingMethodService
 {
     /**
-     * @var CarrierLogoHelper
+     * @var Reader
      */
-    private $carrierLogoHelper;
+    private $moduleReader;
+    /**
+     * @var Repository
+     */
+    protected $assetRepo;
 
     /**
      * CarrierService constructor.
      *
-     * @param \Packlink\PacklinkPro\Helper\CarrierLogoHelper $carrierLogoHelper
+     * @param Reader $reader
+     * @param Repository $assetRepo
      */
-    public function __construct(CarrierLogoHelper $carrierLogoHelper)
+    public function __construct(Reader $reader, Repository $assetRepo)
     {
-        $this->carrierLogoHelper = $carrierLogoHelper;
+        $this->moduleReader = $reader;
+        $this->assetRepo = $assetRepo;
     }
 
     /**
-     * Returns carrier logo file path for shipping method with a given ID.
+     * Returns carrier logo file path of shipping method with provided ID.
+     * If logo doesn't exist returns default carrier logo.
      *
-     * @param int $id Shipping method ID.
+     * @param string $carrierName Name of the carrier.
      *
-     * @return string
-     */
-    public function getCarrierLogoById($id)
-    {
-        /** @var ShippingMethodService $shippingMethodService */
-        $shippingMethodService = ServiceRegister::getService(ShippingMethodService::CLASS_NAME);
-        /** @var ShippingMethod $shippingMethod */
-        $shippingMethod = $shippingMethodService->getShippingMethod($id);
-
-        return $this->getCarrierLogoFilePath($shippingMethod->getCarrierName());
-    }
-
-    /**
-     * @inheritDoc
+     * @return string Logo file path.
      */
     public function getCarrierLogoFilePath($carrierName)
     {
-        return $this->carrierLogoHelper->getCarrierLogoFilePath($carrierName);
+        /** @var ConfigurationService $configService */
+        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
+        $userInfo = $configService->getUserInfo();
+
+        if ($userInfo === null) {
+            return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/carriers/carrier.jpg');
+        }
+
+        $this->assetRepo->getUrl('Packlink_PacklinkPro::images/logo.png');
+        $carrierLogoDir = $this->moduleReader->getModuleDir(
+                Dir::MODULE_VIEW_DIR,
+                'Packlink_PacklinkPro'
+            ) . '/adminhtml/web/images/carriers/' . strtolower($userInfo->country);
+
+        $carrierLogoFile = strtolower(str_replace(' ', '-', $carrierName)) . '.png';
+
+        $logoPath = $carrierLogoDir . '/' . $carrierLogoFile;
+        if (!file_exists($logoPath)) {
+            return $this->getDefaultCarrierLogoPath();
+        }
+
+        return $this->assetRepo->getUrl(
+            'Packlink_PacklinkPro::images/carriers/' . strtolower($userInfo->country) . '/' . $carrierLogoFile
+        );
     }
 
     /**
@@ -113,5 +132,15 @@ class CarrierService implements ShopShippingMethodService
     public function deleteBackupShippingMethod()
     {
         return true;
+    }
+
+    /**
+     * Returns path to default carrier logo.
+     *
+     * @return string
+     */
+    private function getDefaultCarrierLogoPath()
+    {
+        return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/carriers/carrier.jpg');
     }
 }

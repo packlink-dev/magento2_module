@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -15,9 +15,7 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingM
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodResponse;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ShippingMethodController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\UpdateShippingServicesTaskStatusController;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Exceptions\BaseException;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 
 /**
@@ -31,10 +29,6 @@ class ShippingMethods extends Configuration
      * @var ShippingMethodController
      */
     private $controller;
-    /**
-     * @var \Packlink\PacklinkPro\Services\BusinessLogic\CarrierService
-     */
-    private $carrierService;
 
     /**
      * ShippingMethods constructor.
@@ -132,8 +126,6 @@ class ShippingMethods extends Configuration
             return $this->result->setData(['message' => __('Failed to save shipping method.')]);
         }
 
-        $model->logoUrl = $model->id ? $this->getCarrierService()->getCarrierLogoById($model->id) : '';
-
         if ($model->selected) {
             return $this->result->setData($model->toArray());
         }
@@ -175,19 +167,5 @@ class ShippingMethods extends Configuration
         }
 
         return $this->controller;
-    }
-
-    /**
-     * Returns an instance of carrier service.
-     *
-     * @return \Packlink\PacklinkPro\Services\BusinessLogic\CarrierService
-     */
-    private function getCarrierService()
-    {
-        if ($this->carrierService === null) {
-            $this->carrierService = ServiceRegister::getService(ShopShippingMethodService::CLASS_NAME);
-        }
-
-        return $this->carrierService;
     }
 }
