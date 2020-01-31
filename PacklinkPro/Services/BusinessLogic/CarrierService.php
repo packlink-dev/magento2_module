@@ -7,6 +7,8 @@
 
 namespace Packlink\PacklinkPro\Services\BusinessLogic;
 
+use Magento\Framework\Module\Dir;
+use Magento\Framework\Module\Dir\Reader;
 use Magento\Framework\View\Asset\Repository;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
@@ -21,6 +23,10 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 class CarrierService implements ShopShippingMethodService
 {
     /**
+     * @var Reader
+     */
+    private $moduleReader;
+    /**
      * @var Repository
      */
     protected $assetRepo;
@@ -28,10 +34,12 @@ class CarrierService implements ShopShippingMethodService
     /**
      * CarrierService constructor.
      *
+     * @param Reader $reader
      * @param Repository $assetRepo
      */
-    public function __construct(Repository $assetRepo)
+    public function __construct(Reader $reader, Repository $assetRepo)
     {
+        $this->moduleReader = $reader;
         $this->assetRepo = $assetRepo;
     }
 
@@ -42,6 +50,8 @@ class CarrierService implements ShopShippingMethodService
      * @param string $carrierName Name of the carrier.
      *
      * @return string Logo file path.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getCarrierLogoFilePath($carrierName)
     {
@@ -53,14 +63,17 @@ class CarrierService implements ShopShippingMethodService
             return $this->getDefaultCarrierLogoPath();
         }
 
+        $carrierLogoDir = $this->moduleReader->getModuleDir(
+                Dir::MODULE_VIEW_DIR,
+                'Packlink_PacklinkPro'
+            ) . '/adminhtml/web/images/carriers/' . strtolower($userInfo->country);
         $carrierLogoFile = strtolower(str_replace(' ', '-', $carrierName)) . '.png';
 
-        $file = $this->assetRepo->createAsset(
-            'Packlink_PacklinkPro::images/carriers/' . strtolower($userInfo->country) . '/' . $carrierLogoFile
-        );
-
-        if (file_exists($file->getPath())) {
-            return $file->getUrl();
+        $logoPath = $carrierLogoDir . '/' . $carrierLogoFile;
+        if (file_exists($logoPath)) {
+            return $this->assetRepo->getUrl(
+                'Packlink_PacklinkPro::images/carriers/' . strtolower($userInfo->country) . '/' . $carrierLogoFile
+            );
         }
 
         return $this->getDefaultCarrierLogoPath();
