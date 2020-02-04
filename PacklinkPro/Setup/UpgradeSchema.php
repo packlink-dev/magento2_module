@@ -56,6 +56,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
+        if (empty($context->getVersion())) {
+            return;
+        }
+
         Bootstrap::init();
 
         if (version_compare($context->getVersion(), '1.0.1', '<')) {
