@@ -178,24 +178,26 @@ class UpgradeSchema implements UpgradeSchemaInterface
     {
         $connection = $installer->getConnection();
 
-        $select = $connection->select()
-            ->from(InstallSchema::PACKLINK_ENTITY_TABLE)
-            ->where('type = ?', 'ShopOrderDetails');
+        if ($connection->isTableExists(InstallSchema::PACKLINK_ENTITY_TABLE)) {
+            $select = $connection->select()
+                ->from(InstallSchema::PACKLINK_ENTITY_TABLE)
+                ->where('type = ?', 'ShopOrderDetails');
 
-        $entities = $connection->fetchAll($select);
-        if (!empty($entities)) {
-            $orderShipmentDetailsRepository = RepositoryRegistry::getRepository(OrderShipmentDetails::getClassName());
-            /** @var OrderSendDraftTaskMapService $orderSendDraftTaskMapService */
-            $orderSendDraftTaskMapService = ServiceRegister::getService(OrderSendDraftTaskMapService::CLASS_NAME);
+            $entities = $connection->fetchAll($select);
+            if (!empty($entities)) {
+                $orderShipmentDetailsRepository = RepositoryRegistry::getRepository(OrderShipmentDetails::getClassName());
+                /** @var OrderSendDraftTaskMapService $orderSendDraftTaskMapService */
+                $orderSendDraftTaskMapService = ServiceRegister::getService(OrderSendDraftTaskMapService::CLASS_NAME);
 
-            foreach ($entities as $entity) {
-                $data = json_decode($entity['data'], true);
-                $orderShipmentDetails = OrderShipmentDetails::fromArray($data);
-                $orderShipmentDetailsRepository->save($orderShipmentDetails);
-                $orderSendDraftTaskMapService->createOrderTaskMap((string)$data['orderId'], $data['taskId']);
+                foreach ($entities as $entity) {
+                    $data = json_decode($entity['data'], true);
+                    $orderShipmentDetails = OrderShipmentDetails::fromArray($data);
+                    $orderShipmentDetailsRepository->save($orderShipmentDetails);
+                    $orderSendDraftTaskMapService->createOrderTaskMap((string)$data['orderId'], $data['taskId']);
+                }
+
+                $connection->delete(InstallSchema::PACKLINK_ENTITY_TABLE, ['type = ?' => 'ShopOrderDetails']);
             }
-
-            $connection->delete(InstallSchema::PACKLINK_ENTITY_TABLE, ['type = ?' => 'ShopOrderDetails']);
         }
     }
 }
