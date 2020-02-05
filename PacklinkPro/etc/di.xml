@@ -1,0 +1,12 @@
+<!--
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2019 Packlink
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="packlink" type="Packlink\PacklinkPro\Helper\CsrfValidatorSkip" />
+    </type>
+</config>
