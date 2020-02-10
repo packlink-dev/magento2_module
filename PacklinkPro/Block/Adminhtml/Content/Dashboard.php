@@ -141,6 +141,8 @@ class Dashboard extends Template
      * @param string $action Controller action.
      *
      * @return string URL to backend configuration controller.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getControllerUrl($controllerName, $action)
     {

@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a68b049b2f1306946b4238be0c35886",
+    "content-hash": "6290aac5da23e5c763c4da0ab2e95286",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "dev-release/v2.0.0",
+            "version": "dev-feature/cr-16",
             "source": {
                 "type": "git",
                 "url": "git@github.com:logeecom/pl_module_core.git",
-                "reference": "c58865b4bbdae94c276b4f11be371d6121e1c9ab"
+                "reference": "d2767e08a1513d45d54a55d3eb29d4f25bda2179"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/c58865b4bbdae94c276b4f11be371d6121e1c9ab",
-                "reference": "c58865b4bbdae94c276b4f11be371d6121e1c9ab",
+                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/d2767e08a1513d45d54a55d3eb29d4f25bda2179",
+                "reference": "d2767e08a1513d45d54a55d3eb29d4f25bda2179",
                 "shasum": ""
             },
             "require": {
@@ -44,7 +44,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2020-01-31T08:56:58+00:00"
+            "time": "2020-02-10T10:55:37+00:00"
         }
     ],
     "packages-dev": [

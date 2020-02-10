@@ -39,38 +39,20 @@
                     <?php echo $block->escapeQuote(__('Select country to start')); ?>
                 </div>
                 <div class="pl-register-country-list-wrapper">
-                    <a href="https://pro.packlink.es/registro" target="_blank">
-                        <div class="pl-country">
-                            <img src="<?php echo $block->getViewFileUrl(
-                                'Packlink_PacklinkPro::images/flags/spain.svg'
-                            ); ?>">
-                            es
-                        </div>
-                    </a>
-                    <a href="https://pro.packlink.de/registrieren" target="_blank">
-                        <div class="pl-country">
-                            <img src="<?php echo $block->getViewFileUrl(
-                                'Packlink_PacklinkPro::images/flags/germany.svg'
-                            ); ?>">
-                            de
-                        </div>
-                    </a>
-                    <a href="https://pro.packlink.fr/inscription" target="_blank">
-                        <div class="pl-country">
-                            <img src="<?php echo $block->getViewFileUrl(
-                                'Packlink_PacklinkPro::images/flags/france.svg'
-                            ); ?>">
-                            fr
-                        </div>
-                    </a>
-                    <a href="https://pro.packlink.it/registro" target="_blank">
-                        <div class="pl-country">
-                            <img src="<?php echo $block->getViewFileUrl(
-                                'Packlink_PacklinkPro::images/flags/italy.svg'
-                            ); ?>">
-                            it
-                        </div>
-                    </a>
+                    <?php foreach ($block->getSupportedCountries() as $country) { ?>
+                        <a href="<?php echo $block->escapeQuote($country->registrationLink); ?>" target="_blank">
+                            <div class="pl-country">
+                                <img
+                                        src="<?php echo $block->getViewFileUrl(
+                                            "Packlink_PacklinkPro::images/flags/{$country->code}.svg"
+                                        ); ?>"
+                                        class="pl-country-logo"
+                                        alt="<?php echo $block->escapeQuote($country->name); ?>"
+                                >
+                                <div class="pl-country-name"><?php echo $block->escapeQuote($country->name); ?></div>
+                            </div>
+                        </a>
+                    <?php } ?>
                 </div>
             </div>
         </div>

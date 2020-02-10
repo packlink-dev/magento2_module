@@ -163,7 +163,7 @@ class ShopOrderService implements ShopOrderServiceInterface
     /**
      * @inheritDoc
      */
-    public function handleUpdatedTrackingInfo($orderId, array $trackings)
+    public function updateTrackingInfo($orderId, array $trackings)
     {
         /** @var MagentoOrder $order */
         $order = $this->orderRepository->get($orderId);
