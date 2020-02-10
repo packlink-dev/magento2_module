@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Block\Adminhtml\Content;
@@ -43,17 +43,6 @@ class Dashboard extends Template
         'DE' => 'https://pro.packlink.de/agb/',
         'FR' => 'https://pro.packlink.fr/conditions-generales/',
         'IT' => 'https://pro.packlink.it/termini-condizioni/',
-    ];
-    /**
-     * List of country names for different country codes.
-     *
-     * @var array
-     */
-    private static $countryNames = [
-        'ES' => 'Spain',
-        'DE' => 'Germany',
-        'FR' => 'France',
-        'IT' => 'Italy',
     ];
     /**
      * @var UrlHelper
@@ -110,18 +99,6 @@ class Dashboard extends Template
         $locale = $this->getUserLocale();
 
         return self::$termsAndConditionsUrls[$locale];
-    }
-
-    /**
-     * Returns warehouse country name.
-     *
-     * @return string
-     */
-    public function getWarehouseCountry()
-    {
-        $locale = $this->getUserLocale();
-
-        return self::$countryNames[$locale];
     }
 
     /**

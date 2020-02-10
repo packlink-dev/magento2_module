@@ -10,6 +10,7 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Location\LocationService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Warehouse\WarehouseService;
@@ -39,6 +40,7 @@ class DefaultWarehouse extends Configuration
         $this->allowedActions = [
             'getDefaultWarehouse',
             'setDefaultWarehouse',
+            'getSupportedCountries',
             'searchPostalCodes',
         ];
     }
@@ -64,6 +66,7 @@ class DefaultWarehouse extends Configuration
      * @return \Magento\Framework\Controller\Result\Json
      *
      * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoNotRegisteredException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
      */
     protected function setDefaultWarehouse()
     {
@@ -83,6 +86,24 @@ class DefaultWarehouse extends Configuration
     }
 
     /**
+     * Returns Packlink supported warehouse countries.
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
+    public function getSupportedCountries()
+    {
+        /** @var CountryService $countryService */
+        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
+        $supportedCountries = $countryService->getSupportedCountries();
+
+        foreach ($supportedCountries as $country) {
+            $country->name = __($country->name);
+        }
+
+        return $this->formatDtoEntitiesResponse($supportedCountries);
+    }
+
+    /**
      * Performs location search.
      *
      * @return array|\Magento\Framework\Controller\Result\Json
@@ -91,25 +112,18 @@ class DefaultWarehouse extends Configuration
     {
         $input = $this->getPacklinkPostData();
 
-        if (empty($input['query'])) {
+        if (empty($input['query']) || empty($input['country'])) {
             return $this->result;
         }
 
         /** @var LocationService $locationService */
         $locationService = ServiceRegister::getService(LocationService::CLASS_NAME);
-
-        $platformCountry = $this->getConfigService()->getUserInfo()->country;
         try {
-            $locations = $locationService->searchLocations($platformCountry, $input['query']);
+            $locations = $locationService->searchLocations($input['country'], $input['query']);
         } catch (\Exception $e) {
             return $this->result;
         }
 
-        $resultLocations = [];
-        foreach ($locations as $location) {
-            $resultLocations[] = $location->toArray();
-        }
-
-        return $this->result->setData($resultLocations);
+        return $this->formatDtoEntitiesResponse($locations);
     }
 }

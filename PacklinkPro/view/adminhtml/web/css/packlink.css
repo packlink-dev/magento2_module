@@ -169,10 +169,6 @@
     color: #2095F2;
 }
 
-#pl-default-warehouse-country {
-    background-color: #dcdcdc !important;
-}
-
 .pl-filter-wrapper {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 16.66667%;
@@ -798,6 +794,13 @@
     color: #5d5d5d;
     font-size: 12px;
     width: 100%;
+}
+
+.pl-form-section-input #pl-default-warehouse-country {
+    padding: 17px 0 0 10px;
+    font-size: 14px;
+    border: 1px solid #dcdcdc;
+    margin-bottom: 0;
 }
 
 .pl-form-section-input-checkbox-label {
