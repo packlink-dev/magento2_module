@@ -10,10 +10,8 @@ namespace Packlink\PacklinkPro\Services\BusinessLogic;
 use Magento\Framework\Module\Dir;
 use Magento\Framework\Module\Dir\Reader;
 use Magento\Framework\View\Asset\Repository;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
  * Class CarrierService
@@ -55,28 +53,20 @@ class CarrierService implements ShopShippingMethodService
      */
     public function getCarrierLogoFilePath($carrierName)
     {
-        /** @var ConfigurationService $configService */
-        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-        $userInfo = $configService->getUserInfo();
-
-        if ($userInfo === null) {
-            return $this->getDefaultCarrierLogoPath();
-        }
-
         $carrierLogoDir = $this->moduleReader->getModuleDir(
-                Dir::MODULE_VIEW_DIR,
-                'Packlink_PacklinkPro'
-            ) . '/adminhtml/web/images/carriers/' . strtolower($userInfo->country);
+            Dir::MODULE_VIEW_DIR,
+            'Packlink_PacklinkPro'
+        ) . '/adminhtml/web/images/carriers/';
         $carrierLogoFile = strtolower(str_replace(' ', '-', $carrierName)) . '.png';
 
         $logoPath = $carrierLogoDir . '/' . $carrierLogoFile;
         if (file_exists($logoPath)) {
             return $this->assetRepo->getUrl(
-                'Packlink_PacklinkPro::images/carriers/' . strtolower($userInfo->country) . '/' . $carrierLogoFile
+                'Packlink_PacklinkPro::images/carriers/' . $carrierLogoFile
             );
         }
 
-        return $this->getDefaultCarrierLogoPath();
+        return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/carriers/carrier.jpg');
     }
 
     /**
@@ -132,15 +122,5 @@ class CarrierService implements ShopShippingMethodService
     public function deleteBackupShippingMethod()
     {
         return true;
-    }
-
-    /**
-     * Returns path to default carrier logo.
-     *
-     * @return string
-     */
-    private function getDefaultCarrierLogoPath()
-    {
-        return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/carriers/carrier.jpg');
     }
 }
