@@ -174,7 +174,7 @@ class Configuration extends Action
             return __('Field is required.');
         }
 
-        if (in_array($field, array('width', 'length', 'height'))) {
+        if (in_array($field, ['width', 'length', 'height'])) {
             return __('Field must be a positive integer.');
         }
 
