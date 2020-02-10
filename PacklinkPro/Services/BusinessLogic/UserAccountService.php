@@ -14,9 +14,11 @@ use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\User\UserAccountService as BaseUserAccountService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Warehouse\Warehouse;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
  * Class UserAccountService
@@ -76,17 +78,19 @@ class UserAccountService extends BaseUserAccountService
      */
     protected function setWarehouseInfoInternal()
     {
-        $userInfo = $this->getConfigService()->getUserInfo();
         /** @var \Magento\Store\Model\Store $store */
         $store = $this->storeManager->getStore();
         $originCountry = $this->getScopeConfigValue(Config::XML_PATH_ORIGIN_COUNTRY_ID, $store);
         $user = $this->authSession->getUser();
         $storeInfo = $this->storeInfo->getStoreInformationObject($store);
+        /** @var CountryService $countryService */
+        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
 
-        if ($userInfo === null || $originCountry !== $userInfo->country) {
+        if (!$countryService->isCountrySupported($originCountry)) {
             return false;
         }
 
+        $userInfo = $this->getConfigService()->getUserInfo();
         $originAddress = $this->getScopeConfigValue('shipping/origin/street_line1', $store);
         $secondaryStreetLine = $this->getScopeConfigValue('shipping/origin/street_line2', $store);
 
@@ -98,14 +102,14 @@ class UserAccountService extends BaseUserAccountService
             $warehouse = Warehouse::fromArray(
                 [
                     'alias' => $storeInfo->getData('name'),
-                    'name' => $user->getFirstName() ?: $userInfo->firstName,
-                    'surname' => $user->getLastName() ?: $userInfo->lastName,
+                    'name' => $user && $user->getFirstName() ? $user->getFirstName() : $userInfo->firstName,
+                    'surname' => $user && $user->getLastName() ? $user->getLastName() : $userInfo->lastName,
                     'country' => $originCountry,
                     'postal_code' => $this->getScopeConfigValue(Config::XML_PATH_ORIGIN_POSTCODE, $store),
                     'city' => $this->getScopeConfigValue(Config::XML_PATH_ORIGIN_CITY, $store),
                     'address' => $originAddress,
                     'phone' => $storeInfo->getData('phone'),
-                    'email' => $user->getEmail() ?: $userInfo->email,
+                    'email' => $user && $user->getEmail() ? $user->getEmail() : $userInfo->email,
                 ]
             );
         } catch (FrontDtoValidationException $e) {
