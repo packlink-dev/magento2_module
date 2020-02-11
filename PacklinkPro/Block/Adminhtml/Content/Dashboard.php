@@ -20,7 +20,7 @@ use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
  *
  * @package Packlink\PacklinkPro\Block\Adminhtml\Content
  */
-class Dashboard extends Template
+class Dashboard extends Content
 {
     /**
      * List of help URLs for different country codes.
@@ -45,10 +45,6 @@ class Dashboard extends Template
         'IT' => 'https://pro.packlink.it/termini-condizioni/',
     ];
     /**
-     * @var UrlHelper
-     */
-    private $urlHelper;
-    /**
      * @var ModuleListInterface
      */
     protected $moduleList;
@@ -69,12 +65,9 @@ class Dashboard extends Template
         ModuleListInterface $moduleList,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($context, $bootstrap, $urlHelper, $data);
 
-        $this->urlHelper = $urlHelper;
         $this->moduleList = $moduleList;
-
-        $bootstrap->initInstance();
     }
 
     /**
@@ -109,28 +102,6 @@ class Dashboard extends Template
     public function getPluginVersion()
     {
         return $this->moduleList->getOne('Packlink_PacklinkPro')['setup_version'];
-    }
-
-    /**
-     * Returns URL to backend controller that provides data for the configuration page.
-     *
-     * @param string $controllerName Name of the configuration controller.
-     * @param string $action Controller action.
-     *
-     * @return string URL to backend configuration controller.
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getControllerUrl($controllerName, $action)
-    {
-        return $this->urlHelper->getBackendUrl(
-            'packlink/configuration/' . strtolower($controllerName),
-            [
-                'action' => $action,
-                'ajax' => 1,
-                'form_key' => $this->formKey->getFormKey(),
-            ]
-        );
     }
 
     /**

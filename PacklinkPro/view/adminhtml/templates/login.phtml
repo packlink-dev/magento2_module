@@ -29,8 +29,9 @@
                     <svg id="pl-register-form-close-btn" width="24" height="24" viewBox="0 0 22 22"
                          xmlns="http://www.w3.org/2000/svg">
                         <g fill="none" fill-rule="evenodd">
-                            <path d="M11 21c5.523 0 10-4.477 10-10S16.523 1 11 1 1 5.477 1 11s4.477 10 10 10zm0 1C4.925 22 0 17.075 0 11S4.925 0 11 0s11 4.925 11 11-4.925 11-11 11z"
-                                  fill="#2095F2" fill-rule="nonzero"/>
+                            <path
+                                d="M11 21c5.523 0 10-4.477 10-10S16.523 1 11 1 1 5.477 1 11s4.477 10 10 10zm0 1C4.925 22 0 17.075 0 11S4.925 0 11 0s11 4.925 11 11-4.925 11-11 11z"
+                                fill="#2095F2" fill-rule="nonzero"/>
                             <path d="M7.5 7.5l8 7M15.5 7.5l-8 7" stroke="#2095F2" stroke-linecap="square"/>
                         </g>
                     </svg>
@@ -38,21 +39,15 @@
                 <div class="pl-register-country-title-wrapper">
                     <?php echo $block->escapeQuote(__('Select country to start')); ?>
                 </div>
+                <input
+                    type="hidden"
+                    id="pl-countries-url"
+                    value="<?php echo $block->getControllerUrl('DefaultWarehouse', 'getSupportedCountries'); ?>"
+                />
+                <input type="hidden" id="pl-logo-path" value="<?php echo $block->getViewFileUrl(
+                    'Packlink_PacklinkPro::images/flags/'
+                ); ?>"/>
                 <div class="pl-register-country-list-wrapper">
-                    <?php foreach ($block->getSupportedCountries() as $country) { ?>
-                        <a href="<?php echo $block->escapeQuote($country->registrationLink); ?>" target="_blank">
-                            <div class="pl-country">
-                                <img
-                                        src="<?php echo $block->getViewFileUrl(
-                                            "Packlink_PacklinkPro::images/flags/{$country->code}.svg"
-                                        ); ?>"
-                                        class="pl-country-logo"
-                                        alt="<?php echo $block->escapeQuote($country->name); ?>"
-                                >
-                                <div class="pl-country-name"><?php echo $block->escapeQuote($country->name); ?></div>
-                            </div>
-                        </a>
-                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -90,19 +85,60 @@
 </div>
 
 <script>
+    var Packlink = window.Packlink || {};
+
     /**
      * Initializes register form on login page.
      */
     function initRegisterForm() {
-        let registerBtnClicked = function () {
-            let form = document.getElementById('pl-register-form');
-            form.style.display = 'block';
+        let populateCountryList = function (response) {
+                let countryList = document.getElementsByClassName('pl-register-country-list-wrapper')[0],
+                    logoPath = document.getElementById('pl-logo-path').value;
 
-            let closeBtn = document.getElementById('pl-register-form-close-btn');
-            closeBtn.addEventListener('click', function () {
-                form.style.display = 'none';
-            })
-        };
+                if (countryList.childElementCount > 0) {
+                    return;
+                }
+
+                for (let code in response) {
+                    let supportedCountry = response[code],
+                        linkElement = document.createElement('a'),
+                        countryElement = document.createElement('div'),
+                        imageElement = document.createElement('img'),
+                        nameElement = document.createElement('div');
+
+                    linkElement.href = supportedCountry.registration_link;
+                    linkElement.target = '_blank';
+
+                    countryElement.classList.add('pl-country');
+
+                    imageElement.src = logoPath + '/' + supportedCountry.code + '.svg';
+                    imageElement.classList.add('pl-country-logo');
+                    imageElement.alt = supportedCountry.name;
+
+                    countryElement.appendChild(imageElement);
+
+                    nameElement.classList.add('pl-country-name');
+                    nameElement.innerText = supportedCountry.name;
+
+                    countryElement.appendChild(nameElement);
+                    linkElement.appendChild(countryElement);
+                    countryList.appendChild(linkElement);
+                }
+            },
+            registerBtnClicked = function () {
+                let form = document.getElementById('pl-register-form');
+                let ajaxService = Packlink.ajaxService;
+                form.style.display = 'block';
+
+                let closeBtn = document.getElementById('pl-register-form-close-btn');
+                closeBtn.addEventListener('click', function () {
+                    form.style.display = 'none';
+                });
+
+                let supportedCountriesUrl = document.getElementById('pl-countries-url').value;
+
+                ajaxService.get(supportedCountriesUrl, populateCountryList);
+            };
 
         let btn = document.getElementById('pl-register-btn');
         btn.addEventListener('click', registerBtnClicked, true);
