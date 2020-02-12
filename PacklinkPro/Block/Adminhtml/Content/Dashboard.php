@@ -28,10 +28,11 @@ class Dashboard extends Content
      * @var array
      */
     private static $helpUrls = [
-        'ES' => 'https://support-pro.packlink.com/hc/es-es/sections/202755109-Prestashop',
-        'DE' => 'https://support-pro.packlink.com/hc/de/sections/202755109-Prestashop',
-        'FR' => 'https://support-pro.packlink.com/hc/fr-fr/sections/202755109-Prestashop',
-        'IT' => 'https://support-pro.packlink.com/hc/it/sections/202755109-Prestashop',
+        'EN' => 'https://support-pro.packlink.com/hc/en-gb/articles/360011683700-Install-your-Magento-module',
+        'ES' => 'https://support-pro.packlink.com/hc/es-es/articles/360011683700-Instala-tu-m%C3%B3dulo-Magento',
+        'DE' => 'https://support-pro.packlink.com/hc/de',
+        'FR' => 'https://support-pro.packlink.com/hc/fr-fr',
+        'IT' => 'https://support-pro.packlink.com/hc/it',
     ];
     /**
      * List of terms and conditions URLs for different country codes.
@@ -39,6 +40,7 @@ class Dashboard extends Content
      * @var array
      */
     private static $termsAndConditionsUrls = [
+        'EN' => 'https://support-pro.packlink.com/hc/en-gb/articles/360010011480',
         'ES' => 'https://pro.packlink.es/terminos-y-condiciones/',
         'DE' => 'https://pro.packlink.de/agb/',
         'FR' => 'https://pro.packlink.fr/conditions-generales/',
@@ -77,7 +79,7 @@ class Dashboard extends Content
      */
     public function getHelpUrl()
     {
-        $locale = $this->getUserLocale();
+        $locale = $this->getUrlLocaleKey();
 
         return self::$helpUrls[$locale];
     }
@@ -89,7 +91,7 @@ class Dashboard extends Content
      */
     public function getTermsAndConditionsUrl()
     {
-        $locale = $this->getUserLocale();
+        $locale = $this->getUrlLocaleKey();
 
         return self::$termsAndConditionsUrls[$locale];
     }
@@ -105,19 +107,19 @@ class Dashboard extends Content
     }
 
     /**
-     * Returns user's country code (locale).
+     * Returns locale for support URLs.
      *
      * @return string
      */
-    private function getUserLocale()
+    private function getUrlLocaleKey()
     {
         /** @var ConfigurationService $configService */
         $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
 
         $userInfo = $configService->getUserInfo();
-        $locale = 'ES';
+        $locale = 'EN';
 
-        if ($userInfo !== null && array_key_exists($userInfo->country, self::$helpUrls)) {
+        if ($userInfo !== null && in_array($userInfo->country, ['ES', 'DE', 'FR', 'IT'], true)) {
             $locale = $userInfo->country;
         }
 
