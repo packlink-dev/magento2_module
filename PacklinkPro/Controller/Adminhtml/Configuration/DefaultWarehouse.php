@@ -77,12 +77,12 @@ class DefaultWarehouse extends Configuration
         $warehouseService = ServiceRegister::getService(WarehouseService::CLASS_NAME);
 
         try {
-            $warehouseService->setWarehouse($data);
+            $warehouse = $warehouseService->updateWarehouseData($data);
+
+            return $this->result->setData($warehouse->toArray());
         } catch (FrontDtoValidationException $e) {
             return $this->formatValidationErrorResponse($e->getValidationErrors());
         }
-
-        return $this->result->setData($data);
     }
 
     /**
