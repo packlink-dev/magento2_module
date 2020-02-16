@@ -94,6 +94,11 @@ class UrlHelper
      */
     public function getOrderDraftUrl($locale, $reference)
     {
-        return 'https://pro.packlink.' . strtolower($locale) . '/private/shipments/' . $reference;
+        $domain = 'com';
+        if (in_array($locale, ['ES', 'DE', 'FR', 'IT'], true)) {
+            $domain = strtolower($locale);
+        }
+
+        return 'https://pro.packlink.' . $domain . '/private/shipments/' . $reference;
     }
 }
