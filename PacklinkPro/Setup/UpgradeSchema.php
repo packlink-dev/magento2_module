@@ -28,6 +28,7 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\Repositor
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueService;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
@@ -53,6 +54,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
      *
      * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Exceptions\DraftTaskMapExists
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
@@ -69,6 +71,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '1.1.0', '<')) {
             $this->addTaskCleanupSchedule();
             $this->migrateShopOrderDetailsEntities($setup);
+            $this->updateShippingServices();
         }
     }
 
@@ -202,6 +205,23 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
                 $connection->delete(InstallSchema::PACKLINK_ENTITY_TABLE, ['type = ?' => 'ShopOrderDetails']);
             }
+        }
+    }
+
+    /**
+     * Updates Packlink shipping services.
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
+     */
+    protected function updateShippingServices()
+    {
+        /** @var \Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService $configuration */
+        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
+        /** @var QueueService $queueService */
+        $queueService = ServiceRegister::getService(QueueService::CLASS_NAME);
+
+        if ($queueService->findLatestByType('UpdateShippingServicesTask') !== null) {
+            $queueService->enqueue($configuration->getDefaultQueueName(), new UpdateShippingServicesTask());
         }
     }
 }
