@@ -9,6 +9,11 @@ namespace Packlink\PacklinkPro\Helper;
  */
 class CsrfValidatorSkip
 {
+    const WHITELISTED_ACTIONS = [
+        '‌packlink_webhook_webhooks',
+        'packlink_asyncprocess_asyncprocess',
+    ];
+
     /**
      * Validates csrf request.
      *
@@ -24,8 +29,10 @@ class CsrfValidatorSkip
         $request,
         $action
     ) {
-        if ($request->getModuleName() === 'packlink') {
-            return; // Skips CSRF check for Packlink POST routes.
+        if ($request->getModuleName() === 'packlink'
+            && in_array($request->getFullActionName(), static::WHITELISTED_ACTIONS, true)
+        ) {
+            return;
         }
 
         $proceed($request, $action);
