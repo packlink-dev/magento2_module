@@ -12,7 +12,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
@@ -40,6 +39,7 @@ class ShipmentLabels extends Action
      * @return \Magento\Framework\Controller\Result\Json
      *
      * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Exceptions\OrderShipmentDetailsNotFound
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
      */
     public function execute()
     {
@@ -48,7 +48,7 @@ class ShipmentLabels extends Action
 
         if (property_exists($request, 'orderId')) {
             /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
-            $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetails::getClassName());
+            $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
             $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId((string)$request->orderId);
 
             if ($orderDetails) {

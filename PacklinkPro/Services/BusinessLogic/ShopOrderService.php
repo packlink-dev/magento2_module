@@ -27,6 +27,7 @@ use Magento\Store\Model\StoreManager;
 use Packlink\PacklinkPro\Entity\QuoteCarrierDropOffMapping;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\Shipment;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Exceptions\OrderNotFound;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\ShopOrderService as ShopOrderServiceInterface;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Objects\Address;
@@ -163,13 +164,17 @@ class ShopOrderService implements ShopOrderServiceInterface
     /**
      * @inheritDoc
      */
-    public function updateTrackingInfo($orderId, array $trackings)
+    public function updateTrackingInfo($orderId, Shipment $shipment, array $trackingHistory)
     {
+        if (!isset($shipment->trackingCodes)) {
+            return;
+        }
+
         /** @var MagentoOrder $order */
         $order = $this->orderRepository->get($orderId);
         $title = $this->getShippingMethodTitle($orderId);
         $tracks = [];
-        foreach ($trackings as $trackingCode) {
+        foreach ($shipment->trackingCodes as $trackingCode) {
             /** @var Track $track */
             $track = $this->trackFactory->create();
 
@@ -182,12 +187,12 @@ class ShopOrderService implements ShopOrderServiceInterface
         }
 
         $shipmentsCollection = $order->getShipmentsCollection();
-        foreach ($shipmentsCollection as $shipment) {
-            $shipmentId = $shipment->getId();
+        foreach ($shipmentsCollection as $shipmentItem) {
+            $magentoShipmentId = $shipmentItem->getId();
             /** @var MagentoShipment $shipment */
-            $shipment = $this->shipmentRepository->get($shipmentId);
-            $shipment->setTracks($tracks);
-            $this->shipmentRepository->save($shipment);
+            $magentoShipment = $this->shipmentRepository->get($magentoShipmentId);
+            $magentoShipment->setTracks($tracks);
+            $this->shipmentRepository->save($magentoShipment);
         }
     }
 

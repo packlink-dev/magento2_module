@@ -507,7 +507,7 @@
     position: relative;
     z-index: 200;
     animation: pl-fade-in 0.5s ease;
-    border: 1px solid #2095F2 !important;
+    border: 2px solid #2095F2 !important;
 }
 
 .pl-configure-shipping-method-form-wrapper {
@@ -896,12 +896,12 @@
 
 .pl-footer-copyright-wrapper {
     display: flex;
-    width: 300px;
     justify-content: space-between;
 }
 
 .pl-footer-copyright-wrapper a, .pl-system-info-open-btn {
     color: #2095F2 !important;
+    margin-right: 10px;
 }
 
 .pl-footer-copyright-wrapper p {

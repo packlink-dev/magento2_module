@@ -15,7 +15,6 @@ use Magento\Sales\Model\Order\Shipment\Track;
 use Magento\Shipping\Block\Tracking\Popup as MagentoShippingPopup;
 use Magento\Shipping\Model\Info;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
@@ -79,7 +78,7 @@ class Popup extends MagentoShippingPopup
     public function getCarrierTrackingUrl()
     {
         /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
-        $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetails::getClassName());
+        $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
         try {
             $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId((string)$this->getOrderId());
 
