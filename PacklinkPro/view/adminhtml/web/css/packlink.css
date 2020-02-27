@@ -67,7 +67,7 @@
 }
 
 .pl-content-wrapper-panel {
-    padding: 0 0 0 20px;
+    padding: 0 10px 0 20px;
     height: 100%;
     position: relative;
     box-sizing: border-box;
@@ -101,7 +101,7 @@
 }
 
 .pl-sidebar-link-wrapper-inner {
-    padding: 10px;
+    padding: 5px;
     background: whitesmoke;
     vertical-align: middle;
     margin: auto;
@@ -249,7 +249,6 @@
     padding: 0 !important;
     height: 60px;
     line-height: 60px;
-    border-bottom: 1px solid #dcdcdc;
     color: #5d5d5d;
     font-size: 12px;
 }
@@ -286,22 +285,21 @@
 
 .pl-table-wrapper {
     padding: 0 !important;
-    height: calc(100% - 94px);
+    height: calc(100% - 100px);
     overflow-x: hidden;
     overflow-y: auto;
 }
 
 .pl-table {
-    margin: 0 !important;
-    padding: 0 !important;
     width: 100%;
-    border-spacing: unset !important;
+    border-collapse: separate;
 }
 
 .pl-table-header-wrapper {
     height: 60px;
     padding: 0 !important;
     border-bottom: 1px solid #3595f2;
+    border-right: 2px solid #dcdcdc;
 }
 
 .pl-table-header-wrapper th {
@@ -326,7 +324,7 @@
     box-sizing: border-box;
 }
 
-.pl-table-row-wrapper td {
+.pl-table-row-wrapper td, .pl-table-header-wrapper th {
     border-top: 1px solid #dcdcdc !important;
 }
 
@@ -337,6 +335,10 @@
 .pl-table-header-wrapper > th:last-child, .pl-table-row-wrapper > td:last-child {
     color: #2095F2 !important;
     border-right: 1px solid #dcdcdc !important;
+}
+
+.pl-table-header-wrapper th {
+    border-bottom: 1px solid #dcdcdc;
 }
 
 .pl-table-row-method-title h2 {
@@ -361,8 +363,12 @@
     text-align: center !important;
 }
 
-.pl-tbody tr:last-child td {
+.pl-tbody tr.pl-table-row-wrapper:last-child td {
     border-bottom: 1px solid #dcdcdc !important;
+}
+
+.pl-tbody tr:first-child td {
+    border-top: none !important;
 }
 
 .pl-tbody tr,
@@ -380,7 +386,7 @@
 
 .pl-method-logo {
     max-height: 40px;
-    max-width: 130px;
+    max-width: 100px;
 }
 
 .pl-method-pudo-icon-wrapper {
@@ -507,7 +513,7 @@
     position: relative;
     z-index: 200;
     animation: pl-fade-in 0.5s ease;
-    border: 2px solid #2095F2 !important;
+    border: 1px solid #2095F2 !important;
 }
 
 .pl-configure-shipping-method-form-wrapper {
@@ -1265,6 +1271,7 @@
     width: inherit;
     padding: 5px;
     height: unset;
+    border: 1px solid #dcdcdc;
 }
 
 .pl-mapping-page-wrapper-equals {

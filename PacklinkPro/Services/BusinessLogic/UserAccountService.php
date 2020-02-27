@@ -28,6 +28,12 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 class UserAccountService extends BaseUserAccountService
 {
     /**
+     * Singleton instance of this class.
+     *
+     * @var static
+     */
+    protected static $instance;
+    /**
      * Core store config
      *
      * @var ScopeConfigInterface
