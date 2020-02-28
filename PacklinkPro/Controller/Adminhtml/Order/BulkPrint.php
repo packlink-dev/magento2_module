@@ -14,7 +14,6 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Magento\Framework\Module\Dir\Reader;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\ShipmentRepository;
 use Magento\Sales\Model\ResourceModel\Order\Shipment\CollectionFactory;
@@ -46,10 +45,6 @@ class BulkPrint extends Action
      */
     private $collectionFactory;
     /**
-     * @var Reader
-     */
-    private $moduleReader;
-    /**
      * @var FileFactory
      */
     private $fileFactory;
@@ -67,17 +62,16 @@ class BulkPrint extends Action
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Ui\Component\MassAction\Filter $filter
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
+     * @param \Magento\Sales\Model\ResourceModel\Order\Shipment\CollectionFactory $collectionFactory
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
-     * @param \Magento\Framework\Module\Dir\Reader $reader
      * @param \Magento\Framework\App\Response\Http\FileFactory $fileFactory
+     * @param \Magento\Sales\Model\Order\ShipmentRepository $shipmentRepository
      */
     public function __construct(
         Action\Context $context,
         Filter $filter,
         CollectionFactory $collectionFactory,
         Bootstrap $bootstrap,
-        Reader $reader,
         FileFactory $fileFactory,
         ShipmentRepository $shipmentRepository
     ) {
@@ -85,7 +79,6 @@ class BulkPrint extends Action
 
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->moduleReader = $reader;
         $this->fileFactory = $fileFactory;
         $this->shipmentRepository = $shipmentRepository;
 
@@ -132,19 +125,13 @@ class BulkPrint extends Action
     {
         $shipmentIds = $collection->getAllIds();
 
-        $tmpDirectory = $this->getTmpDirectory();
-        if (!empty($shipmentIds) && !is_dir($tmpDirectory) && !mkdir($tmpDirectory)) {
-            throw new \RuntimeException(sprintf(__("Directory '%s' was not created"), $tmpDirectory));
-        }
+        $files = $this->saveFilesLocally($shipmentIds);
 
-        $this->saveFilesLocally($shipmentIds);
-
-        if ($this->directoryEmpty($tmpDirectory)) {
+        if (empty($files)) {
             $this->messageManager->addNoticeMessage(__('No Packlink shipment labels available.'));
         } else {
             try {
-                $pdfContent = $this->mergePdfFiles($tmpDirectory);
-                $this->deleteTemporaryFiles($tmpDirectory);
+                $pdfContent = $this->mergePdfFiles($files);
                 $now = date('Y-m-d_H-i-s');
                 $fileName = "Packlink-bulk-shipment-labels_$now.pdf";
 
@@ -172,6 +159,8 @@ class BulkPrint extends Action
      *
      * @param array $shipmentIds Array of shipment IDs.
      *
+     * @return array
+     *
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Exceptions\OrderShipmentDetailsNotFound
@@ -181,6 +170,7 @@ class BulkPrint extends Action
         $orders = $this->getAllOrderDetails($shipmentIds);
         $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
 
+        $files = [];
         foreach ($orders as $orderDetails) {
             $labels = $orderDetails->getShipmentLabels();
 
@@ -194,11 +184,19 @@ class BulkPrint extends Action
             }
 
             foreach ($labels as $label) {
-                $this->getOrderShipmentDetailsService()->markLabelPrinted($orderDetails->getReference(), $label->getLink());
+                $this->getOrderShipmentDetailsService()->markLabelPrinted(
+                    $orderDetails->getReference(),
+                    $label->getLink()
+                );
 
-                $this->savePDF($label->getLink());
+                $file = $this->savePDF($label->getLink());
+                if ($file) {
+                    $files[] = $file;
+                }
             }
         }
+
+        return $files;
     }
 
     /**
@@ -235,93 +233,44 @@ class BulkPrint extends Action
      * Saves PDF file from provided URL to temporary location on the system.
      *
      * @param string $link
+     *
+     * @return false|string
      */
     private function savePDF($link)
     {
-        $file = fopen($link, 'rb');
-        if ($file) {
-            $tmpFile = fopen($this->getTmpDirectory() . microtime() . '.pdf', 'wb');
-            if ($tmpFile) {
-                while (!feof($file)) {
-                    fwrite($tmpFile, fread($file, 1024 * 8), 1024 * 8);
-                }
+        $data = file_get_contents($link);
 
-                fclose($tmpFile);
-            }
-
-            fclose($file);
+        if ($data === false) {
+            return $data;
         }
+
+        $file = tempnam(sys_get_temp_dir(), 'packlink_pdf_');
+        file_put_contents($file, $data);
+
+        return $file;
     }
 
     /**
-     * Merges all PDF files within provided directory into one PDF.
+     * Merges all PDF files into one PDF.
      *
-     * @param string $pdfDirectory Path to directory that contains PDF files.
+     * @param array $files Array of PDF label files.
      *
      * @return string Merged PDF content.
      *
      * @throws \Zend_Pdf_Exception
      */
-    private function mergePdfFiles($pdfDirectory)
+    private function mergePdfFiles($files)
     {
         $pdf = new \Zend_Pdf();
         $extractor = new \Zend_Pdf_Resource_Extractor();
-        $iterator = new \DirectoryIterator($pdfDirectory);
-        foreach ($iterator as $fileInfo) {
-            if (!$fileInfo->isDot()) {
-                $labelPdf = \Zend_Pdf::load($fileInfo->getPath() . '/' . $fileInfo->getFilename());
-                foreach ($labelPdf->pages as $page) {
-                    $pdf->pages[] = $extractor->clonePage($page);
-                }
+        foreach ($files as $file) {
+            $labelPdf = \Zend_Pdf::load($file);
+            foreach ($labelPdf->pages as $page) {
+                $pdf->pages[] = $extractor->clonePage($page);
             }
         }
 
         return $pdf->render();
-    }
-
-    /**
-     * Deletes all temporary files created in the process of bulk printing of labels.
-     *
-     * @param string $tmpDirectory
-     */
-    private function deleteTemporaryFiles($tmpDirectory)
-    {
-        $it = new \RecursiveDirectoryIterator($tmpDirectory, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $files = new \RecursiveIteratorIterator(
-            $it,
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-        foreach ($files as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getRealPath());
-            } else {
-                unlink($file->getRealPath());
-            }
-        }
-
-        rmdir($tmpDirectory);
-    }
-
-    /**
-     * Returns path to temporary directory within module, used for storing shipment labels.
-     *
-     * @return string
-     */
-    private function getTmpDirectory()
-    {
-        return $this->moduleReader->getModuleDir('', 'Packlink_PacklinkPro') . '/tmp/';
-    }
-
-    /**
-     * Checks if a directory is empty.
-     *
-     * @param string $dir Path to directory.
-     *
-     * @return bool Returns TRUE if directory is empty, otherwise returns FALSE.
-     */
-    private function directoryEmpty($dir)
-    {
-        return !(new \FilesystemIterator($dir))->valid();
     }
 
     /**
