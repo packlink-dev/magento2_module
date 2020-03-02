@@ -157,6 +157,7 @@
 "Failed to save shipping method."                                                                                      ,"Échec de l'enregistrement du service d'envoi."
 "Shipping service successfully saved."                                                                                 ,"Service de livraison enregistré avec succès."
 "Failed to activate shipping method."                                                                                  ,"Échec de l'activation du service d'envoi."
+"Draft is currently being created in Packlink PRO"                                                                     ,"Le brouillon est en cours de création sur Packlink PRO"
 "Error: "                                                                                                              ,"Erreur: "
 "There has been an error creating order draft."                                                                        ,"Une erreur s’est produite lors de la création du projet de commande."
 "Carrier did not provide tracking URL."                                                                                ,"Le transporteur n’a fourni aucun URL de suivi."

@@ -6,6 +6,11 @@
  */
 
 /** @var Packlink\PacklinkPro\Block\Adminhtml\Order\View\Info $block */
+
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Objects\ShipmentDraftStatus;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
+
+$draftStatus = $block->getDraftStatus();
 ?>
 
 <section class="admin__page-section order-view-billing-shipping">
@@ -25,7 +30,25 @@
         <!-- PACKLINK CONTENT -->
         <div class="pl-shipping">
             <?php if ($block->isUserLoggedIn()) : ?>
-                <?php if (!$block->isDraftCreated()) : ?>
+                <?php if (in_array(
+                    $draftStatus->status,
+                    [ShipmentDraftStatus::NOT_QUEUED, QueueItem::FAILED],
+                    true
+                )) : ?>
+                    <?php if ($draftStatus->status === QueueItem::FAILED) : ?>
+                        <div id="pl-create-draft-error" class="message message-warning warning">
+                         <span id="pl-create-draft-error-text">
+                            <?= $block->escapeQuote(__('Error: ')) ?>
+                         </span>
+                            <span id="pl-create-draft-default-msg">
+                            <?= $block->escapeQuote(
+                                __('There has been an error creating order draft.') . ' '
+                                . __('Error: ')
+                                . $draftStatus->message
+                            ) ?>
+                         </span>
+                        </div>
+                    <?php endif; ?>
                     <div class="admin__page-section-item-content">
                         <button
                                 id="create-draft"
@@ -39,13 +62,8 @@
                             <span><?= $block->escapeQuote(__('Create order draft in Packlink PRO')) ?></span>
                         </button>
                     </div>
-                    <div id="pl-create-draft-error" class="message message-warning warning" hidden></div>
-                    <span id="pl-create-draft-error-text" hidden>
-                        <?= $block->escapeQuote(__('Error: ')) ?>
-                    </span>
-                    <span id="pl-create-draft-default-msg" hidden>
-                        <?= $block->escapeQuote(__('There has been an error creating order draft.')) ?>
-                    </span>
+                <?php elseif ($draftStatus->status === QueueItem::IN_PROGRESS) : ?>
+                    <span><?= $block->escapeQuote(__('Draft is currently being created in Packlink PRO')) ?></span>
                 <?php elseif ($block->getOrderDetails() !== null) : ?>
                     <?php if ($block->labelExists()) : ?>
                         <div class="admin__field">

@@ -1730,6 +1730,7 @@ body {
 
 #pl-create-draft-error {
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .pl-login-error-msg {

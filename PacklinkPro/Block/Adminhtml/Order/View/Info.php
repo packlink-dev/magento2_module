@@ -134,18 +134,18 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     }
 
     /**
-     * Checks whether order draft is already created for the order.
+     * Returns the current status of the draft.
      *
-     * @return bool Returns TRUE if order draft exists for provided order, otherwise returns FALSE.
+     * @return ShipmentDraftStatus
      */
-    public function isDraftCreated()
+    public function getDraftStatus()
     {
         $order = $this->getCurrentOrder();
+
         /** @var ShipmentDraftService $shipmentDraftService */
         $shipmentDraftService = ServiceRegister::getService(ShipmentDraftService::CLASS_NAME);
-        $status = $shipmentDraftService->getDraftStatus($order->getId());
 
-        return $status->status !== ShipmentDraftStatus::NOT_QUEUED;
+        return $shipmentDraftService->getDraftStatus($order->getId());
     }
 
     /**

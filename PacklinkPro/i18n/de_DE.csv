@@ -157,6 +157,7 @@
 "Failed to save shipping method."                                                                                      ,"Versanddienst konnte nicht gespeichert werden."
 "Shipping service successfully saved."                                                                                 ,"Versanddienst erfolgreich gespeichert."
 "Failed to activate shipping method."                                                                                  ,"Versanddienst konnte nicht aktiviert werden."
+"Draft is currently being created in Packlink PRO"                                                                     ,"Der Entwurf wird gerade in Packlink PRO erstellt"
 "Error: "                                                                                                              ,"Fehler: "
 "There has been an error creating order draft."                                                                        ,"Beim Erstellen des Auftragsentwurfs ist ein Fehler aufgetreten."
 "Carrier did not provide tracking URL."                                                                                ,"Der Spediteur hat keine Tracking-URL angegeben."
