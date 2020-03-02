@@ -199,6 +199,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 foreach ($entities as $entity) {
                     $data = json_decode($entity['data'], true);
                     $orderShipmentDetails = OrderShipmentDetails::fromArray($data);
+                    $orderShipmentDetails->setReference($data['shipmentReference']);
+                    $orderShipmentDetails->setOrderId((string)$data['orderId']);
+                    $orderShipmentDetails->setShippingCost($data['packlinkShippingPrice']);
                     $orderShipmentDetailsRepository->save($orderShipmentDetails);
                     $orderSendDraftTaskMapService->createOrderTaskMap((string)$data['orderId'], $data['taskId']);
                 }
