@@ -30,29 +30,17 @@ top right toolbar.
 module and the module from Magento. In such a configuration, you need to rename the module folder in Magento,
 run tests, and rename it back.
 
-### Install coding standards tool
-If you haven't done so, install Magento Code Sniffer.
-```
-composer create-project magento/magento-coding-standard --stability=dev magento-coding-standard
-```
-
-### Run code fixer
-Run code fixer on base code.
-```
-magento-coding-standard/vendor/bin/phpcbf ./PacklinkPro/ --standard=Magento2
+### Preparing code for commit
+Always run the validator script before committing the code.
 
 ```
-This will fix all common problems. 
+./prepare-validate.sh
 
-### Run code sniffer
-Run code sniffer.
 ```
-magento-coding-standard/vendor/bin/phpcs ./PacklinkPro/ --standard=Magento2 --severity=10
-```
-If there is no output, all is fine. Otherwise, correct the reported errors. Ignore errors in `Tests` folder 
-since it will not be a part of the final release.
-Ignore errors in file `/IntegrationCore/Infrastructure/Serializer/Concrete/NativeSerializer.php` since this file
-is removed during the deployment process.
+This will validate and automatically fix all common problems. 
+If there is no output, all is fine. Otherwise, correct the reported errors. 
+Ignore errors in `Tests` folder and in file `/IntegrationCore/Infrastructure/Serializer/Concrete/NativeSerializer.php` 
+since these will be removed during the deployment/packaging process.
 
 ## Release new version
 
@@ -67,15 +55,4 @@ Run
 ```
 ./deploy.sh
 ```
-### Validate package for release
-If you haven't done so, install Magento Marketplace Tools:
-```
-git clone https://github.com/magento/marketplace-tools.git
-```
 
-This will make a proper packages in the `PluginInstallation` folder based on the current module version.
-
-Run checker to validate package:
-```
-php marketplace-tools/validate_m2_package.php -d ./PluginInstallation/[version]/PacklinkPro.zip
-```

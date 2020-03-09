@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+
+## [1.1.0](https://github.com/packlink-dev/magento2_module/compare/v1.1.0...v1.0.1)
+### Changed
+- Updated to the latest Packlink Integration Core v2.0.0. The most important changes:
+  * Update interval for shipment details is optimized. Now, the data for active shipments will be updated once a day.
+  * Optimized code
+  * Added a background task for cleaning up the task runner queue for completed tasks.
+- Fixed problem with bulk label print on some servers
+- Display better progress status for creating a draft shipment
+
+### Added
+- Added CSRF checks for webhooks endpoints
+- Added more supported countries for Packlink accounts and shipments.
+
 ## [1.0.1](https://github.com/packlink-dev/magento2_module/compare/v1.0.1...v1.0.0)
 ### Changed
 - Shipment data update interval.

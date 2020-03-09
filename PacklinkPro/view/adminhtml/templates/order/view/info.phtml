@@ -130,10 +130,10 @@ $draftStatus = $block->getDraftStatus();
                                     <td class="col">
                                         <?php if (!empty($block->getOrderDetails()->getCarrierTrackingNumbers())) : ?>
                                             <a
-                                                    href="<?= $block->escapeHtml(
-                                                        $block->getOrderDetails()->getCarrierTrackingUrl()
-                                                          ) ?>"
-                                                    target="_blank"
+                                                href="<?= $block->escapeHtml(
+                                                    $block->getOrderDetails()->getCarrierTrackingUrl()
+                                                ) ?>"
+                                                target="_blank"
                                             >
                                                 <button type="button" class="pl-order-page-item">
                                                     <?= $block->escapeQuote(__('Track it!')) ?>
