@@ -1,24 +1,24 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6290aac5da23e5c763c4da0ab2e95286",
+    "content-hash": "8120f56fdec04c7de91f50bc29eb7c9f",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "dev-feature/cr-16",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:logeecom/pl_module_core.git",
-                "reference": "29bf8863e6b2ee6d2885ad4c5e4e9174afca92e5"
+                "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
+                "reference": "61b75af99c912a36d7b3111ee2cbb1ee51eb0767"
             },
             "dist": {
-              "type": "zip",
-              "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/29bf8863e6b2ee6d2885ad4c5e4e9174afca92e5",
-              "reference": "29bf8863e6b2ee6d2885ad4c5e4e9174afca92e5",
-              "shasum": ""
+                "type": "zip",
+                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/61b75af99c912a36d7b3111ee2cbb1ee51eb0767",
+                "reference": "61b75af99c912a36d7b3111ee2cbb1ee51eb0767",
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3.29"
@@ -44,7 +44,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-          "time": "2020-03-03T13:24:00+00:00"
+            "time": "2020-03-30T13:26:28+00:00"
         }
     ],
     "packages-dev": [
@@ -1228,9 +1228,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "packlink/integration-core": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
