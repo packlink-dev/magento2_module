@@ -1,25 +1,25 @@
 {
-    "_readme": [
-        "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
-        "This file is @generated automatically"
-    ],
-    "content-hash": "8120f56fdec04c7de91f50bc29eb7c9f",
-    "packages": [
-        {
-            "name": "packlink/integration-core",
-            "version": "v2.0.1",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "61b75af99c912a36d7b3111ee2cbb1ee51eb0767"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/61b75af99c912a36d7b3111ee2cbb1ee51eb0767",
-                "reference": "61b75af99c912a36d7b3111ee2cbb1ee51eb0767",
-                "shasum": ""
-            },
+  "_readme": [
+    "This file locks the dependencies of your project to a known state",
+    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+    "This file is @generated automatically"
+  ],
+  "content-hash": "dbe8593462478a620ddb8b7bf9d8cd2e",
+  "packages": [
+    {
+      "name": "packlink/integration-core",
+      "version": "v2.0.3",
+      "source": {
+        "type": "git",
+        "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
+        "reference": "027b62b18e1f4abc1efd8294872969569896ae5b"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/027b62b18e1f4abc1efd8294872969569896ae5b",
+        "reference": "027b62b18e1f4abc1efd8294872969569896ae5b",
+        "shasum": ""
+      },
             "require": {
                 "php": ">=5.3.29"
             },
@@ -44,7 +44,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2020-03-30T13:26:28+00:00"
+      "time": "2020-04-07T12:13:34+00:00"
         }
     ],
     "packages-dev": [

@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Helper;
@@ -82,23 +82,5 @@ class UrlHelper
     public function getBackendUrl($routePath, $routeParams = null)
     {
         return $this->backendUrlHelper->getUrl($routePath, $routeParams);
-    }
-
-    /**
-     * Returns URL to order draft on Packlink PRO.
-     *
-     * @param string $locale User locale code.
-     * @param string $reference Order shipment reference.
-     *
-     * @return string URL to order draft on Packlink PRO.
-     */
-    public function getOrderDraftUrl($locale, $reference)
-    {
-        $domain = 'com';
-        if (in_array($locale, ['ES', 'DE', 'FR', 'IT'], true)) {
-            $domain = strtolower($locale);
-        }
-
-        return 'https://pro.packlink.' . $domain . '/private/shipments/' . $reference;
     }
 }

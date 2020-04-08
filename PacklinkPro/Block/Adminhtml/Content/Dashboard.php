@@ -12,6 +12,7 @@ use Magento\Framework\Module\ModuleListInterface;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\UrlHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
@@ -115,11 +116,12 @@ class Dashboard extends Content
     {
         /** @var ConfigurationService $configService */
         $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
+        /** @var \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService $countryService */
+        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
 
         $userInfo = $configService->getUserInfo();
         $locale = 'EN';
-
-        if ($userInfo !== null && in_array($userInfo->country, ['ES', 'DE', 'FR', 'IT'], true)) {
+        if ($userInfo !== null && $countryService->isBaseCountry($userInfo->country)) {
             $locale = $userInfo->country;
         }
 

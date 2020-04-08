@@ -90,16 +90,13 @@ class OrderDraft extends Column
                     continue;
                 }
 
-                $reference = $orderDetails->getReference();
-
                 $logoUrl = $this->assetRepo->getUrl('Packlink_PacklinkPro::images/logo.png');
 
                 if ($orderDetails->isDeleted()) {
                     $element = '<img class="pl-order-draft-icon" src="' . $logoUrl . '"/>';
                 } else {
-                    $draftUrl = $this->urlHelper->getOrderDraftUrl($userInfo->country, $reference);
                     $element = html_entity_decode(
-                        '<a href="' . $draftUrl . '" target="_blank">'
+                        '<a href="' . $orderDetails->getShipmentUrl() . '" target="_blank">'
                         . '<img class="pl-order-draft-icon" src="' . $logoUrl
                         . '" alt="' . __('View on Packlink PRO') . '" title="' . __('View on Packlink PRO') . '"/>'
                         . '</a>'

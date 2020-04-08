@@ -123,14 +123,7 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     {
         $orderDetails = $this->getOrderDetails();
 
-        if ($orderDetails === null) {
-            return '';
-        }
-
-        return $this->urlHelper->getOrderDraftUrl(
-            $this->getConfigService()->getUserInfo()->country,
-            $orderDetails->getReference()
-        );
+        return $orderDetails !== null ? $orderDetails->getShipmentUrl() : '';
     }
 
     /**
@@ -145,7 +138,14 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
         /** @var ShipmentDraftService $shipmentDraftService */
         $shipmentDraftService = ServiceRegister::getService(ShipmentDraftService::CLASS_NAME);
 
-        return $shipmentDraftService->getDraftStatus($order->getId());
+        if ($order !== null) {
+            return $shipmentDraftService->getDraftStatus($order->getId());
+        }
+
+        $status = new ShipmentDraftStatus();
+        $status->status = ShipmentDraftStatus::NOT_QUEUED;
+
+        return $status;
     }
 
     /**
@@ -288,7 +288,9 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
             try {
                 $order = $this->getCurrentOrder();
                 if ($order) {
-                    $this->orderDetails = $this->getOrderShipmentDetailsService()->getDetailsByOrderId((string)$order->getId());
+                    $this->orderDetails = $this->getOrderShipmentDetailsService()->getDetailsByOrderId(
+                        (string)$order->getId()
+                    );
                 }
             } catch (\Exception $e) {
                 Logger::logWarning(__('Order details not found'), 'Integration');

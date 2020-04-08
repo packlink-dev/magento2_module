@@ -11,6 +11,7 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\DailySchedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\HourlySchedule;
@@ -192,9 +193,24 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             $entities = $connection->fetchAll($select);
             if (!empty($entities)) {
-                $orderShipmentDetailsRepository = RepositoryRegistry::getRepository(OrderShipmentDetails::getClassName());
+                $orderShipmentDetailsRepository = RepositoryRegistry::getRepository(
+                    OrderShipmentDetails::getClassName()
+                );
                 /** @var OrderSendDraftTaskMapService $orderSendDraftTaskMapService */
                 $orderSendDraftTaskMapService = ServiceRegister::getService(OrderSendDraftTaskMapService::CLASS_NAME);
+
+                /** @var Configuration $configService */
+                $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
+                /** @var CountryService $countryService */
+                $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
+
+                $userInfo = $configService->getUserInfo();
+                $userDomain = 'com';
+                if ($userInfo !== null && $countryService->isBaseCountry($userInfo->country)) {
+                    $userDomain = strtolower($userInfo->country);
+                }
+
+                $baseShipmentUrl = "https://pro.packlink.$userDomain/private/shipments/";
 
                 foreach ($entities as $entity) {
                     $data = json_decode($entity['data'], true);
@@ -202,6 +218,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     $orderShipmentDetails->setReference($data['shipmentReference']);
                     $orderShipmentDetails->setOrderId((string)$data['orderId']);
                     $orderShipmentDetails->setShippingCost($data['packlinkShippingPrice']);
+                    $orderShipmentDetails->setShipmentUrl($baseShipmentUrl . $orderShipmentDetails->getReference());
                     $orderShipmentDetailsRepository->save($orderShipmentDetails);
                     $orderSendDraftTaskMapService->createOrderTaskMap((string)$data['orderId'], $data['taskId']);
                 }
