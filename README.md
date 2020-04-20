@@ -45,7 +45,7 @@ since these will be removed during the deployment/packaging process.
 ## Release new version
 
 ### Prepare module
-Make sure that version in `./PacklinkPro/composer.json` file is set to a new version number.
+Make sure version in `./PacklinkPro/composer.json` file is set to a new version number.
 Make sure DB "setup_version" in `./PacklinkPro/etc/module.xml` file is set to a new version number.
 
 Add change log - release notes in `./PluginInstalations/CHANGELOG.md` file.
