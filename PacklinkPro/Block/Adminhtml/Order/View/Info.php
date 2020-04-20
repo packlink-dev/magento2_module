@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Block\Adminhtml\Order\View;
@@ -17,18 +17,18 @@ use Magento\Sales\Helper\Admin;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Address\Renderer;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\Entity\ShopOrderDetails;
-use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
 use Packlink\PacklinkPro\Helper\UrlHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Objects\ShipmentDraftStatus;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\ShipmentDraftService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Utility\TimeProvider;
-use Packlink\PacklinkPro\Model\ShipmentLabel;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 /**
  * Class Info
@@ -42,19 +42,15 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
      */
     private $urlHelper;
     /**
-     * @var OrderRepositoryService
+     * @var OrderShipmentDetailsService
      */
-    private $orderRepositoryService;
+    private $orderShipmentDetailsService;
     /**
      * @var ConfigurationService
      */
     private $configService;
     /**
-     * @var CarrierLogoHelper
-     */
-    private $carrierLogoHelper;
-    /**
-     * @var ShopOrderDetails
+     * @var OrderShipmentDetails
      */
     private $orderDetails;
 
@@ -70,7 +66,6 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
      * @param \Magento\Sales\Model\Order\Address\Renderer $addressRenderer
      * @param \Packlink\PacklinkPro\Helper\UrlHelper $urlHelper
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
-     * @param \Packlink\PacklinkPro\Helper\CarrierLogoHelper $carrierLogoHelper
      * @param array $data
      */
     public function __construct(
@@ -83,7 +78,6 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
         Renderer $addressRenderer,
         UrlHelper $urlHelper,
         Bootstrap $bootstrap,
-        CarrierLogoHelper $carrierLogoHelper,
         array $data = []
     ) {
         parent::__construct(
@@ -98,7 +92,6 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
         );
 
         $this->urlHelper = $urlHelper;
-        $this->carrierLogoHelper = $carrierLogoHelper;
 
         $bootstrap->initInstance();
     }
@@ -107,6 +100,8 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
      * Returns URL of the order draft controller.
      *
      * @return string URL of the order draft controller.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getDraftControllerUrl()
     {
@@ -128,26 +123,29 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     {
         $orderDetails = $this->getOrderDetails();
 
-        if ($orderDetails === null) {
-            return '';
-        }
-
-        return $this->urlHelper->getOrderDraftUrl(
-            $this->getConfigService()->getUserInfo()->country,
-            $orderDetails->getShipmentReference()
-        );
+        return $orderDetails !== null ? $orderDetails->getShipmentUrl() : '';
     }
 
     /**
-     * Checks whether order draft is already created for the order.
+     * Returns the current status of the draft.
      *
-     * @return bool Returns TRUE if order draft exists for provided order, otherwise returns FALSE.
+     * @return ShipmentDraftStatus
      */
-    public function isDraftCreated()
+    public function getDraftStatus()
     {
-        $orderDetails = $this->getOrderDetails();
+        $order = $this->getCurrentOrder();
 
-        return $orderDetails !== null;
+        /** @var ShipmentDraftService $shipmentDraftService */
+        $shipmentDraftService = ServiceRegister::getService(ShipmentDraftService::CLASS_NAME);
+
+        if ($order !== null) {
+            return $shipmentDraftService->getDraftStatus($order->getId());
+        }
+
+        $status = new ShipmentDraftStatus();
+        $status->status = ShipmentDraftStatus::NOT_QUEUED;
+
+        return $status;
     }
 
     /**
@@ -164,6 +162,8 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
      * Returns link to the backend controller for printing shipment label.
      *
      * @return string Link to controller.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getLabelControllerUrl()
     {
@@ -184,6 +184,11 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     public function labelExists()
     {
         $orderDetails = $this->getOrderDetails();
+
+        if ($orderDetails === null) {
+            return false;
+        }
+
         /** @var \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService $orderService */
         $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
 
@@ -198,6 +203,11 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     public function labelPrinted()
     {
         $details = $this->getOrderDetails();
+
+        if ($details === null) {
+            return false;
+        }
+
         $labels = $details->getShipmentLabels();
 
         return !empty($labels) && $labels[0]->isPrinted();
@@ -230,41 +240,23 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
         return $output;
     }
 
-    /**
-     * Returns title of the order shipping method.
-     *
-     * @return string Shipping method title.
-     *
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getShippingMethodTitle()
+    public function getShippingMethod()
     {
         $order = $this->getCurrentOrder();
 
-        if ($order === null) {
-            return '';
+        if (!$order) {
+            return null;
         }
 
-        return $this->getOrderRepositoryService()->getShippingMethodTitle($order->getId());
-    }
-
-    /**
-     * Returns carrier logo file path for the order.
-     *
-     * @return string Path to carrier logo.
-     */
-    public function getCarrierLogo()
-    {
-        $order = $this->getCurrentOrder();
-
-        $id = 0;
-        if ($order !== null) {
-            $sourceShippingMethod = $order->getShippingMethod(true);
-            $id = $sourceShippingMethod ? (int)$sourceShippingMethod->getDataByKey('method') : 0;
+        $orderShippingMethod = $order->getShippingMethod(true);
+        if (!$orderShippingMethod) {
+            return null;
         }
 
-        return $this->carrierLogoHelper->getCarrierLogoFilePath($id);
+        /** @var ShippingMethodService $shippingMethodService */
+        $shippingMethodService = ServiceRegister::getService(ShippingMethodService::CLASS_NAME);
+
+        return $shippingMethodService->getShippingMethod((int)$orderShippingMethod->getDataByKey('method'));
     }
 
     /**
@@ -288,7 +280,7 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     /**
      * Returns details for the order.
      *
-     * @return ShopOrderDetails Order details entity.
+     * @return OrderShipmentDetails Order details entity.
      */
     public function getOrderDetails()
     {
@@ -296,8 +288,8 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
             try {
                 $order = $this->getCurrentOrder();
                 if ($order) {
-                    $this->orderDetails = $this->getOrderRepositoryService()->getOrderDetailsById(
-                        (int)$order->getId()
+                    $this->orderDetails = $this->getOrderShipmentDetailsService()->getDetailsByOrderId(
+                        (string)$order->getId()
                     );
                 }
             } catch (\Exception $e) {
@@ -329,30 +321,17 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     }
 
     /**
-     * Returns shipment label for the order.
+     * Returns instance of order shipment details service.
      *
-     * @return ShipmentLabel Shipment label entity.
+     * @return \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService
      */
-    private function getShipmentLabel()
+    private function getOrderShipmentDetailsService()
     {
-        $orderDetails = $this->getOrderDetails();
-
-        return $orderDetails && is_array($orderDetails->getShipmentLabels()) ? $orderDetails->getShipmentLabels()[0]
-            : null;
-    }
-
-    /**
-     * Returns instance of order repository service.
-     *
-     * @return OrderRepositoryService
-     */
-    private function getOrderRepositoryService()
-    {
-        if ($this->orderRepositoryService === null) {
-            $this->orderRepositoryService = ServiceRegister::getService(OrderRepository::CLASS_NAME);
+        if ($this->orderShipmentDetailsService === null) {
+            $this->orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
         }
 
-        return $this->orderRepositoryService;
+        return $this->orderShipmentDetailsService;
     }
 
     /**

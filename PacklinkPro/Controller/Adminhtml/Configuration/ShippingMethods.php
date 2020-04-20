@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -11,12 +11,10 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\Helper\CarrierLogoHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodConfiguration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodResponse;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ShippingMethodController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\UpdateShippingServicesTaskStatusController;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Exceptions\BaseException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 
@@ -28,10 +26,6 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 class ShippingMethods extends Configuration
 {
     /**
-     * @var CarrierLogoHelper
-     */
-    private $carrierLogoHelper;
-    /**
      * @var ShippingMethodController
      */
     private $controller;
@@ -42,17 +36,13 @@ class ShippingMethods extends Configuration
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
-     * @param \Packlink\PacklinkPro\Helper\CarrierLogoHelper $logoHelper
      */
     public function __construct(
         Context $context,
         Bootstrap $bootstrap,
-        JsonFactory $jsonFactory,
-        CarrierLogoHelper $logoHelper
+        JsonFactory $jsonFactory
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
-
-        $this->carrierLogoHelper = $logoHelper;
 
         $this->allowedActions = [
             'getAll',
@@ -70,7 +60,7 @@ class ShippingMethods extends Configuration
     {
         $shippingMethods = $this->getShippingMethodController()->getAll();
 
-        return $this->result->setData($this->formatCollectionJsonResponse($shippingMethods));
+        return $this->formatDtoEntitiesResponse($shippingMethods);
     }
 
     /**
@@ -136,8 +126,6 @@ class ShippingMethods extends Configuration
             return $this->result->setData(['message' => __('Failed to save shipping method.')]);
         }
 
-        $model->logoUrl = $model->id ? $this->carrierLogoHelper->getCarrierLogoFilePath($model->id) : '';
-
         if ($model->selected) {
             return $this->result->setData($model->toArray());
         }
@@ -151,26 +139,6 @@ class ShippingMethods extends Configuration
         $model->selected = true;
 
         return $this->result->setData($model->toArray());
-    }
-
-    /**
-     * Transforms shipping method collection to JSON response.
-     *
-     * @param BaseDto[] $data DTO collection.
-     *
-     * @return array Transformed JSON response.
-     */
-    private function formatCollectionJsonResponse($data)
-    {
-        $collection = [];
-
-        /** @var ShippingMethodResponse $shippingMethod */
-        foreach ($data as $shippingMethod) {
-            $shippingMethod->logoUrl = $this->carrierLogoHelper->getCarrierLogoFilePath($shippingMethod->id);
-            $collection[] = $shippingMethod->toArray();
-        }
-
-        return $collection;
     }
 
     /**

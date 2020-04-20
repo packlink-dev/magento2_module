@@ -13,10 +13,9 @@ use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\UrlHelper;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 /**
  * Class ShipmentLabel
@@ -76,14 +75,14 @@ class ShipmentLabel extends Column
     public function prepareDataSource(array $dataSource)
     {
         if (isset($dataSource['data']['items'])) {
-            /** @var OrderRepositoryService $orderRepositoryService */
-            $orderRepositoryService = ServiceRegister::getService(OrderRepository::CLASS_NAME);
+            /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
+            $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
             /** @var OrderService $orderService */
             $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
 
             $fieldName = $this->getData('name');
             foreach ($dataSource['data']['items'] as &$item) {
-                $orderDetails = $orderRepositoryService->getOrderDetailsById((int)$item['order_id']);
+                $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId($item['order_id']);
                 if ($orderDetails === null
                     || !$orderService->isReadyToFetchShipmentLabels($orderDetails->getShippingStatus())
                 ) {

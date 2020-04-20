@@ -14,6 +14,7 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\ValidationError;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
@@ -38,6 +39,18 @@ class Configuration extends Action
         'shippingmethods',
     ];
     /**
+     * Translation messages for fields that are being validated.
+     *
+     * @var array
+     */
+    protected $validationMessages = [
+        'email' => 'Field must be valid email.',
+        'phone' => 'Field must be valid phone number.',
+        'weight' => 'Weight must be a positive decimal number.',
+        'postal_code' => 'Postal code is not correct.',
+    ];
+
+    /**
      * Actions that are being handled by the controller.
      *
      * @var array
@@ -51,12 +64,6 @@ class Configuration extends Action
      * @var Json
      */
     protected $result;
-    /**
-     * Available controller fields.
-     *
-     * @var array
-     */
-    protected $fields;
     /**
      * @var ConfigurationService
      */
@@ -113,6 +120,65 @@ class Configuration extends Action
     protected function getPacklinkPostData()
     {
         return json_decode(file_get_contents('php://input'), true);
+    }
+
+    /**
+     * Formats a collection on front DTO entity to the response array.
+     *
+     * @param \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\BaseDto[] $entities
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
+    protected function formatDtoEntitiesResponse($entities)
+    {
+        $response = [];
+
+        foreach ($entities as $entity) {
+            $response[] = $entity->toArray();
+        }
+
+        return $this->result->setData($response);
+    }
+
+    /**
+     * Returns a 400 validation error response.
+     *
+     * @param ValidationError[] $errors
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
+    protected function formatValidationErrorResponse($errors)
+    {
+        $response = [];
+
+        foreach ($errors as $error) {
+            $response[$error->field] = $this->getValidationMessage($error->code, $error->field);
+        }
+
+        $this->result->setHttpResponseCode(400);
+
+        return $this->result->setData($response);
+    }
+
+    /**
+     * Returns a validation message for validation error.
+     *
+     * @param string $code
+     * @param string $field
+     *
+     * @return \Magento\Framework\Phrase
+     */
+    protected function getValidationMessage($code, $field)
+    {
+        if ($code === ValidationError::ERROR_REQUIRED_FIELD) {
+            return __('Field is required.');
+        }
+
+        if (in_array($field, ['width', 'length', 'height'])) {
+            return __('Field must be a positive integer.');
+        }
+
+        return __($this->validationMessages[$field]);
     }
 
     /**

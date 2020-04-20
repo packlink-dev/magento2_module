@@ -1,7 +1,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 .pl-main-wrapper {
@@ -67,7 +67,7 @@
 }
 
 .pl-content-wrapper-panel {
-    padding: 0 0 0 20px;
+    padding: 0 10px 0 20px;
     height: 100%;
     position: relative;
     box-sizing: border-box;
@@ -101,7 +101,7 @@
 }
 
 .pl-sidebar-link-wrapper-inner {
-    padding: 10px;
+    padding: 5px;
     background: whitesmoke;
     vertical-align: middle;
     margin: auto;
@@ -167,10 +167,6 @@
 .pl-sidebar-subitem-wrapper.selected {
     background-color: #dcdcdc;
     color: #2095F2;
-}
-
-#pl-default-warehouse-country {
-    background-color: #dcdcdc !important;
 }
 
 .pl-filter-wrapper {
@@ -253,7 +249,6 @@
     padding: 0 !important;
     height: 60px;
     line-height: 60px;
-    border-bottom: 1px solid #dcdcdc;
     color: #5d5d5d;
     font-size: 12px;
 }
@@ -290,22 +285,21 @@
 
 .pl-table-wrapper {
     padding: 0 !important;
-    height: calc(100% - 94px);
+    height: calc(100% - 100px);
     overflow-x: hidden;
     overflow-y: auto;
 }
 
 .pl-table {
-    margin: 0 !important;
-    padding: 0 !important;
     width: 100%;
-    border-spacing: unset !important;
+    border-collapse: separate;
 }
 
 .pl-table-header-wrapper {
     height: 60px;
     padding: 0 !important;
     border-bottom: 1px solid #3595f2;
+    border-right: 2px solid #dcdcdc;
 }
 
 .pl-table-header-wrapper th {
@@ -330,7 +324,7 @@
     box-sizing: border-box;
 }
 
-.pl-table-row-wrapper td {
+.pl-table-row-wrapper td, .pl-table-header-wrapper th {
     border-top: 1px solid #dcdcdc !important;
 }
 
@@ -341,6 +335,10 @@
 .pl-table-header-wrapper > th:last-child, .pl-table-row-wrapper > td:last-child {
     color: #2095F2 !important;
     border-right: 1px solid #dcdcdc !important;
+}
+
+.pl-table-header-wrapper th {
+    border-bottom: 1px solid #dcdcdc;
 }
 
 .pl-table-row-method-title h2 {
@@ -365,8 +363,12 @@
     text-align: center !important;
 }
 
-.pl-tbody tr:last-child td {
+.pl-tbody tr.pl-table-row-wrapper:last-child td {
     border-bottom: 1px solid #dcdcdc !important;
+}
+
+.pl-tbody tr:first-child td {
+    border-top: none !important;
 }
 
 .pl-tbody tr,
@@ -384,7 +386,7 @@
 
 .pl-method-logo {
     max-height: 40px;
-    max-width: 130px;
+    max-width: 100px;
 }
 
 .pl-method-pudo-icon-wrapper {
@@ -800,6 +802,13 @@
     width: 100%;
 }
 
+.pl-form-section-input #pl-default-warehouse-country {
+    padding: 17px 0 0 10px;
+    font-size: 14px;
+    border: 1px solid #dcdcdc;
+    margin-bottom: 0;
+}
+
 .pl-form-section-input-checkbox-label {
     font-size: 14px;
     font-weight: normal !important;
@@ -893,12 +902,12 @@
 
 .pl-footer-copyright-wrapper {
     display: flex;
-    width: 300px;
     justify-content: space-between;
 }
 
 .pl-footer-copyright-wrapper a, .pl-system-info-open-btn {
     color: #2095F2 !important;
+    margin-right: 10px;
 }
 
 .pl-footer-copyright-wrapper p {
@@ -1171,9 +1180,14 @@
     border-radius: 3px;
     position: relative;
     display: none;
-    width: 300px;
+    width: 250px;
     float: right;
     animation: pl-fade-in .5s ease;
+    max-height: calc(100vh - 240px);
+    overflow-x: auto;
+    text-align: justify;
+    z-index: 1;
+    background-color: #fff;
 }
 
 .pl-register-country-title-wrapper {
@@ -1183,8 +1197,7 @@
 
 .pl-register-country-list-wrapper {
     margin-top: 15px;
-    display: flex;
-    justify-content: space-evenly;
+    height: 97%;
 }
 
 .pl-register-country-list-wrapper a {
@@ -1192,13 +1205,26 @@
 }
 
 .pl-country {
+    display: flex;
+    height: 35px;
     width: 30px;
-    line-height: 30px;
+    line-height: 35px;
     border-radius: 50%;
     text-align: center;
     color: #2095f2;
     font-size: 14px;
     text-transform: uppercase;
+    margin-bottom: 5px
+}
+
+.pl-country-logo {
+    width: 60px;
+    margin-left: 15px;
+}
+
+.pl-country-name {
+    white-space: nowrap;
+    margin-left: 15px;
 }
 
 .pl-register-form-close-btn {
@@ -1245,6 +1271,7 @@
     width: inherit;
     padding: 5px;
     height: unset;
+    border: 1px solid #dcdcdc;
 }
 
 .pl-mapping-page-wrapper-equals {
@@ -1703,6 +1730,7 @@ body {
 
 #pl-create-draft-error {
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .pl-login-error-msg {

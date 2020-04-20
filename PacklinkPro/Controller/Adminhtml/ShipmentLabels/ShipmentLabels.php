@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\ShipmentLabels;
@@ -11,11 +11,9 @@ use Magento\Backend\App\Action;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ShipmentLabel;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 class ShipmentLabels extends Action
 {
@@ -40,9 +38,8 @@ class ShipmentLabels extends Action
      *
      * @return \Magento\Framework\Controller\Result\Json
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Exceptions\OrderShipmentDetailsNotFound
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
      */
     public function execute()
     {
@@ -50,26 +47,24 @@ class ShipmentLabels extends Action
         $request = json_decode(file_get_contents('php://input'));
 
         if (property_exists($request, 'orderId')) {
-            /** @var OrderRepositoryService $orderRepository */
-            $orderRepository = ServiceRegister::getService(OrderRepository::CLASS_NAME);
-            $orderDetails = $orderRepository->getOrderDetailsById((int) $request->orderId);
+            /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
+            $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
+            $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId((string)$request->orderId);
 
             if ($orderDetails) {
                 $labels = $orderDetails->getShipmentLabels();
                 if (empty($labels)) {
                     /** @var OrderService $orderService */
                     $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
-                    $labels = $orderService->getShipmentLabels($orderDetails->getShipmentReference());
-                    $labels = array_map(function (ShipmentLabel $label) {
-                        $label->setPrinted(true);
-
-                        return $label;
-                    }, $labels);
-                    $orderDetails->setShipmentLabels($labels);
+                    /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
+                    $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
+                    $labels = $orderService->getShipmentLabels($orderDetails->getReference());
+                    $orderShipmentDetailsService->setLabelsByReference($orderDetails->getReference(), $labels);
                 }
 
                 if (!empty($labels)) {
-                    $orderRepository->saveOrderDetails($orderDetails);
+                    $orderShipmentDetailsService->markLabelPrinted($orderDetails->getReference(), $labels[0]);
+
                     return $result->setData(['labelLink' => $labels[0]->getLink()]);
                 }
             }

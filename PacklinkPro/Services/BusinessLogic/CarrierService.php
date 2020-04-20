@@ -2,11 +2,14 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Services\BusinessLogic;
 
+use Magento\Framework\Module\Dir;
+use Magento\Framework\Module\Dir\Reader;
+use Magento\Framework\View\Asset\Repository;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
 
@@ -17,6 +20,55 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\Shi
  */
 class CarrierService implements ShopShippingMethodService
 {
+    /**
+     * @var Reader
+     */
+    private $moduleReader;
+    /**
+     * @var Repository
+     */
+    protected $assetRepo;
+
+    /**
+     * CarrierService constructor.
+     *
+     * @param Reader $reader
+     * @param Repository $assetRepo
+     */
+    public function __construct(Reader $reader, Repository $assetRepo)
+    {
+        $this->moduleReader = $reader;
+        $this->assetRepo = $assetRepo;
+    }
+
+    /**
+     * Returns carrier logo file path of shipping method with provided ID.
+     * If logo doesn't exist returns default carrier logo.
+     *
+     * @param string $carrierName Name of the carrier.
+     *
+     * @return string Logo file path.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getCarrierLogoFilePath($carrierName)
+    {
+        $carrierLogoDir = $this->moduleReader->getModuleDir(
+            Dir::MODULE_VIEW_DIR,
+            'Packlink_PacklinkPro'
+        ) . '/adminhtml/web/images/carriers/';
+        $carrierLogoFile = strtolower(str_replace(' ', '-', $carrierName)) . '.png';
+
+        $logoPath = $carrierLogoDir . '/' . $carrierLogoFile;
+        if (file_exists($logoPath)) {
+            return $this->assetRepo->getUrl(
+                'Packlink_PacklinkPro::images/carriers/' . $carrierLogoFile
+            );
+        }
+
+        return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/carriers/carrier.jpg');
+    }
+
     /**
      * Adds / Activates shipping method in shop integration.
      *

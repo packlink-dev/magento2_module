@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Order;
@@ -14,19 +14,16 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Magento\Framework\Module\Dir\Reader;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\ShipmentRepository;
 use Magento\Sales\Model\ResourceModel\Order\Shipment\CollectionFactory;
 use Magento\Ui\Component\MassAction\Filter;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\Entity\ShopOrderDetails;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\OrderRepository;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
-use Packlink\PacklinkPro\Model\ShipmentLabel;
-use Packlink\PacklinkPro\Services\BusinessLogic\OrderRepositoryService;
 
 /**
  * Class BulkPrint
@@ -48,10 +45,6 @@ class BulkPrint extends Action
      */
     private $collectionFactory;
     /**
-     * @var Reader
-     */
-    private $moduleReader;
-    /**
      * @var FileFactory
      */
     private $fileFactory;
@@ -60,26 +53,25 @@ class BulkPrint extends Action
      */
     private $shipmentRepository;
     /**
-     * @var OrderRepositoryService
+     * @var OrderShipmentDetailsService
      */
-    private $orderRepositoryService;
+    private $orderShipmentDetailsService;
 
     /**
      * BulkPrint constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Ui\Component\MassAction\Filter $filter
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
+     * @param \Magento\Sales\Model\ResourceModel\Order\Shipment\CollectionFactory $collectionFactory
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
-     * @param \Magento\Framework\Module\Dir\Reader $reader
      * @param \Magento\Framework\App\Response\Http\FileFactory $fileFactory
+     * @param \Magento\Sales\Model\Order\ShipmentRepository $shipmentRepository
      */
     public function __construct(
         Action\Context $context,
         Filter $filter,
         CollectionFactory $collectionFactory,
         Bootstrap $bootstrap,
-        Reader $reader,
         FileFactory $fileFactory,
         ShipmentRepository $shipmentRepository
     ) {
@@ -87,7 +79,6 @@ class BulkPrint extends Action
 
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->moduleReader = $reader;
         $this->fileFactory = $fileFactory;
         $this->shipmentRepository = $shipmentRepository;
 
@@ -128,24 +119,19 @@ class BulkPrint extends Action
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
      * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Exceptions\OrderShipmentDetailsNotFound
      */
     private function bulkPrintShipmentLabels(AbstractCollection $collection)
     {
         $shipmentIds = $collection->getAllIds();
 
-        $tmpDirectory = $this->getTmpDirectory();
-        if (!empty($shipmentIds) && !is_dir($tmpDirectory) && !mkdir($tmpDirectory)) {
-            throw new \RuntimeException(sprintf(__("Directory '%s' was not created"), $tmpDirectory));
-        }
+        $files = $this->saveFilesLocally($shipmentIds);
 
-        $this->saveFilesLocally($shipmentIds);
-
-        if ($this->directoryEmpty($tmpDirectory)) {
+        if (empty($files)) {
             $this->messageManager->addNoticeMessage(__('No Packlink shipment labels available.'));
         } else {
             try {
-                $pdfContent = $this->mergePdfFiles($tmpDirectory);
-                $this->deleteTemporaryFiles($tmpDirectory);
+                $pdfContent = $this->mergePdfFiles($files);
                 $now = date('Y-m-d_H-i-s');
                 $fileName = "Packlink-bulk-shipment-labels_$now.pdf";
 
@@ -173,34 +159,44 @@ class BulkPrint extends Action
      *
      * @param array $shipmentIds Array of shipment IDs.
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @return array
+     *
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Exceptions\OrderShipmentDetailsNotFound
      */
     private function saveFilesLocally(array $shipmentIds)
     {
         $orders = $this->getAllOrderDetails($shipmentIds);
         $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
 
+        $files = [];
         foreach ($orders as $orderDetails) {
             $labels = $orderDetails->getShipmentLabels();
 
             if (empty($labels)) {
                 /** @var OrderService $orderService */
-                $labels = $orderService->getShipmentLabels($orderDetails->getShipmentReference());
-                $labels = array_map(function (ShipmentLabel $label) {
-                    $label->setPrinted(true);
-
-                    return $label;
-                }, $labels);
-                $orderDetails->setShipmentLabels($labels);
-                $this->orderRepositoryService->saveOrderDetails($orderDetails);
+                $labels = $orderService->getShipmentLabels($orderDetails->getReference());
+                $this->getOrderShipmentDetailsService()->setLabelsByReference(
+                    $orderDetails->getReference(),
+                    $labels
+                );
             }
 
             foreach ($labels as $label) {
-                $this->savePDF($label->getLink());
+                $this->getOrderShipmentDetailsService()->markLabelPrinted(
+                    $orderDetails->getReference(),
+                    $label->getLink()
+                );
+
+                $file = $this->savePDF($label->getLink());
+                if ($file) {
+                    $files[] = $file;
+                }
             }
         }
+
+        return $files;
     }
 
     /**
@@ -208,11 +204,9 @@ class BulkPrint extends Action
      *
      * @param array $shipmentIds Array of shipment IDs.
      *
-     * @return ShopOrderDetails[] Array of order details entities..
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @return OrderShipmentDetails[] Array of order details entities..
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getAllOrderDetails(array $shipmentIds)
     {
@@ -226,7 +220,7 @@ class BulkPrint extends Action
                 continue;
             }
 
-            $orderDetails = $this->getOrderRepositoryService()->getOrderDetailsById((int)$shipment->getOrderId());
+            $orderDetails = $this->getOrderShipmentDetailsService()->getDetailsByOrderId((string)$shipment->getOrderId());
             if ($orderDetails !== null) {
                 $orders[] = $orderDetails;
             }
@@ -239,44 +233,40 @@ class BulkPrint extends Action
      * Saves PDF file from provided URL to temporary location on the system.
      *
      * @param string $link
+     *
+     * @return false|string
      */
     private function savePDF($link)
     {
-        $file = fopen($link, 'rb');
-        if ($file) {
-            $tmpFile = fopen($this->getTmpDirectory() . microtime() . '.pdf', 'wb');
-            if ($tmpFile) {
-                while (!feof($file)) {
-                    fwrite($tmpFile, fread($file, 1024 * 8), 1024 * 8);
-                }
+        $data = file_get_contents($link);
 
-                fclose($tmpFile);
-            }
-
-            fclose($file);
+        if ($data === false) {
+            return $data;
         }
+
+        $file = tempnam(sys_get_temp_dir(), 'packlink_pdf_');
+        file_put_contents($file, $data);
+
+        return $file;
     }
 
     /**
-     * Merges all PDF files within provided directory into one PDF.
+     * Merges all PDF files into one PDF.
      *
-     * @param string $pdfDirectory Path to directory that contains PDF files.
+     * @param array $files Array of PDF label files.
      *
      * @return string Merged PDF content.
      *
      * @throws \Zend_Pdf_Exception
      */
-    private function mergePdfFiles($pdfDirectory)
+    private function mergePdfFiles($files)
     {
         $pdf = new \Zend_Pdf();
         $extractor = new \Zend_Pdf_Resource_Extractor();
-        $iterator = new \DirectoryIterator($pdfDirectory);
-        foreach ($iterator as $fileInfo) {
-            if (!$fileInfo->isDot()) {
-                $labelPdf = \Zend_Pdf::load($fileInfo->getPath() . '/' . $fileInfo->getFilename());
-                foreach ($labelPdf->pages as $page) {
-                    $pdf->pages[] = $extractor->clonePage($page);
-                }
+        foreach ($files as $file) {
+            $labelPdf = \Zend_Pdf::load($file);
+            foreach ($labelPdf->pages as $page) {
+                $pdf->pages[] = $extractor->clonePage($page);
             }
         }
 
@@ -284,61 +274,16 @@ class BulkPrint extends Action
     }
 
     /**
-     * Deletes all temporary files created in the process of bulk printing of labels.
+     * Returns an instance of order shipment details service.
      *
-     * @param string $tmpDirectory
+     * @return OrderShipmentDetailsService
      */
-    private function deleteTemporaryFiles($tmpDirectory)
+    private function getOrderShipmentDetailsService()
     {
-        $it = new \RecursiveDirectoryIterator($tmpDirectory, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $files = new \RecursiveIteratorIterator(
-            $it,
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-        foreach ($files as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getRealPath());
-            } else {
-                unlink($file->getRealPath());
-            }
+        if ($this->orderShipmentDetailsService === null) {
+            $this->orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
         }
 
-        rmdir($tmpDirectory);
-    }
-
-    /**
-     * Returns path to temporary directory within module, used for storing shipment labels.
-     *
-     * @return string
-     */
-    private function getTmpDirectory()
-    {
-        return $this->moduleReader->getModuleDir('', 'Packlink_PacklinkPro') . '/tmp/';
-    }
-
-    /**
-     * Checks if a directory is empty.
-     *
-     * @param string $dir Path to directory.
-     *
-     * @return bool Returns TRUE if directory is empty, otherwise returns FALSE.
-     */
-    private function directoryEmpty($dir)
-    {
-        return !(new \FilesystemIterator($dir))->valid();
-    }
-
-    /**
-     * Returns an instance of order repository service.
-     *
-     * @return OrderRepositoryService
-     */
-    private function getOrderRepositoryService()
-    {
-        if ($this->orderRepositoryService === null) {
-            $this->orderRepositoryService = ServiceRegister::getService(OrderRepository::CLASS_NAME);
-        }
-
-        return $this->orderRepositoryService;
+        return $this->orderShipmentDetailsService;
     }
 }

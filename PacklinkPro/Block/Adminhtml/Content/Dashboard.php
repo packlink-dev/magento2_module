@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Block\Adminhtml\Content;
@@ -12,6 +12,7 @@ use Magento\Framework\Module\ModuleListInterface;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\UrlHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
@@ -20,7 +21,7 @@ use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
  *
  * @package Packlink\PacklinkPro\Block\Adminhtml\Content
  */
-class Dashboard extends Template
+class Dashboard extends Content
 {
     /**
      * List of help URLs for different country codes.
@@ -28,10 +29,11 @@ class Dashboard extends Template
      * @var array
      */
     private static $helpUrls = [
-        'ES' => 'https://support-pro.packlink.com/hc/es-es/sections/202755109-Prestashop',
-        'DE' => 'https://support-pro.packlink.com/hc/de/sections/202755109-Prestashop',
-        'FR' => 'https://support-pro.packlink.com/hc/fr-fr/sections/202755109-Prestashop',
-        'IT' => 'https://support-pro.packlink.com/hc/it/sections/202755109-Prestashop',
+        'EN' => 'https://support-pro.packlink.com/hc/en-gb/articles/360011683700-Install-your-Magento-module',
+        'ES' => 'https://support-pro.packlink.com/hc/es-es/articles/360011683700-Instala-tu-m%C3%B3dulo-Magento',
+        'DE' => 'https://support-pro.packlink.com/hc/de',
+        'FR' => 'https://support-pro.packlink.com/hc/fr-fr',
+        'IT' => 'https://support-pro.packlink.com/hc/it',
     ];
     /**
      * List of terms and conditions URLs for different country codes.
@@ -39,26 +41,12 @@ class Dashboard extends Template
      * @var array
      */
     private static $termsAndConditionsUrls = [
+        'EN' => 'https://support-pro.packlink.com/hc/en-gb/articles/360010011480',
         'ES' => 'https://pro.packlink.es/terminos-y-condiciones/',
         'DE' => 'https://pro.packlink.de/agb/',
         'FR' => 'https://pro.packlink.fr/conditions-generales/',
         'IT' => 'https://pro.packlink.it/termini-condizioni/',
     ];
-    /**
-     * List of country names for different country codes.
-     *
-     * @var array
-     */
-    private static $countryNames = [
-        'ES' => 'Spain',
-        'DE' => 'Germany',
-        'FR' => 'France',
-        'IT' => 'Italy',
-    ];
-    /**
-     * @var UrlHelper
-     */
-    private $urlHelper;
     /**
      * @var ModuleListInterface
      */
@@ -80,12 +68,9 @@ class Dashboard extends Template
         ModuleListInterface $moduleList,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($context, $bootstrap, $urlHelper, $data);
 
-        $this->urlHelper = $urlHelper;
         $this->moduleList = $moduleList;
-
-        $bootstrap->initInstance();
     }
 
     /**
@@ -95,7 +80,7 @@ class Dashboard extends Template
      */
     public function getHelpUrl()
     {
-        $locale = $this->getUserLocale();
+        $locale = $this->getUrlLocaleKey();
 
         return self::$helpUrls[$locale];
     }
@@ -107,21 +92,9 @@ class Dashboard extends Template
      */
     public function getTermsAndConditionsUrl()
     {
-        $locale = $this->getUserLocale();
+        $locale = $this->getUrlLocaleKey();
 
         return self::$termsAndConditionsUrls[$locale];
-    }
-
-    /**
-     * Returns warehouse country name.
-     *
-     * @return string
-     */
-    public function getWarehouseCountry()
-    {
-        $locale = $this->getUserLocale();
-
-        return self::$countryNames[$locale];
     }
 
     /**
@@ -135,39 +108,20 @@ class Dashboard extends Template
     }
 
     /**
-     * Returns URL to backend controller that provides data for the configuration page.
-     *
-     * @param string $controllerName Name of the configuration controller.
-     * @param string $action Controller action.
-     *
-     * @return string URL to backend configuration controller.
-     */
-    public function getControllerUrl($controllerName, $action)
-    {
-        return $this->urlHelper->getBackendUrl(
-            'packlink/configuration/' . strtolower($controllerName),
-            [
-                'action' => $action,
-                'ajax' => 1,
-                'form_key' => $this->formKey->getFormKey(),
-            ]
-        );
-    }
-
-    /**
-     * Returns user's country code (locale).
+     * Returns locale for support URLs.
      *
      * @return string
      */
-    private function getUserLocale()
+    private function getUrlLocaleKey()
     {
         /** @var ConfigurationService $configService */
         $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
+        /** @var \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService $countryService */
+        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
 
         $userInfo = $configService->getUserInfo();
-        $locale = 'ES';
-
-        if ($userInfo !== null && array_key_exists($userInfo->country, self::$helpUrls)) {
+        $locale = 'EN';
+        if ($userInfo !== null && $countryService->isBaseCountry($userInfo->country)) {
             $locale = $userInfo->country;
         }
 
