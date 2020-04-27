@@ -9,6 +9,10 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="sales_order_place_after">
+        <observer name="packlink_sales_order_place_before"
+                  instance="Packlink\PacklinkPro\Observer\SalesOrderPlaceBefore"/>
+    </event>
+    <event name="sales_order_place_after">
         <observer name="packlink_sales_order_place_after"
                   instance="Packlink\PacklinkPro\Observer\SalesOrderPlaceAfter"/>
     </event>

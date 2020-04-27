@@ -101,7 +101,7 @@ class ConfigurationService extends Configuration
      */
     public function getCurrentSystemId()
     {
-        return $this->storeManager->getStore()->getId();
+        return '';
     }
 
     /**
@@ -189,6 +189,6 @@ class ConfigurationService extends Configuration
      */
     protected function isSystemSpecific($name)
     {
-        return $name !== 'taskRunnerStatus';
+        return false;
     }
 }
