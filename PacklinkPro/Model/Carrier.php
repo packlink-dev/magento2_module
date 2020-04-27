@@ -234,7 +234,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface
             $data['dest_country_id'],
             $data['dest_postcode'],
             $this->getPackages($data['all_items']),
-            $data['package_value']
+            $data['package_physical_value']
         );
     }
 
