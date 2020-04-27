@@ -3,7 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [1.1.0](https://github.com/packlink-dev/magento2_module/compare/v1.1.0...v1.0.1)
+## [1.1.1](https://github.com/packlink-dev/magento2_module/compare/v1.1.0...v1.1.1)
+### Changed
+- Enable multi-store support in such a way that the same carriers are displayed across all stores, not just in default one.
+- Fix package cost calculation
+- Sever-side validation when drop-off is selected before placing the order.
+
+## [1.1.0](https://github.com/packlink-dev/magento2_module/compare/v1.0.1...v1.1.0)
 ### Changed
 - Updated to the latest Packlink Integration Core v2.0.0. The most important changes:
   * Update interval for shipment details is optimized. Now, the data for active shipments will be updated once a day.
@@ -16,7 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added CSRF checks for webhooks endpoints
 - Added more supported countries for Packlink accounts and shipments.
 
-## [1.0.1](https://github.com/packlink-dev/magento2_module/compare/v1.0.1...v1.0.0)
+## [1.0.1](https://github.com/packlink-dev/magento2_module/compare/v1.0.0...v1.0.1)
 ### Changed
 - Shipment data update interval.
 - Fixed bugs in base repository discovered by the new test suite. 
