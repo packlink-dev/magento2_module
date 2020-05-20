@@ -15,7 +15,9 @@ use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\UrlHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\ShipmentDraftService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
 /**
@@ -86,21 +88,40 @@ class OrderDraft extends Column
             $fieldName = $this->getData('name');
             foreach ($dataSource['data']['items'] as &$item) {
                 $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId($item['entity_id']);
-                if ($orderDetails === null || $orderDetails->getReference() === null) {
-                    continue;
-                }
 
+                /** @var ShipmentDraftService $draftService */
+                $draftService = ServiceRegister::getService(ShipmentDraftService::CLASS_NAME);
+                $draftStatus = $draftService->getDraftStatus($item['entity_id']);
                 $logoUrl = $this->assetRepo->getUrl('Packlink_PacklinkPro::images/logo.png');
+                $element = '';
 
-                if ($orderDetails->isDeleted()) {
-                    $element = '<img class="pl-order-draft-icon" src="' . $logoUrl . '"/>';
-                } else {
-                    $element = html_entity_decode(
-                        '<a href="' . $orderDetails->getShipmentUrl() . '" target="_blank">'
-                        . '<img class="pl-order-draft-icon" src="' . $logoUrl
-                        . '" alt="' . __('View on Packlink PRO') . '" title="' . __('View on Packlink PRO') . '"/>'
-                        . '</a>'
-                    );
+                switch ($draftStatus->status) {
+                    case QueueItem::COMPLETED:
+                        if ($orderDetails) {
+                            $deleted = $orderShipmentDetailsService->isShipmentDeleted($orderDetails->getReference());
+
+                            $element = html_entity_decode(
+                                '<a class="pl-draft-button-wrapper" ' . ($deleted ? 'disable ' : 'href="' . $orderDetails->getShipmentUrl() . '" target="_blank" ') . '>'
+                                . '<button class="pl-draft-button" ' . ($deleted ? 'disabled ' : '' ) . '><img class="pl-order-draft-icon" src="' . $logoUrl . '" alt=""/>'
+                                . __('View on Packlink')
+                                . '</button></a>'
+                            );
+                        }
+
+                        break;
+                    case QueueItem::QUEUED:
+                    case QueueItem::IN_PROGRESS:
+                        $element = '<div class="pl-draft-in-progress" data-order-id="' . $item['entity_id'] . '">'
+                            . __('Draft is currently being created in Packlink PRO')
+                            . '</div>';
+                        break;
+                    case QueueItem::ABORTED:
+                        $element = __('Previous attempt to create a draft was aborted.') . ' ' . $draftStatus->message;
+                        break;
+                    default:
+                        $element = '<button class="pl-create-draft-button" data-order-id="' . $item['entity_id'] . '"><img class="pl-order-draft-icon" src="' .$logoUrl . '" alt="">'
+                            . __('Send with Packlink')
+                            . '</button>';
                 }
 
                 $item[$fieldName] = $element;

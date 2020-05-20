@@ -1589,8 +1589,27 @@
     display: none;
 }
 
+.pl-draft-button-wrapper {
+    text-decoration: none !important;
+}
+
+.pl-draft-button,
+.pl-create-draft-button {
+    display: flex;
+    background-color: #ffffff;
+    line-height: 3rem;
+    font-size: 1.1rem;
+    width: 16rem;
+}
+
+.pl-draft-button:focus,
+.pl-create-draft-button:focus {
+    background-color: #ffffff;
+}
+
 .pl-order-draft-icon {
-    width: 50px;
+    width: 3rem;
+    margin-right: 0.2rem;
 }
 
 .pl-print-label-button {
