@@ -112,7 +112,7 @@ class OrderDraft extends Column
                     case QueueItem::QUEUED:
                     case QueueItem::IN_PROGRESS:
                         $element = '<div onload="draftInProgressInit(this)" class="pl-draft-in-progress" data-order-id="' . $item['entity_id'] . '">'
-                            . __('Draft is currently being created in Packlink PRO')
+                            . __('Draft is currently being created.')
                             . '<script type="text/javascript">draftInProgressInit("' . $item['entity_id'] . '");</script>'
                             . '</div>';
                         break;
