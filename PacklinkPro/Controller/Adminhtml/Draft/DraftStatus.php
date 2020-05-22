@@ -72,7 +72,7 @@ class DraftStatus extends Action
             return $result->setData(
                 [
                     'status' => 'created',
-                    'message' => $shipmentDetails->getShipmentUrl(),
+                    'shipment_url' => $shipmentDetails->getShipmentUrl(),
                 ]
             );
         }
