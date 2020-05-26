@@ -111,16 +111,13 @@ class OrderDraft extends Column
                         break;
                     case QueueItem::QUEUED:
                     case QueueItem::IN_PROGRESS:
-                        $element = '<div onload="draftInProgressInit(this)" class="pl-draft-in-progress" data-order-id="' . $item['entity_id'] . '">'
+                        $element = '<div class="pl-draft-in-progress" data-order-id="' . $item['entity_id'] . '">'
                             . __('Draft is currently being created.')
-                            . '<script type="text/javascript">draftInProgressInit("' . $item['entity_id'] . '");</script>'
+                            . '<script type="text/javascript">plDraftInProgressInit("' . $item['entity_id'] . '");</script>'
                             . '</div>';
                         break;
-                    case QueueItem::ABORTED:
-                        $element = __('Previous attempt to create a draft was aborted.') . ' ' . $draftStatus->message;
-                        break;
                     default:
-                        $element = '<button onClick="createDraftClick(event)" class="pl-create-draft-button" data-order-id="' . $item['entity_id'] . '"><img class="pl-order-draft-icon" src="' .$logoUrl . '" alt="">'
+                        $element = '<button onClick="plCreateDraftClick(event)" class="pl-create-draft-button" data-order-id="' . $item['entity_id'] . '"><img class="pl-order-draft-icon" src="' .$logoUrl . '" alt="">'
                             . __('Send with Packlink')
                             . '</button>';
                 }

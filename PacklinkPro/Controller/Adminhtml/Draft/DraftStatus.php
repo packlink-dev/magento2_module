@@ -77,15 +77,9 @@ class DraftStatus extends Action
             );
         }
 
-        $response = [
+        return $result->setData([
             'status' => $draftStatus->status,
             'shipment_url' => '',
-        ];
-
-        if ($draftStatus->status === QueueItem::ABORTED) {
-            $response['message'] = $draftStatus->message;
-        }
-
-        return $result->setData($response);
+        ]);
     }
 }

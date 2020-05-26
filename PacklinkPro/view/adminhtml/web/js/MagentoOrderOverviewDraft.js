@@ -4,38 +4,36 @@ let createDraftEndpoint,
     checkDraftStatusEndpoint,
     draftInProgressMessage,
     draftFailedMessage,
-    draftAbortedMessage,
     draftButtonTemplate,
     createDraftTemplate;
 
-function initializeFields() {
+function plInitializeFields() {
     createDraftEndpoint = document.querySelector('#pl-create-endpoint');
     checkDraftStatusEndpoint = document.querySelector('#pl-check-status');
     draftInProgressMessage = document.querySelector('#pl-draft-in-progress');
     draftFailedMessage = document.querySelector('#pl-draft-failed');
-    draftAbortedMessage = document.querySelector('#pl-draft-aborted');
     draftButtonTemplate = document.querySelector('#pl-draft-button-template');
     createDraftTemplate = document.querySelector('#pl-create-draft-template');
 }
 
-function createDraftClick(event) {
-    initializeFields();
+function plCreateDraftClick(event) {
+    plInitializeFields();
 
     event.preventDefault();
 
-    createDraft(event.target);
+    plCreateDraft(event.target);
 }
 
-function draftInProgressInit(orderId) {
-    initializeFields();
+function plDraftInProgressInit(orderId) {
+    plInitializeFields();
 
     let element = document.querySelector('.pl-draft-in-progress[data-order-id="' + orderId + '"]'),
         parent = element.parentElement;
 
-    checkDraftStatus(parent, orderId);
+    plCheckDraftStatus(parent, orderId);
 }
 
-function createDraft(createDraftButton) {
+function plCreateDraft(createDraftButton) {
     let orderId = parseInt(createDraftButton.getAttribute('data-order-id')),
         buttonParent = createDraftButton.parentElement;
 
@@ -43,13 +41,13 @@ function createDraft(createDraftButton) {
     buttonParent.innerText = draftInProgressMessage.value;
 
     Packlink.ajaxService.post(createDraftEndpoint.value, {orderId: orderId}, function () {
-        checkDraftStatus(buttonParent, orderId);
+        plCheckDraftStatus(buttonParent, orderId);
     });
 }
 
-function checkDraftStatus(parent, orderId) {
+function plCheckDraftStatus(parent, orderId) {
     clearTimeout(function () {
-        checkDraftStatus(parent, orderId);
+        plCheckDraftStatus(parent, orderId);
     });
 
     Packlink.ajaxService.get(checkDraftStatusEndpoint.value + '?orderId=' + orderId, function (response) {
@@ -62,24 +60,22 @@ function checkDraftStatus(parent, orderId) {
 
             parent.innerHTML = '';
             parent.appendChild(viewDraftButton);
-        } else if (response.status === 'failed') {
+        } else if (['failed', 'aborted'].includes(response.status)) {
             parent.innerText = draftFailedMessage.value;
             setTimeout(function () {
-                displayCreateDraftButton(parent, orderId)
+                plDisplayCreateDraftButton(parent, orderId)
             }, 5000)
-        } else if (response.status === 'aborted') {
-            parent.innerText = draftAbortedMessage.value + ' ' + response.message;
         } else {
             setTimeout(function () {
-                checkDraftStatus(parent, orderId)
+                plCheckDraftStatus(parent, orderId)
             }, 1000);
         }
     });
 }
 
-function displayCreateDraftButton(parent, orderId) {
+function plDisplayCreateDraftButton(parent, orderId) {
     clearTimeout(function () {
-        displayCreateDraftButton(parent, orderId)
+        plDisplayCreateDraftButton(parent, orderId)
     });
 
     let createDraftButton = createDraftTemplate.cloneNode(true);
@@ -91,7 +87,7 @@ function displayCreateDraftButton(parent, orderId) {
     createDraftButton.addEventListener('click', function (event) {
         event.preventDefault();
 
-        createDraft(createDraftButton);
+        plCreateDraft(createDraftButton);
     });
 
     parent.innerHTML = '';
