@@ -3,12 +3,12 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_order_place_after">
+    <event name="sales_order_place_before">
         <observer name="packlink_sales_order_place_before"
                   instance="Packlink\PacklinkPro\Observer\SalesOrderPlaceBefore"/>
     </event>
