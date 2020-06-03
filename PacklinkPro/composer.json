@@ -2,7 +2,7 @@
   "name": "packlink/magento2",
   "description": "Save up to 70% on your shipping costs. No fixed fees, no minimum shipping volume required. Manage all your shipments in a single platform.",
   "type": "magento2-module",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "license": [
     "OSL-3.0",
     "AFL-3.0"

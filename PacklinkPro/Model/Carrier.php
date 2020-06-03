@@ -10,7 +10,6 @@
 namespace Packlink\PacklinkPro\Model;
 
 use Magento\Quote\Model\Quote\Address\RateRequest;
-use Magento\Quote\Model\Quote\Item;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
@@ -233,7 +232,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface
             $warehouse->postalCode,
             $data['dest_country_id'],
             $data['dest_postcode'],
-            $this->getPackages($data['all_items']),
+            $this->getPackages($data['package_weight'], $data['package_qty'] ?: 1),
             $data['package_physical_value']
         );
     }
@@ -241,21 +240,23 @@ class Carrier extends AbstractCarrier implements CarrierInterface
     /**
      * Returns prepared packages for shipping cost calculation.
      *
-     * @param Item[] $items Array of order items.
+     * @param float $weight Total order weight.
+     * @param float $quantity Number of packages.
      *
      * @return Package[] Array of Packlink package entities.
      */
-    private function getPackages($items)
+    private function getPackages($weight, $quantity)
     {
         /** @var ConfigurationService $configService */
         $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
 
         $parcel = $configService->getDefaultParcel() ?: ParcelInfo::defaultParcel();
         $packages = [];
+        $weight = $weight ? $weight : $parcel->weight;
 
-        foreach ($items as $item) {
+        for ($i = 0; $i < $quantity; $i++) {
             $packages[] = new Package(
-                $item->getWeight() ?: $parcel->weight,
+                round($weight / $quantity, 2),
                 $parcel->width,
                 $parcel->height,
                 $parcel->length
