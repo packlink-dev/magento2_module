@@ -1,0 +1,33 @@
+<?php
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2020 Packlink
+ */
+
+/** @var Packlink\PacklinkPro\Block\Adminhtml\Order\Index\HiddenFields $block */
+?>
+
+<div class="pl-hidden-fields-container">
+    <input type="hidden" id="pl-create-endpoint"
+           value="<?= $block->escapeUrl($block->getDraftControllerUrl()) ?>"/>
+    <input type="hidden" id="pl-check-status"
+           value="<?= $block->escapeUrl($block->getDraftStatusUrl()) ?>"/>
+
+    <input type="hidden" id="pl-draft-in-progress"
+           value="<?= $block->escapeQuote(__('Draft is currently being created.')) ?>"/>
+    <input type="hidden" id="pl-draft-failed"
+           value="<?= $block->escapeQuote(__('Previous attempt to create a draft failed.')) ?>"/>
+
+    <a target="_blank" id="pl-draft-button-template" href="#" class="pl-draft-button-wrapper hidden">
+        <button class="pl-draft-button">
+            <img class="pl-order-draft-icon" src="<?= $block->escapeUrl($block->getLogoPath()) ?>" alt="">
+            <?= $block->escapeQuote(__('View on Packlink')) ?>
+        </button>
+    </a>
+
+    <button id="pl-create-draft-template" class="button pl-create-draft-button hidden">
+        <img class="pl-order-draft-icon" src="<?= $block->escapeUrl($block->getLogoPath()) ?>" alt="">
+        <?= $block->escapeQuote(__('Send with Packlink')) ?>
+    </button>
+</div>
