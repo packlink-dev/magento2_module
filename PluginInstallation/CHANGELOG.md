@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Fix issue with parcel price calculation.
 
+## [1.1.4](https://github.com/packlink-dev/magento2_module/compare/v1.1.1...v1.1.4)
+### Added
+- Added Hungary to the list of supported countries.
+
 ## [1.1.1](https://github.com/packlink-dev/magento2_module/compare/v1.1.0...v1.1.1)
 ### Changed
 - Enable multi-store support in such a way that the same carriers are displayed across all stores, not just in default one.

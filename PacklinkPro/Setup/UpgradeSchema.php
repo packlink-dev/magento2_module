@@ -69,6 +69,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '1.1.0', '<')) {
             $this->upgradeTo110($setup);
         }
+
+        if (version_compare($context->getVersion(), '1.1.4', '<')) {
+            $this->upgradeTo114($setup);
+        }
     }
 
     /**
@@ -162,6 +166,26 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             throw $e;
         }
+    }
+
+    /**
+     * Runs the upgrade script for v1.1.4.
+     *
+     * @param SchemaSetupInterface $setup
+     *
+     * @throws \Exception
+     */
+    protected function upgradeTo114(SchemaSetupInterface $setup)
+    {
+        Logger::logInfo('Started executing V1.1.4 update script.');
+
+        $installer = $setup->startSetup();
+
+        $databaseHandler = new DatabaseHandler($installer);
+
+        $databaseHandler->addAdditionalIndex();
+
+        Logger::logInfo('Update script V1.1.4 has been successfully completed.');
     }
 
     /**
