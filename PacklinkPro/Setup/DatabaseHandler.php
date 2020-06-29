@@ -138,7 +138,7 @@ class DatabaseHandler
 
         if ($this->installer->getConnection()->isTableExists($entityTable)) {
             $this->installer->getConnection()->addColumn(
-                InstallSchema::PACKLINK_ENTITY_TABLE,
+                $entityTable,
                 'index_8',
                 [
                     'type' => Table::TYPE_TEXT,
