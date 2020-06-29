@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.1.4](https://github.com/packlink-dev/magento2_module/compare/v1.1.3...v1.1.4)
+### Added
+- Added Hungary to the list of supported countries.
+
 ## [1.1.3](https://github.com/packlink-dev/magento2_module/compare/v1.1.2...v1.1.3)
 ### Added
 - Added "Send with Packlink" button on order overview page. 
@@ -13,10 +17,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [1.1.2](https://github.com/packlink-dev/magento2_module/compare/v1.1.1...v1.1.2)
 ### Changed
 - Fix issue with parcel price calculation.
-
-## [1.1.4](https://github.com/packlink-dev/magento2_module/compare/v1.1.1...v1.1.4)
-### Added
-- Added Hungary to the list of supported countries.
 
 ## [1.1.1](https://github.com/packlink-dev/magento2_module/compare/v1.1.0...v1.1.1)
 ### Changed
