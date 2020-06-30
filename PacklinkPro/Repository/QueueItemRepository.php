@@ -11,6 +11,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Interfaces\QueueItemRepository as QueueItemRepositoryInterface;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueItemSaveException;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Interfaces\Priority;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 use Packlink\PacklinkPro\ResourceModel\QueueItemEntity;
 
@@ -32,14 +33,19 @@ class QueueItemRepository extends BaseRepository implements QueueItemRepositoryI
      *      - Queue must be without already running queue items
      *      - For one queue only one (oldest queued) item should be returned
      *
+     * @param int $priority Queue item priority.
      * @param int $limit Result set limit. By default max 10 earliest queue items will be returned
      *
      * @return QueueItem[] Found queue item list
      *
      * @throws QueryFilterInvalidParamException
      */
-    public function findOldestQueuedItems($limit = 10)
+    public function findOldestQueuedItems($priority, $limit = 10)
     {
+        if ($priority !== Priority::NORMAL) {
+            return [];
+        }
+
         $queuedItems = [];
         $entity = new $this->entityClass;
 

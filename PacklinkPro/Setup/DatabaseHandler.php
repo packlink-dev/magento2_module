@@ -111,6 +111,13 @@ class DatabaseHandler
                     'Index7'
                 )
                 ->addColumn(
+                    'index_8',
+                    Table::TYPE_TEXT,
+                    255,
+                    ['default' => null, 'nullable' => true],
+                    'Index8'
+                )
+                ->addColumn(
                     'data',
                     Table::TYPE_TEXT,
                     Table::MAX_TEXT_SIZE,
@@ -119,6 +126,27 @@ class DatabaseHandler
                 );
 
             $this->installer->getConnection()->createTable($entityTable);
+        }
+    }
+
+    /**
+     * Adds additional index column to the Packlink entity table.
+     */
+    public function addAdditionalIndex()
+    {
+        $entityTable = $this->installer->getTable(InstallSchema::PACKLINK_ENTITY_TABLE);
+
+        if ($this->installer->getConnection()->isTableExists($entityTable)) {
+            $this->installer->getConnection()->addColumn(
+                $entityTable,
+                'index_8',
+                [
+                    'type' => Table::TYPE_TEXT,
+                    'size' => 255,
+                    'nullable' => true,
+                    'comment' => 'Index8',
+                ]
+            );
         }
     }
 

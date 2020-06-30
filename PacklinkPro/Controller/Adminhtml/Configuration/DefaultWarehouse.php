@@ -97,6 +97,7 @@ class DefaultWarehouse extends Configuration
         $supportedCountries = $countryService->getSupportedCountries();
 
         foreach ($supportedCountries as $country) {
+            $country->registrationLink = str_replace('magento', 'pro', $country->registrationLink);
             $country->name = __($country->name);
         }
 
