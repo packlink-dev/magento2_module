@@ -214,8 +214,8 @@ class ShopOrderService implements ShopOrderServiceInterface
             return;
         }
 
-        if (!empty($stateMappings[$shippingStatus]) && $order->getState() !== $stateMappings[$shippingStatus]) {
-            $order->setState($stateMappings[$shippingStatus]);
+        if (!empty($stateMappings[$shippingStatus]) && $order->getStatus() !== $stateMappings[$shippingStatus]) {
+            $order->setStatus($stateMappings[$shippingStatus]);
             $this->orderRepository->save($order);
         }
     }
