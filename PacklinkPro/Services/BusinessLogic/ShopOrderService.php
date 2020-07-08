@@ -529,7 +529,10 @@ class ShopOrderService implements ShopOrderServiceInterface
         $sourceStreet = $sourceAddress->getStreet();
         if (is_array($sourceStreet)) {
             $addressLine1 = $sourceStreet[0];
-            $addressLine2 = count($sourceStreet) > 1 ? $sourceStreet[1] : '';
+            if (count($sourceStreet) > 1) {
+                $addressLine2 .= !empty($sourceStreet[1]) ? $sourceStreet[1] : '';
+                $addressLine2 .= !empty($sourceStreet[2]) ? ' ' . $sourceStreet[2] : '';
+            }
         }
 
         $shippingAddress->setZipCode($sourceAddress->getPostcode());
