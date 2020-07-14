@@ -228,6 +228,11 @@ class BaseRepository implements RepositoryInterface
     private function deserializeEntity($data)
     {
         $jsonEntity = json_decode($data, true);
+
+        if (empty($jsonEntity)) {
+            return null;
+        }
+
         if (array_key_exists('class_name', $jsonEntity)) {
             $entity = new $jsonEntity['class_name'];
         } else {

@@ -34,6 +34,10 @@ function plDraftInProgressInit(orderId) {
 }
 
 function plCreateDraft(createDraftButton) {
+    if (!createDraftButton.hasAttribute('data-order-id')) {
+        createDraftButton = createDraftButton.parentElement;
+    }
+
     let orderId = parseInt(createDraftButton.getAttribute('data-order-id')),
         buttonParent = createDraftButton.parentElement;
 

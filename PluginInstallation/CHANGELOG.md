@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.1.5](https://github.com/packlink-dev/magento2_module/compare/v1.1.4...v1.1.5)
+### Added
+- Add task runner wakeup on the order overview page.
+- Add third address line when creating order shipment draft.
+
 ## [1.1.4](https://github.com/packlink-dev/magento2_module/compare/v1.1.3...v1.1.4)
 ### Added
 - Added Hungary to the list of supported countries.
