@@ -19,6 +19,7 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\ShipmentDra
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Interfaces\TaskRunnerWakeup;
 
 /**
  * Class OrderDraft
@@ -74,6 +75,10 @@ class OrderDraft extends Column
      */
     public function prepareDataSource(array $dataSource)
     {
+        /** @var TaskRunnerWakeup $wakeupService */
+        $wakeupService = ServiceRegister::getService(TaskRunnerWakeup::CLASS_NAME);
+        $wakeupService->wakeup();
+
         if (isset($dataSource['data']['items'])) {
             /** @var ConfigurationService $configService */
             $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
