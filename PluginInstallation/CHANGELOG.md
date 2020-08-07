@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.1.6](https://github.com/packlink-dev/magento2_module/compare/v1.1.5...v1.1.6)
+### Added
+- Compatibility with Magento 2.4.
+
 ## [1.1.5](https://github.com/packlink-dev/magento2_module/compare/v1.1.4...v1.1.5)
 ### Added
 - Add task runner wakeup on the order overview page.
