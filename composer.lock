@@ -4,27 +4,29 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7aa3be50c3b0dd8ae6596d742499699",
+    "content-hash": "547edcde3c4a116cb685e8ec8e545213",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "2.1.3",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "645d1641ba013b9cfaf3abb99b4ee828b41eb9c3"
+                "reference": "bd094e1abde010bbbb0ed2e4ca7be1fec009f4da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/645d1641ba013b9cfaf3abb99b4ee828b41eb9c3",
-                "reference": "645d1641ba013b9cfaf3abb99b4ee828b41eb9c3",
+                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/bd094e1abde010bbbb0ed2e4ca7be1fec009f4da",
+                "reference": "bd094e1abde010bbbb0ed2e4ca7be1fec009f4da",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "php": ">=5.3.29"
             },
             "require-dev": {
                 "codacy/coverage": "dev-master",
+                "leafo/scssphp": "0.0.12",
                 "phpunit/phpunit": "^4.8"
             },
             "type": "library",
@@ -40,11 +42,19 @@
                     "Logeecom\\Tests\\BusinessLogic\\": "tests/BusinessLogic"
                 }
             },
+            "scripts": {
+                "post-update-cmd": [
+                    "php cssCompile.php"
+                ],
+                "post-install-cmd": [
+                    "php cssCompile.php"
+                ]
+            },
             "license": [
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2020-06-29T07:52:43+00:00"
+            "time": "2020-08-25T14:17:02+00:00"
         }
     ],
     "packages-dev": [
@@ -557,6 +567,7 @@
             "keywords": [
                 "tokenizer"
             ],
+            "abandoned": true,
             "time": "2017-12-04T08:55:13+00:00"
         },
         {

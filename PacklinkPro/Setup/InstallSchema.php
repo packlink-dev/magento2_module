@@ -86,6 +86,7 @@ class InstallSchema implements InstallSchemaInterface
                         ShipmentStatus::STATUS_READY => Order::STATE_PROCESSING,
                         ShipmentStatus::STATUS_IN_TRANSIT => Order::STATE_PROCESSING,
                         ShipmentStatus::STATUS_DELIVERED => Order::STATE_COMPLETE,
+                        ShipmentStatus::STATUS_CANCELLED => Order::STATE_CANCELED,
                     ]
                 );
             }

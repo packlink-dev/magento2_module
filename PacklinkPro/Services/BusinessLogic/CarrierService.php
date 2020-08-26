@@ -56,17 +56,17 @@ class CarrierService implements ShopShippingMethodService
         $carrierLogoDir = $this->moduleReader->getModuleDir(
             Dir::MODULE_VIEW_DIR,
             'Packlink_PacklinkPro'
-        ) . '/adminhtml/web/images/carriers/';
+        ) . '/adminhtml/web/packlink/images/carriers/';
         $carrierLogoFile = strtolower(str_replace(' ', '-', $carrierName)) . '.png';
 
         $logoPath = $carrierLogoDir . '/' . $carrierLogoFile;
         if (file_exists($logoPath)) {
             return $this->assetRepo->getUrl(
-                'Packlink_PacklinkPro::images/carriers/' . $carrierLogoFile
+                'Packlink_PacklinkPro::packlink/images/carriers/' . $carrierLogoFile
             );
         }
 
-        return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/carriers/carrier.jpg');
+        return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/carrier.jpg');
     }
 
     /**
@@ -120,6 +120,16 @@ class CarrierService implements ShopShippingMethodService
      * @return bool TRUE if backup shipping method is deleted; otherwise, FALSE.
      */
     public function deleteBackupShippingMethod()
+    {
+        return true;
+    }
+
+    /**
+     * Disables shop shipping services/carriers.
+     *
+     * @return boolean TRUE if operation succeeded; otherwise, false.
+     */
+    public function disableShopServices()
     {
         return true;
     }
