@@ -10,11 +10,10 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\LocationsController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\WarehouseController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\RegistrationRegionsController as CountryController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Location\LocationService;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Warehouse\WarehouseService;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
  * Class DefaultWarehouse
@@ -23,6 +22,19 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
  */
 class DefaultWarehouse extends Configuration
 {
+    /**
+     * @var WarehouseController
+     */
+    private $baseController;
+    /**
+     * @var LocationsController
+     */
+    private $locationsController;
+    /**
+     * @var CountryController
+     */
+    private $countryController;
+
     /**
      * DefaultWarehouse constructor.
      *
@@ -43,6 +55,10 @@ class DefaultWarehouse extends Configuration
             'getSupportedCountries',
             'searchPostalCodes',
         ];
+
+        $this->baseController = new WarehouseController();
+        $this->locationsController = new LocationsController();
+        $this->countryController = new CountryController();
     }
 
     /**
@@ -52,12 +68,9 @@ class DefaultWarehouse extends Configuration
      */
     protected function getDefaultWarehouse()
     {
-        /** @var WarehouseService $warehouseService */
-        $warehouseService = ServiceRegister::getService(WarehouseService::CLASS_NAME);
+        $warehouse = $this->baseController->getWarehouse();
 
-        $warehouse = $warehouseService->getWarehouse();
-
-        return $this->result->setData($warehouse->toArray());
+        return $this->result->setData($warehouse ? $warehouse->toArray() : []);
     }
 
     /**
@@ -73,16 +86,13 @@ class DefaultWarehouse extends Configuration
         $data = $this->getPacklinkPostData();
         $data['default'] = true;
 
-        /** @var WarehouseService $warehouseService */
-        $warehouseService = ServiceRegister::getService(WarehouseService::CLASS_NAME);
-
         try {
-            $warehouse = $warehouseService->updateWarehouseData($data);
-
-            return $this->result->setData($warehouse->toArray());
+            $warehouse = $this->baseController->updateWarehouse($data);
         } catch (FrontDtoValidationException $e) {
             return $this->formatValidationErrorResponse($e->getValidationErrors());
         }
+
+        return $this->result->setData($warehouse->toArray());
     }
 
     /**
@@ -92,16 +102,9 @@ class DefaultWarehouse extends Configuration
      */
     public function getSupportedCountries()
     {
-        /** @var CountryService $countryService */
-        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
-        $supportedCountries = $countryService->getSupportedCountries();
+        $countries = $this->countryController->getRegions();
 
-        foreach ($supportedCountries as $country) {
-            $country->registrationLink = str_replace('magento', 'pro', $country->registrationLink);
-            $country->name = __($country->name);
-        }
-
-        return $this->formatDtoEntitiesResponse($supportedCountries);
+        return $this->formatDtoEntitiesResponse($countries);
     }
 
     /**
@@ -117,10 +120,8 @@ class DefaultWarehouse extends Configuration
             return $this->result;
         }
 
-        /** @var LocationService $locationService */
-        $locationService = ServiceRegister::getService(LocationService::CLASS_NAME);
         try {
-            $locations = $locationService->searchLocations($input['country'], $input['query']);
+            $locations = $this->locationsController->searchLocations($input);
         } catch (\Exception $e) {
             return $this->result;
         }

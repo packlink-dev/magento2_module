@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -17,6 +17,7 @@ use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\ValidationError;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ConfigurationController;
 
 /**
  * Class Configuration
@@ -37,6 +38,11 @@ class Configuration extends Action
         'defaultwarehouse',
         'orderstatemapping',
         'shippingmethods',
+        'modulestate',
+        'onboarding',
+        'login',
+        'registrationregions',
+        'registration',
     ];
     /**
      * Translation messages for fields that are being validated.
@@ -68,7 +74,18 @@ class Configuration extends Action
      * @var ConfigurationService
      */
     private $configService;
+    /**
+     * @var ConfigurationController
+     */
+    private $baseController;
 
+    /**
+     * Configuration constructor.
+     *
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
+     * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
+     */
     public function __construct(
         Context $context,
         Bootstrap $bootstrap,
@@ -78,6 +95,9 @@ class Configuration extends Action
 
         $this->resultJsonFactory = $jsonFactory;
         $this->result = $this->resultJsonFactory->create();
+        $this->baseController = new ConfigurationController();
+
+        $this->allowedActions = ['getData'];
 
         $bootstrap->initInstance();
     }
@@ -113,6 +133,21 @@ class Configuration extends Action
     }
 
     /**
+     * Returns data for the configuration page.
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
+    protected function getData()
+    {
+        return $this->result->setData(
+            [
+                'helpUrl' => $this->baseController->getHelpLink(),
+                'version' => $this->getConfigService()->getModuleVersion(),
+            ]
+        );
+    }
+
+    /**
      * Returns post data from Packlink request.
      *
      * @return array
@@ -125,7 +160,7 @@ class Configuration extends Action
     /**
      * Formats a collection on front DTO entity to the response array.
      *
-     * @param \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\BaseDto[] $entities
+     * @param \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\BaseDto[]|\Packlink\PacklinkPro\IntegrationCore\Infrastructure\Data\DataTransferObject[] $entities
      *
      * @return \Magento\Framework\Controller\Result\Json
      */
@@ -158,6 +193,18 @@ class Configuration extends Action
         $this->result->setHttpResponseCode(400);
 
         return $this->result->setData($response);
+    }
+
+    /**
+     * Returns a 404 not found error response.
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
+    protected function formatNotFoundResponse()
+    {
+        $this->result->setHttpResponseCode(Exception::HTTP_NOT_FOUND);
+
+        return $this->result->setData(['message' => _('Not found')]);
     }
 
     /**

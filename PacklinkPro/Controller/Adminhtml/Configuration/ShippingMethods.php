@@ -15,6 +15,7 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingM
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DTO\ShippingMethodResponse;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ShippingMethodController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\UpdateShippingServicesTaskStatusController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Exceptions\BaseException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 
@@ -28,7 +29,7 @@ class ShippingMethods extends Configuration
     /**
      * @var ShippingMethodController
      */
-    private $controller;
+    private $baseController;
 
     /**
      * ShippingMethods constructor.
@@ -43,9 +44,13 @@ class ShippingMethods extends Configuration
         JsonFactory $jsonFactory
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
+        $this->baseController = new ShippingMethodController();
 
         $this->allowedActions = [
             'getAll',
+            'getActive',
+            'getInactive',
+            'getShippingMethod',
             'activate',
             'deactivate',
             'save',
@@ -58,9 +63,50 @@ class ShippingMethods extends Configuration
      */
     protected function getAll()
     {
-        $shippingMethods = $this->getShippingMethodController()->getAll();
+        $shippingMethods = $this->baseController->getAll();
 
         return $this->formatDtoEntitiesResponse($shippingMethods);
+    }
+
+    /**
+     * Returns active shipping methods.
+     */
+    protected function getActive()
+    {
+        $shippingMethods = $this->baseController->getActive();
+
+        return $this->formatDtoEntitiesResponse($shippingMethods);
+    }
+
+    /**
+     * Returns inactive shipping methods.
+     */
+    protected function getInactive()
+    {
+        $shippingMethods = $this->baseController->getInactive();
+
+        return $this->formatDtoEntitiesResponse($shippingMethods);
+    }
+
+    /**
+     * Returns a single shipping method identified by the provided ID.
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
+    protected function getShippingMethod()
+    {
+        $request = $this->getRequest();
+
+        if (!$request->getParam('id')) {
+            return $this->formatNotFoundResponse();
+        }
+
+        $shippingMethod = $this->baseController->getShippingMethod($request->getParam('id'));
+        if ($shippingMethod === null) {
+            return $this->formatNotFoundResponse();
+        }
+
+        return $this->result->setData($shippingMethod->toArray());
     }
 
     /**
@@ -87,7 +133,7 @@ class ShippingMethods extends Configuration
     {
         $data = $this->getPacklinkPostData();
 
-        if (!$data['id'] || !$this->getShippingMethodController()->activate((int)$data['id'])) {
+        if (!$data['id'] || !$this->baseController->activate((int)$data['id'])) {
             $this->result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
 
             return $this->result->setData(['message' => __('Failed to select shipping method.')]);
@@ -105,7 +151,7 @@ class ShippingMethods extends Configuration
     {
         $data = $this->getPacklinkPostData();
 
-        if (!$data['id'] || !$this->getShippingMethodController()->deactivate((int)$data['id'])) {
+        if (!$data['id'] || !$this->baseController->deactivate((int)$data['id'])) {
             $this->result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
 
             return $this->result->setData(['message' => __('Failed to deselect shipping method.')]);
@@ -114,12 +160,21 @@ class ShippingMethods extends Configuration
         return $this->result->setData(['message' => __('Shipping method successfully deselected.')]);
     }
 
+    /**
+     * Saves shipping method.
+     *
+     * @return \Magento\Framework\Controller\Result\Json
+     */
     protected function save()
     {
-        $configuration = $this->getShippingMethodConfiguration();
+        try {
+            $configuration = $this->getShippingMethodConfiguration();
+        } catch (FrontDtoValidationException $e) {
+            return $this->formatValidationErrorResponse($e->getValidationErrors());
+        }
 
         /** @var ShippingMethodResponse $model */
-        $model = $this->getShippingMethodController()->save($configuration);
+        $model = $this->baseController->save($configuration);
         if ($model === null) {
             $this->result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
 
@@ -130,13 +185,11 @@ class ShippingMethods extends Configuration
             return $this->result->setData($model->toArray());
         }
 
-        if (!$model->id || !$this->getShippingMethodController()->activate((int)$model->id)) {
+        if (!$model->id || !$this->baseController->activate((int)$model->id)) {
             $this->result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
 
             return $this->result->setData(['message' => __('Failed to activate shipping method.')]);
         }
-
-        $model->selected = true;
 
         return $this->result->setData($model->toArray());
     }
@@ -145,6 +198,8 @@ class ShippingMethods extends Configuration
      * Returns shipping configuration.
      *
      * @return ShippingMethodConfiguration
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
      */
     private function getShippingMethodConfiguration()
     {
@@ -153,19 +208,5 @@ class ShippingMethods extends Configuration
         $data['taxClass'] = (int)$data['taxClass'];
 
         return ShippingMethodConfiguration::fromArray($data);
-    }
-
-    /**
-     * Returns instance of shipping method controller.
-     *
-     * @return ShippingMethodController
-     */
-    private function getShippingMethodController()
-    {
-        if ($this->controller === null) {
-            $this->controller = new ShippingMethodController();
-        }
-
-        return $this->controller;
     }
 }

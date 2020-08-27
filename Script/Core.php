@@ -2,7 +2,7 @@
 /**
  * @package    Packlink
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\Script;

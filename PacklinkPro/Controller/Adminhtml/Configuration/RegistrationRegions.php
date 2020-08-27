@@ -10,22 +10,22 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DashboardController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\RegistrationRegionsController;
 
 /**
- * Class Dashboard
+ * Class RegistrationRegions
  *
  * @package Packlink\PacklinkPro\Controller\Adminhtml\Configuration
  */
-class Dashboard extends Configuration
+class RegistrationRegions extends Configuration
 {
     /**
-     * @var DashboardController
+     * @var RegistrationRegionsController
      */
     private $baseController;
 
     /**
-     * Dashboard constructor.
+     * RegistrationRegions constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
@@ -35,25 +35,22 @@ class Dashboard extends Configuration
         Context $context,
         Bootstrap $bootstrap,
         JsonFactory $jsonFactory
-    ) {
+    )
+    {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
-        $this->allowedActions = ['getStatus'];
+        $this->allowedActions = [
+            'getRegions',
+        ];
 
-        $this->baseController = new DashboardController();
+        $this->baseController = new RegistrationRegionsController();
     }
 
     /**
-     * Returns current setup status.
-     *
-     * @return \Magento\Framework\Controller\Result\Json
-     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoNotRegisteredException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
+     * Returns regions available for Packlink account registration.
      */
-    protected function getStatus()
+    protected function getRegions()
     {
-        $status = $this->baseController->getStatus();
-
-        return $this->result->setData($status->toArray());
+        $this->formatDtoEntitiesResponse($this->baseController->getRegions());
     }
 }

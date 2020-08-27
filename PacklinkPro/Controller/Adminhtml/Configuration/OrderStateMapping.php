@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -11,6 +11,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\OrderStatusMappingController;
 
 /**
  * Class OrderStateMapping
@@ -23,6 +24,10 @@ class OrderStateMapping extends Configuration
      * @var CollectionFactory
      */
     private $statusCollectionFactory;
+    /**
+     * @var OrderStatusMappingController
+     */
+    private $baseController;
 
     /**
      * OrderStateMapping constructor.
@@ -41,12 +46,12 @@ class OrderStateMapping extends Configuration
         parent::__construct($context, $bootstrap, $jsonFactory);
 
         $this->allowedActions = [
-            'getSystemOrderStatuses',
-            'getMappings',
+            'getMappingsAndStatuses',
             'setMappings',
         ];
 
         $this->statusCollectionFactory = $statusCollectionFactory;
+        $this->baseController = new OrderStatusMappingController();
     }
 
     /**
@@ -54,47 +59,31 @@ class OrderStateMapping extends Configuration
      *
      * @return \Magento\Framework\Controller\Result\Json
      */
-    protected function getMappings()
+    protected function getMappingsAndStatuses()
     {
-        $mappings = $this->getConfigService()->getOrderStatusMappings();
-
-        return $this->result->setData($mappings ?: []);
+        return $this->result->setData([
+            'systemName' => $this->getConfigService()->getIntegrationName(),
+            'mappings' => $this->baseController->getMappings(),
+            'packlinkStatuses' => $this->baseController->getPacklinkStatuses(),
+            'orderStatuses' => $this->getAvailableStatuses(),
+        ]);
     }
 
     /**
      * Sets order state mappings.
      *
-     * * @return \Magento\Framework\Controller\Result\Json
+     * @return \Magento\Framework\Controller\Result\Json
      */
     protected function setMappings()
     {
         $data = $this->getPacklinkPostData();
-        $this->getConfigService()->setOrderStatusMappings($data);
+        $this->baseController->setMappings($data);
 
-        return $this->result;
+        return $this->result->setData(['success' => true]);
     }
 
     /**
-     * Returns all order statuses that exist in Magento.
-     *
-     * @return \Magento\Framework\Controller\Result\Json
-     */
-    protected function getSystemOrderStatuses()
-    {
-        return $this->result->setData($this->getAvailableStatuses());
-    }
-
-    /**
-     * Retrieves list of available order statuses in following format:
-     *
-     * [
-     *      [
-     *          'code' => 1,
-     *          'label' => Shipped,
-     *      ],
-     *
-     *      ...
-     * ]
+     * Retrieves the list of available order statuses.
      *
      * @return array
      */
@@ -104,7 +93,7 @@ class OrderStateMapping extends Configuration
         $orderStates = $this->statusCollectionFactory->create()->toOptionArray();
 
         foreach ($orderStates as $orderState) {
-            $result[] = ['code' => $orderState['value'], 'label' => $orderState['label']];
+            $result[$orderState['value']] = $orderState['label'];
         }
 
         return $result;

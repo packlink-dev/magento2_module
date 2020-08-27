@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2020 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -20,6 +20,11 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\AutoConfigura
 class AutoConfigure extends Configuration
 {
     /**
+     * @var AutoConfigurationController
+     */
+    private $baseController;
+
+    /**
      * AutoConfigure constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
@@ -34,6 +39,8 @@ class AutoConfigure extends Configuration
         parent::__construct($context, $bootstrap, $jsonFactory);
 
         $this->allowedActions = ['start'];
+
+        $this->baseController = new AutoConfigurationController();
     }
 
     /**
@@ -43,8 +50,6 @@ class AutoConfigure extends Configuration
      */
     protected function start()
     {
-        $controller = new AutoConfigurationController();
-
-        return $this->result->setData(['success' => $controller->start(true)]);
+        return $this->result->setData(['success' => $this->baseController->start(true)]);
     }
 }
