@@ -36,6 +36,8 @@ use Packlink\PacklinkPro\Services\BusinessLogic\ShopOrderService;
 use Packlink\PacklinkPro\Services\BusinessLogic\UserAccountService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\User\UserAccountService as BaseUserAccountService;
 use Packlink\PacklinkPro\Services\Infrastructure\LoggerService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Registration\RegistrationInfoService as RegistrationInfoServiceInterface;
+use Packlink\PacklinkPro\Services\BusinessLogic\RegistrationInfoService;
 
 /**
  * Class Bootstrap
@@ -195,6 +197,13 @@ class Bootstrap extends BootstrapComponent
             BaseUserAccountService::CLASS_NAME,
             function () use ($instance) {
                 return $instance->userAccountService;
+            }
+        );
+
+        ServiceRegister::registerService(
+            RegistrationInfoServiceInterface::CLASS_NAME,
+            function () {
+                return new RegistrationInfoService();
             }
         );
     }
