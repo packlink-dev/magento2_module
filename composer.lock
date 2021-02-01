@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7aa3be50c3b0dd8ae6596d742499699",
+    "content-hash": "cc60e67adc86347b98cb32fa1ed87e42",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "2.1.3",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "645d1641ba013b9cfaf3abb99b4ee828b41eb9c3"
+                "reference": "0f338cb6f8ef4b014e6a28a8c101d3ba4670af57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/645d1641ba013b9cfaf3abb99b4ee828b41eb9c3",
-                "reference": "645d1641ba013b9cfaf3abb99b4ee828b41eb9c3",
+                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/0f338cb6f8ef4b014e6a28a8c101d3ba4670af57",
+                "reference": "0f338cb6f8ef4b014e6a28a8c101d3ba4670af57",
                 "shasum": ""
             },
             "require": {
@@ -44,7 +44,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2020-06-29T07:52:43+00:00"
+            "time": "2021-01-18T13:27:44+00:00"
         }
     ],
     "packages-dev": [
@@ -557,6 +557,7 @@
             "keywords": [
                 "tokenizer"
             ],
+            "abandoned": true,
             "time": "2017-12-04T08:55:13+00:00"
         },
         {
@@ -1182,12 +1183,12 @@
             "version": "1.6.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "573381c0a64f155a0d9a23f4b0c797194805b925"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/573381c0a64f155a0d9a23f4b0c797194805b925",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/573381c0a64f155a0d9a23f4b0c797194805b925",
                 "reference": "573381c0a64f155a0d9a23f4b0c797194805b925",
                 "shasum": ""
             },

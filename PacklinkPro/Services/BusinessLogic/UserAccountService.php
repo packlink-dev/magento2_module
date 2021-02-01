@@ -14,7 +14,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\WarehouseCountryService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\User\UserAccountService as BaseUserAccountService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Warehouse\Warehouse;
@@ -89,8 +89,8 @@ class UserAccountService extends BaseUserAccountService
         $originCountry = $this->getScopeConfigValue(Config::XML_PATH_ORIGIN_COUNTRY_ID, $store);
         $user = $this->authSession->getUser();
         $storeInfo = $this->storeInfo->getStoreInformationObject($store);
-        /** @var CountryService $countryService */
-        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
+        /** @var WarehouseCountryService $countryService */
+        $countryService = ServiceRegister::getService(WarehouseCountryService::CLASS_NAME);
 
         if (!$countryService->isCountrySupported($originCountry)) {
             return false;

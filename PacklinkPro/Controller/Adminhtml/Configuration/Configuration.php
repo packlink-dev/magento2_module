@@ -37,6 +37,7 @@ class Configuration extends Action
         'defaultwarehouse',
         'orderstatemapping',
         'shippingmethods',
+        'registration',
     ];
     /**
      * Translation messages for fields that are being validated.

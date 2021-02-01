@@ -10,7 +10,7 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\WarehouseCountryService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Location\LocationService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Warehouse\WarehouseService;
@@ -92,12 +92,11 @@ class DefaultWarehouse extends Configuration
      */
     public function getSupportedCountries()
     {
-        /** @var CountryService $countryService */
-        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
+        /** @var WarehouseCountryService $countryService */
+        $countryService = ServiceRegister::getService(WarehouseCountryService::CLASS_NAME);
         $supportedCountries = $countryService->getSupportedCountries();
 
         foreach ($supportedCountries as $country) {
-            $country->registrationLink = str_replace('magento', 'pro', $country->registrationLink);
             $country->name = __($country->name);
         }
 
