@@ -11,6 +11,8 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\RegistrationController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
  * Class Registration
@@ -92,5 +94,25 @@ class Registration extends Configuration
                 ]
             );
         }
+    ) {
+        parent::__construct($context, $bootstrap, $jsonFactory);
+
+        $this->allowedActions = [
+            'getSupportedCountries',
+        ];
+    }
+
+    protected function getSupportedCountries()
+    {
+        /** @var CountryService $countryService */
+        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
+        $supportedCountries = $countryService->getSupportedCountries();
+
+        foreach ($supportedCountries as $country) {
+            $country->registrationLink = str_replace('magento', 'pro', $country->registrationLink);
+            $country->name = __($country->name);
+        }
+
+        return $this->formatDtoEntitiesResponse($supportedCountries);
     }
 }
