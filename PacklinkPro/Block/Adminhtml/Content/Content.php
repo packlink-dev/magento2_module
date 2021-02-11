@@ -21,7 +21,7 @@ class Content extends Template
     /**
      * @var UrlHelper
      */
-    private $urlHelper;
+    public $urlHelper;
 
     /**
      * Content constructor.

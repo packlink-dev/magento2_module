@@ -7,6 +7,9 @@
 
 namespace Packlink\PacklinkPro;
 
+use Magento\Backend\Model\Auth\Session;
+use Magento\Store\Model\Information;
+use Magento\Store\Model\StoreManagerInterface;
 use Packlink\PacklinkPro\Entity\QuoteCarrierDropOffMapping;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\BootstrapComponent;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
@@ -76,6 +79,18 @@ class Bootstrap extends BootstrapComponent
      * @var UserAccountService
      */
     private $userAccountService;
+    /**
+     * @var Session
+     */
+    private $session;
+    /**
+     * @var Information
+     */
+    private $information;
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
 
     /**
      * Bootstrap constructor.
@@ -86,6 +101,9 @@ class Bootstrap extends BootstrapComponent
      * @param ShopOrderService $shopOrderService
      * @param CarrierService $carrierService
      * @param UserAccountService $userAccountService
+     * @param \Magento\Backend\Model\Auth\Session $session
+     * @param \Magento\Store\Model\Information $information
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
         CurlHttpClient $httpClientService,
@@ -93,7 +111,10 @@ class Bootstrap extends BootstrapComponent
         ConfigurationService $configService,
         ShopOrderService $shopOrderService,
         CarrierService $carrierService,
-        UserAccountService $userAccountService
+        UserAccountService $userAccountService,
+        Session $session,
+        Information $information,
+        StoreManagerInterface $storeManager
     ) {
         $this->httpClientService = $httpClientService;
         $this->loggerService = $loggerService;
@@ -101,6 +122,9 @@ class Bootstrap extends BootstrapComponent
         $this->shopOrderService = $shopOrderService;
         $this->carrierService = $carrierService;
         $this->userAccountService = $userAccountService;
+        $this->session = $session;
+        $this->information = $information;
+        $this->storeManager = $storeManager;
 
         static::$instance = $this;
     }
@@ -203,7 +227,11 @@ class Bootstrap extends BootstrapComponent
         ServiceRegister::registerService(
             RegistrationInfoServiceInterface::CLASS_NAME,
             function () {
-                return new RegistrationInfoService();
+                return new RegistrationInfoService(
+                    $this->session,
+                    $this->information,
+                    $this->storeManager
+                );
             }
         );
     }

@@ -10,7 +10,9 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
         <css src="Packlink_PacklinkPro::css/packlink.css"/>
-        <link src="Packlink_PacklinkPro::js/core/AjaxService.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/AjaxService.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/StateUUIDService.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/ResponseService.js"/>
         <link src="Packlink_PacklinkPro::js/MagentoPrintLabel.js"/>
     </head>
 </page>

@@ -181,7 +181,7 @@ class ShippingMethods extends Configuration
             return $this->result->setData(['message' => __('Failed to save shipping method.')]);
         }
 
-        if ($model->selected) {
+        if ($model->activated) {
             return $this->result->setData($model->toArray());
         }
 

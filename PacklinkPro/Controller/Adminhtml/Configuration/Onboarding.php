@@ -35,8 +35,7 @@ class Onboarding extends Configuration
         Context $context,
         Bootstrap $bootstrap,
         JsonFactory $jsonFactory
-    )
-    {
+    ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
         $this->allowedActions = [

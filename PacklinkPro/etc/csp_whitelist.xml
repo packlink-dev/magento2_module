@@ -1,0 +1,21 @@
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="style-src">
+            <values>
+                <value id="packlink_com" type="host">*.packlink.com</value>
+                <value id="googleapis_com" type="host">*.googleapis.com</value>
+            </values>
+        </policy>
+        <policy id="font-src">
+            <values>
+                <value id="packlink_com_font" type="host">*.packlink.com</value>
+                <value id="gstatic_com" type="host">*.gstatic.com</value>
+            </values>
+        </policy>
+        <policy id="img-src">
+            <values>
+                <value id="packlink_com_img" type="host">*.packlink.com</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>

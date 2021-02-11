@@ -1214,7 +1214,7 @@
     color: #2095f2;
     font-size: 14px;
     text-transform: uppercase;
-    margin-bottom: 5px
+    margin-bottom: 20px !important;
 }
 
 .pl-country-logo {
@@ -1569,7 +1569,6 @@
 }
 
 .pl-switch * {
-    pointer-events: none !important;
     height: 21px;
 }
 

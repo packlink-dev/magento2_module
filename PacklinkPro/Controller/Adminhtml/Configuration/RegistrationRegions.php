@@ -35,8 +35,7 @@ class RegistrationRegions extends Configuration
         Context $context,
         Bootstrap $bootstrap,
         JsonFactory $jsonFactory
-    )
-    {
+    ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
         $this->allowedActions = [
@@ -51,6 +50,6 @@ class RegistrationRegions extends Configuration
      */
     protected function getRegions()
     {
-        $this->formatDtoEntitiesResponse($this->baseController->getRegions());
+        return $this->formatDtoEntitiesResponse($this->baseController->getRegions());
     }
 }
