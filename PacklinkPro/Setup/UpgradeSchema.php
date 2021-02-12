@@ -264,7 +264,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         $entities = $connection->fetchAll($select);
 
-        foreach($entities as $entity) {
+        foreach ($entities as $entity) {
             if (empty($entity['data'])) {
                 continue;
             }
@@ -276,7 +276,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $parcel['value']['weight'] = !empty($weight) ? $weight : 1;
             }
 
-            foreach (array('length', 'height', 'width') as $field) {
+            foreach (['length', 'height', 'width'] as $field) {
                 if (!empty($parcel['value'][$field])) {
                     $fieldValue = (int)$parcel['value'][$field];
                     $parcel['value'][$field] = !empty($fieldValue) ? $fieldValue : 10;
@@ -298,7 +298,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
      */
     protected function getTransformedPricingPolicies(array $method)
     {
-        $result = array();
+        $result = [];
 
         if (empty($method['pricingPolicy'])) {
             return $result;
