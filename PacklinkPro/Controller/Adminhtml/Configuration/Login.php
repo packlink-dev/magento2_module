@@ -57,6 +57,6 @@ class Login extends Configuration
 
         $status = $this->baseController->login(!empty($data['apiKey']) ? $data['apiKey'] : '');
 
-        $this->result->setData(['success' => $status]);
+        return $this->result->setData(['success' => $status]);
     }
 }
