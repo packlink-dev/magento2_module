@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Block\Adminhtml\Content;
@@ -19,6 +19,9 @@ use Packlink\PacklinkPro\Helper\UrlHelper;
 class Content extends Template
 {
     /**
+     * urlHelper is accessed dashboard template
+     * therefore it has to be public
+     *
      * @var UrlHelper
      */
     public $urlHelper;

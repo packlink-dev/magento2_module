@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2021 Packlink
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,7 +16,7 @@
         <link src="Packlink_PacklinkPro::js/CheckoutShippingMethods.js"/>
         <link src="Packlink_PacklinkPro::js/MapModalController.js"/>
 
-        <css src="Packlink_PacklinkPro::location/css/locationPicker.css"/>
+        <css src="Packlink_PacklinkPro::packlink/location/css/locationPicker.css"/>
         <css src="Packlink_PacklinkPro::css/checkout.css"/>
     </head>
     <body>

@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Content;
@@ -15,7 +15,6 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\View\Result\PageFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\Helper\UrlHelper;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Configuration\Configuration;
 
 /**
@@ -97,10 +96,6 @@ class Dashboard extends Action
             return $this->result->setData($this->getTranslations());
         }
 
-        if ($action === 'getUrls') {
-            return $this->result->setData($this->getControllerUrls());
-        }
-
         return $this->resultPageFactory->create();
     }
 
@@ -161,16 +156,6 @@ class Dashboard extends Action
             'pl-register-modal' => file_get_contents($baseDir . 'register-modal.html'),
             'pl-system-info-modal' => file_get_contents($baseDir . 'system-info-modal.html'),
         ];
-    }
-
-    /**
-     * Returns Packlink module controller URLs.
-     *
-     * @return array
-     */
-    public function getControllerUrls()
-    {
-        return [];
     }
 
     /**

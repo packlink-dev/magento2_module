@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2021 Packlink
  */
 
 /** @var Packlink\PacklinkPro\Block\Adminhtml\Content\Dashboard $block */
@@ -56,11 +56,16 @@
 </div>
 
 <script src="<?php echo $block->getViewFileUrl('Packlink_PacklinkPro::packlink/js/GridResizerService.js'); ?>"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+      rel="stylesheet"/>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
             let ajaxService = Packlink.ajaxService,
                 stateControllerUrl = "<?php echo $block->getControllerUrl('ModuleState', 'getCurrentState'); ?>",
                 baseResourcesUrl = "<?php echo $block->getViewFileUrl('Packlink_PacklinkPro::packlink'); ?>",
+                // URLs for AJAX actions have to be loaded here
+                // if URLs are loaded from backend all form keys will not be generated correctly
+                // and all AJAX requests will fail
                 configuration = {
                     'login': {
                         'submit': "<?php echo $block->getControllerUrl('Login', 'login'); ?>",

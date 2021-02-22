@@ -3,7 +3,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2021 Packlink
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -17,11 +17,11 @@
         <css src="Packlink_PacklinkPro::css/packlink-order-details.css"/>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
               rel="stylesheet"/>
+        <link src="Packlink_PacklinkPro::packlink/js/TemplateService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/AjaxService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/AutoTestController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/ConfigurationController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/DefaultParcelController.js"/>
-        <link src="Packlink_PacklinkPro::packlink/js/TemplateService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/TranslationService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/DefaultWarehouseController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/EditServiceController.js"/>
@@ -39,9 +39,8 @@
         <link src="Packlink_PacklinkPro::packlink/js/RegisterModalController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/UtilityService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/ResponseService.js"/>
-        <link src="Packlink_PacklinkPro::packlink/js/ServiceCountriesModalController.js"/>
-        <link src="Packlink_PacklinkPro::packlink/js/ShippingServicesRenderer.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/StateController.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/ServiceCountriesModalController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/StateUUIDService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/SystemInfoController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/ValidationService.js"/>
@@ -49,6 +48,7 @@
         <link src="Packlink_PacklinkPro::js/MagentoCreateOrderDraft.js"/>
         <link src="Packlink_PacklinkPro::js/MagentoOrderOverviewDraft.js"/>
         <link src="Packlink_PacklinkPro::js/MagentoPrintLabel.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/ShippingServicesRenderer.js"/>
     </head>
     <body>
         <referenceContainer name="page.messages">

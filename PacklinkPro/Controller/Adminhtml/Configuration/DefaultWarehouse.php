@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -13,7 +13,6 @@ use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\LocationsController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\WarehouseController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\RegistrationRegionsController as CountryController;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\WarehouseCountryService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
 
 /**
