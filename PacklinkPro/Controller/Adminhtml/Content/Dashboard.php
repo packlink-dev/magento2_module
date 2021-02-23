@@ -33,10 +33,6 @@ class Dashboard extends Action
      */
     private $resultPageFactory;
     /**
-     * @var \Magento\Framework\Controller\Result\JsonFactory
-     */
-    private $resultJsonFactory;
-    /**
      * @var \Magento\Framework\Controller\Result\Json
      */
     private $result;
@@ -67,8 +63,7 @@ class Dashboard extends Action
 
         $this->request = $request;
         $this->resultPageFactory = $resultPageFactory;
-        $this->resultJsonFactory = $jsonFactory;
-        $this->result = $this->resultJsonFactory->create();
+        $this->result = $jsonFactory->create();
         $this->authSession = $session;
 
         $bootstrap->initInstance();

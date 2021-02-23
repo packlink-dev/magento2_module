@@ -19,12 +19,9 @@ use Packlink\PacklinkPro\Helper\UrlHelper;
 class Content extends Template
 {
     /**
-     * urlHelper is accessed dashboard template
-     * therefore it has to be public
-     *
      * @var UrlHelper
      */
-    public $urlHelper;
+    private $urlHelper;
 
     /**
      * Content constructor.
@@ -67,5 +64,15 @@ class Content extends Template
                 'form_key' => $this->formKey->getFormKey(),
             ]
         );
+    }
+
+    /**
+     * Retrieves urlHelper.
+     *
+     * @return \Packlink\PacklinkPro\Helper\UrlHelper
+     */
+    public function getUrlHelper()
+    {
+        return $this->urlHelper;
     }
 }

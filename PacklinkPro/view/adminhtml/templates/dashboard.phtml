@@ -129,7 +129,7 @@
                 };
 
             ajaxService.get(
-                "<?php echo $block->urlHelper->getBackendUrl(
+                "<?php echo $block->getUrlHelper()->getBackendUrl(
                     'packlink/content/dashboard',
                     ['action' => 'getTranslations']
                 ); ?>",
@@ -143,7 +143,7 @@
 
 
             ajaxService.get(
-                "<?php echo $block->urlHelper->getBackendUrl(
+                "<?php echo $block->getUrlHelper()->getBackendUrl(
                     'packlink/content/dashboard',
                     ['action' => 'getTemplates']
                 ); ?>",
