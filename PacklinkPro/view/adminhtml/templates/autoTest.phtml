@@ -67,17 +67,17 @@
                download>
                 <button type="button" name="download-log"
                         class="button btn-info btn-lg"><?php echo $block->escapeQuote(
-                            __('Download test log')
-                        ); ?></button>
+                        __('Download test log')
+                    ); ?></button>
             </a>
             <a href="<?php echo $block->getControllerUrl('Debug', 'getSystemInfo'); ?>" value="packlink-debug-data.zip"
                download>
                 <button type="button" name="download-system-info-file"
                         class="button btn-info btn-lg"><?php echo $block->escapeQuote(
-                            __('Download system info file')
-                        ); ?></button>
+                        __('Download system info file')
+                    ); ?></button>
             </a>
-            <a href="<?php echo $block->urlHelper->getBackendUrl('packlink/content/dashboard'); ?>">
+            <a href="<?php echo $block->getUrlHelper()->getBackendUrl('packlink/content/dashboard'); ?>">
                 <button type="button" name="open-module" class="button btn-success btn-lg">
                     <?php echo $block->escapeQuote(__('Open PacklinkPRO module')); ?>
                 </button>

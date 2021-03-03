@@ -60,7 +60,7 @@ class AutoTest extends Configuration
      */
     protected function start()
     {
-        $this->result->setData($this->baseController->start());
+        return $this->result->setData($this->baseController->start());
     }
 
     /**

@@ -13,6 +13,8 @@
         <css src="Packlink_PacklinkPro::css/packlink.css"/>
         <css src="Packlink_PacklinkPro::css/packlink-auto-test.css"/>
         <link src="Packlink_PacklinkPro::packlink/js/AjaxService.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/StateUUIDService.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/ResponseService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/TemplateService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/UtilityService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/AutoTestController.js"/>
