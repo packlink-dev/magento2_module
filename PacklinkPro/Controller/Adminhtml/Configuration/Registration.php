@@ -70,7 +70,7 @@ class Registration extends Configuration
     }
 
     /**
-     * Attemps to register the user on Packlink PRO.
+     * Attempts to register the user on Packlink PRO.
      *
      * @return \Magento\Framework\Controller\Result\Json
      */
@@ -87,7 +87,8 @@ class Registration extends Configuration
             return $this->result->setData(
                 [
                     'success' => false,
-                    'error' => $e->getMessage(),
+                    'error' => $e->getMessage() === 'Registration failed. Error: ' ?
+                        'Registration failed. Error: Invalid phone number.' : $e->getMessage(),
                 ]
             );
         }
