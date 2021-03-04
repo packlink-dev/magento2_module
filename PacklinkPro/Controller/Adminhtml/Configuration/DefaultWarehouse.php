@@ -12,7 +12,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\LocationsController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\WarehouseController;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\RegistrationRegionsController as CountryController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
 
 /**
@@ -30,10 +29,6 @@ class DefaultWarehouse extends Configuration
      * @var LocationsController
      */
     private $locationsController;
-    /**
-     * @var CountryController
-     */
-    private $countryController;
 
     /**
      * DefaultWarehouse constructor.
@@ -58,7 +53,6 @@ class DefaultWarehouse extends Configuration
 
         $this->baseController = new WarehouseController();
         $this->locationsController = new LocationsController();
-        $this->countryController = new CountryController();
     }
 
     /**
@@ -102,7 +96,7 @@ class DefaultWarehouse extends Configuration
      */
     public function getSupportedCountries()
     {
-        $countries = $this->countryController->getRegions();
+        $countries = $this->baseController->getWarehouseCountries();
 
         return $this->formatDtoEntitiesResponse($countries);
     }
