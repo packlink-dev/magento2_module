@@ -8,8 +8,10 @@
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 
 use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration as ConfigService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\LocationsController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\WarehouseController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
@@ -29,6 +31,10 @@ class DefaultWarehouse extends Configuration
      * @var LocationsController
      */
     private $locationsController;
+    /**
+     * @var Session
+     */
+    private $authSession;
 
     /**
      * DefaultWarehouse constructor.
@@ -36,11 +42,13 @@ class DefaultWarehouse extends Configuration
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
+     * @param \Magento\Backend\Model\Auth\Session $session
      */
     public function __construct(
         Context $context,
         Bootstrap $bootstrap,
-        JsonFactory $jsonFactory
+        JsonFactory $jsonFactory,
+        Session $session
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
@@ -51,6 +59,7 @@ class DefaultWarehouse extends Configuration
             'searchPostalCodes',
         ];
 
+        $this->authSession = $session;
         $this->baseController = new WarehouseController();
         $this->locationsController = new LocationsController();
     }
@@ -96,6 +105,12 @@ class DefaultWarehouse extends Configuration
      */
     public function getSupportedCountries()
     {
+        $user = $this->authSession->getUser();
+
+        if ($user) {
+            ConfigService::setCurrentLanguage(substr($user->getInterfaceLocale(), 0, 2));
+        }
+
         $countries = $this->baseController->getWarehouseCountries();
 
         return $this->formatDtoEntitiesResponse($countries);
