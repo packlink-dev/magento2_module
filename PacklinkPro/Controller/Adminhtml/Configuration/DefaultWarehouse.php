@@ -108,7 +108,10 @@ class DefaultWarehouse extends Configuration
         $user = $this->authSession->getUser();
 
         if ($user) {
-            ConfigService::setCurrentLanguage(substr($user->getInterfaceLocale(), 0, 2));
+            $locale = substr($user->getInterfaceLocale(), 0, 2);
+            ConfigService::setCurrentLanguage(
+                in_array($locale, ['en', 'de', 'es', 'fr', 'it']) ? $locale : 'en'
+            );
         }
 
         $countries = $this->baseController->getWarehouseCountries();

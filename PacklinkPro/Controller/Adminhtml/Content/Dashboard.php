@@ -78,7 +78,10 @@ class Dashboard extends Action
         $user = $this->authSession->getUser();
 
         if ($user) {
-            Configuration::setCurrentLanguage(substr($user->getInterfaceLocale(), 0, 2));
+            $locale = substr($user->getInterfaceLocale(), 0, 2);
+            Configuration::setCurrentLanguage(
+                in_array($locale, ['en', 'de', 'es', 'fr', 'it']) ? $locale : 'en'
+            );
         }
 
         $action = $this->request->getParam('action');
