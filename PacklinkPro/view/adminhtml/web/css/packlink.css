@@ -1204,18 +1204,6 @@
     text-decoration: none !important;
 }
 
-.pl-country {
-    display: flex;
-    height: 35px;
-    width: 30px;
-    line-height: 35px;
-    text-align: center;
-    color: #2095f2;
-    font-size: 14px;
-    text-transform: uppercase;
-    margin-bottom: 20px !important;
-}
-
 .pl-country-logo {
     width: 60px;
     margin-left: 15px;
