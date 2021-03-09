@@ -357,7 +357,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
      */
     protected function getLogoUrl($method)
     {
-        if (strpos($method['logoUrl'], '/images/carriers/') !== false) {
+        if (strpos($method['logoUrl'], '/images/carriers/') === false) {
             return  $method['logoUrl'];
         }
 
