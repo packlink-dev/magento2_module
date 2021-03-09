@@ -1546,10 +1546,6 @@
     cursor: pointer;
 }
 
-.pl-switch * {
-    height: 21px;
-}
-
 .pl-switch .pl-checked-checkbox {
     display: none;
 }
