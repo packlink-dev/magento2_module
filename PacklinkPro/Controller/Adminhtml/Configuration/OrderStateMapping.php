@@ -12,6 +12,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\OrderStatusMappingController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Language\Translator;
 
 /**
  * Class OrderStateMapping
@@ -89,7 +90,7 @@ class OrderStateMapping extends Configuration
      */
     private function getAvailableStatuses()
     {
-        $result = [];
+        $result = ['' => Translator::translate('orderStatusMapping.none')];
         $orderStates = $this->statusCollectionFactory->create()->toOptionArray();
 
         foreach ($orderStates as $orderState) {
