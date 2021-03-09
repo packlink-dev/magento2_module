@@ -78,8 +78,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgradeTo114($setup);
         }
 
-        if (version_compare($context->getVersion(), '1.1.9', '<')) {
-            $this->upgradeTo119($setup);
+        if (version_compare($context->getVersion(), '1.2.0', '<')) {
+            $this->upgradeTo120($setup);
         }
     }
 
@@ -197,21 +197,21 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
-     * Runs the upgrade script for v1.1.9.
+     * Runs the upgrade script for v1.2.0.
      *
      * @param SchemaSetupInterface $setup
      *
      * @throws \Exception
      */
-    protected function upgradeTo119(SchemaSetupInterface $setup)
+    protected function upgradeTo120(SchemaSetupInterface $setup)
     {
-        Logger::logInfo('Started executing V1.1.9 update script.');
+        Logger::logInfo('Started executing V1.2.0 update script.');
 
         $this->updateShippingMethods($setup);
 
         $this->convertParcelProperties($setup);
 
-        Logger::logInfo('Update script V1.1.9 has been successfully completed.');
+        Logger::logInfo('Update script V1.2.0 has been successfully completed.');
     }
 
     /**
