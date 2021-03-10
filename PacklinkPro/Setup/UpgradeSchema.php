@@ -79,7 +79,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         }
 
         if (version_compare($context->getVersion(), '1.2.0', '<')) {
-            $this->upgradeTo120($setup);
+            $this->upgradeTo120($setup, $context);
         }
     }
 
@@ -171,8 +171,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
             Logger::logInfo('Update script V1.1.0 has been successfully completed.');
         } catch (\Exception $e) {
             Logger::logError("V1.1.0 update script failed because: {$e->getMessage()}");
-
-            throw $e;
         }
     }
 
@@ -200,16 +198,22 @@ class UpgradeSchema implements UpgradeSchemaInterface
      * Runs the upgrade script for v1.2.0.
      *
      * @param SchemaSetupInterface $setup
+     * @param \Magento\Framework\Setup\ModuleContextInterface $context
      *
-     * @throws \Exception
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
      */
-    protected function upgradeTo120(SchemaSetupInterface $setup)
+    protected function upgradeTo120(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         Logger::logInfo('Started executing V1.2.0 update script.');
 
-        $this->updateShippingMethods($setup);
-
         $this->convertParcelProperties($setup);
+
+        if (version_compare($context->getVersion(), '1.1.0', '<')) {
+            $this->updateShippingServices();
+        }
+
+        $this->updateShippingMethods($setup);
 
         Logger::logInfo('Update script V1.2.0 has been successfully completed.');
     }

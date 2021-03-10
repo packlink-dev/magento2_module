@@ -16,6 +16,8 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\View\Result\PageFactory;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Configuration\Configuration;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Interfaces\TaskRunnerWakeup;
 
 /**
  * Class Dashboard
@@ -75,6 +77,8 @@ class Dashboard extends Action
      */
     public function execute()
     {
+        $this->wakeUp();
+
         $user = $this->authSession->getUser();
 
         if ($user) {
@@ -192,5 +196,15 @@ class Dashboard extends Action
         $locale = Configuration::getCurrentLanguage();
 
         return json_decode(file_get_contents($baseDir . $locale . '.json'), true);
+    }
+
+    /**
+     * Task runner wakeup.
+     */
+    private function wakeUp()
+    {
+        /** @var TaskRunnerWakeup $taskRunnerWakeupService */
+        $taskRunnerWakeupService = ServiceRegister::getService(TaskRunnerWakeup::CLASS_NAME);
+        $taskRunnerWakeupService->wakeup();
     }
 }
