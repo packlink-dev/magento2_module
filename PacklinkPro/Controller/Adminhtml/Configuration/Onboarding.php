@@ -10,22 +10,22 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DashboardController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\OnboardingController;
 
 /**
- * Class Dashboard
+ * Class Onboarding
  *
  * @package Packlink\PacklinkPro\Controller\Adminhtml\Configuration
  */
-class Dashboard extends Configuration
+class Onboarding extends Configuration
 {
     /**
-     * @var DashboardController
+     * @var OnboardingController
      */
     private $baseController;
 
     /**
-     * Dashboard constructor.
+     * Onboarding constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
@@ -38,22 +38,20 @@ class Dashboard extends Configuration
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
-        $this->allowedActions = ['getStatus'];
+        $this->allowedActions = [
+            'getCurrentState',
+        ];
 
-        $this->baseController = new DashboardController();
+        $this->baseController = new OnboardingController();
     }
 
     /**
-     * Returns current setup status.
+     * Returns the current state of the on-boarding page.
      *
      * @return \Magento\Framework\Controller\Result\Json
-     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoNotRegisteredException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
      */
-    protected function getStatus()
+    protected function getCurrentState()
     {
-        $status = $this->baseController->getStatus();
-
-        return $this->result->setData($status->toArray());
+        return $this->result->setData($this->baseController->getCurrentState()->toArray());
     }
 }

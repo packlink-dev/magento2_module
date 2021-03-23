@@ -2,7 +2,7 @@
 /**
  * @package    Packlink
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\Script;
@@ -94,23 +94,35 @@ class Core
     {
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/js',
-            __DIR__ . '/../PacklinkPro/view/adminhtml/web/js/core'
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/js'
+        );
+        self::copyDirectory(
+            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/css',
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/css'
+        );
+        self::copyDirectory(
+            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/lang',
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/lang'
+        );
+        self::copyDirectory(
+            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/templates',
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/templates'
+        );
+        self::copyDirectory(
+            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/images',
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/images'
         );
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/js',
-            __DIR__ . '/../PacklinkPro/view/frontend/web/js/core'
+            __DIR__ . '/../PacklinkPro/view/frontend/web/packlink/js'
         );
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/LocationPicker',
-            __DIR__ . '/../PacklinkPro/view/frontend/web/location'
+            __DIR__ . '/../PacklinkPro/view/frontend/web/packlink/location'
         );
         self::copyDirectory(
-            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/img/carriers',
-            __DIR__ . '/../PacklinkPro/view/adminhtml/web/images/carriers'
-        );
-        self::copyDirectory(
-            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/img/carriers',
-            __DIR__ . '/../PacklinkPro/view/frontend/web/images/carriers'
+            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/images/carriers',
+            __DIR__ . '/../PacklinkPro/view/frontend/web/packlink/images/carriers'
         );
     }
 }

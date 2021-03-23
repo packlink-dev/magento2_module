@@ -1,7 +1,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 .pl-main-wrapper {
@@ -1204,19 +1204,6 @@
     text-decoration: none !important;
 }
 
-.pl-country {
-    display: flex;
-    height: 35px;
-    width: 30px;
-    line-height: 35px;
-    border-radius: 50%;
-    text-align: center;
-    color: #2095f2;
-    font-size: 14px;
-    text-transform: uppercase;
-    margin-bottom: 5px
-}
-
 .pl-country-logo {
     width: 60px;
     margin-left: 15px;
@@ -1292,7 +1279,6 @@
 
 .pl-autocomplete-list {
     position: absolute;
-    top: 50px;
     z-index: 10;
     width: 100%;
     max-height: 250px;
@@ -1375,14 +1361,6 @@
 
 .pl-table-row-method-type.pl-national .pl-international {
     display: none;
-}
-
-.pl-error {
-    border: 1px solid #C95C6B !important;
-}
-
-.pl-error:hover ~ .pl-error-msg {
-    display: flex;
 }
 
 .pl-error-msg #pl-error-text {
@@ -1566,11 +1544,6 @@
 
 .pl-switch {
     cursor: pointer;
-}
-
-.pl-switch * {
-    pointer-events: none !important;
-    height: 21px;
 }
 
 .pl-switch .pl-checked-checkbox {

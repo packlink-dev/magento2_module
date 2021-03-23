@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Setup;
@@ -19,6 +19,9 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\Schedule
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\WeeklySchedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\ScheduleCheckTask;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\OrderSendDraftTaskMapService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingPricePolicy;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Utility\ShipmentStatus;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\TaskCleanupTask;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\UpdateShipmentDataTask;
@@ -29,6 +32,7 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueService;
+use \Packlink\PacklinkPro\Services\BusinessLogic\CarrierService;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
@@ -72,6 +76,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '1.1.4', '<')) {
             $this->upgradeTo114($setup);
+        }
+
+        if (version_compare($context->getVersion(), '1.2.0', '<')) {
+            $this->upgradeTo120($setup, $context);
         }
     }
 
@@ -163,8 +171,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
             Logger::logInfo('Update script V1.1.0 has been successfully completed.');
         } catch (\Exception $e) {
             Logger::logError("V1.1.0 update script failed because: {$e->getMessage()}");
-
-            throw $e;
         }
     }
 
@@ -186,6 +192,180 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $databaseHandler->addAdditionalIndex();
 
         Logger::logInfo('Update script V1.1.4 has been successfully completed.');
+    }
+
+    /**
+     * Runs the upgrade script for v1.2.0.
+     *
+     * @param SchemaSetupInterface $setup
+     * @param \Magento\Framework\Setup\ModuleContextInterface $context
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
+     */
+    protected function upgradeTo120(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        Logger::logInfo('Started executing V1.2.0 update script.');
+
+        $this->convertParcelProperties($setup);
+
+        if (version_compare($context->getVersion(), '1.1.0', '<')) {
+            $this->updateShippingServices();
+        }
+
+        $this->updateShippingMethods($setup);
+
+        Logger::logInfo('Update script V1.2.0 has been successfully completed.');
+    }
+
+    /**
+     * Updates shipping methods.
+     *
+     * @param SchemaSetupInterface $setup
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     */
+    protected function updateShippingMethods(SchemaSetupInterface $setup)
+    {
+        $repository = RepositoryRegistry::getRepository(ShippingMethod::getClassName());
+        /** @var CarrierService $carrierService */
+        $carrierService = ServiceRegister::getService(ShopShippingMethodService::CLASS_NAME);
+
+        $connection = $setup->getConnection();
+
+        $select = $connection->select()
+            ->from(InstallSchema::PACKLINK_ENTITY_TABLE)
+            ->where('type = ?', 'ShippingService');
+
+        $entities = $connection->fetchAll($select);
+
+        foreach ($entities as $entity) {
+            $data = json_decode($entity['data'], true);
+            $data['pricingPolicies'] = $this->getTransformedPricingPolicies($data);
+            $data['logoUrl'] = $this->getLogoUrl($data);
+
+            $shippingMethod = ShippingMethod::fromArray($data);
+            $repository->update($shippingMethod);
+
+            if ($shippingMethod->isActivated()) {
+                $carrierService->update($shippingMethod);
+            }
+        }
+    }
+
+    /**
+     * Converts parcel properties from strings to numbers.
+     *
+     * @param SchemaSetupInterface $setup
+     */
+    protected function convertParcelProperties(SchemaSetupInterface $setup)
+    {
+        $connection = $setup->getConnection();
+
+        $select = $connection->select()
+            ->from(InstallSchema::PACKLINK_ENTITY_TABLE)
+            ->where('index_1 = ?', 'defaultParcel');
+
+        $entities = $connection->fetchAll($select);
+
+        foreach ($entities as $entity) {
+            if (empty($entity['data'])) {
+                continue;
+            }
+
+            $parcel = json_decode($entity['data'], true);
+
+            if (!empty($parcel['value']['weight'])) {
+                $weight = (float)$parcel['value']['weight'];
+                $parcel['value']['weight'] = !empty($weight) ? $weight : 1;
+            }
+
+            foreach (['length', 'height', 'width'] as $field) {
+                if (!empty($parcel['value'][$field])) {
+                    $fieldValue = (int)$parcel['value'][$field];
+                    $parcel['value'][$field] = !empty($fieldValue) ? $fieldValue : 10;
+                }
+            }
+
+            if (!empty($entity['id'])) {
+                $connection->update(InstallSchema::PACKLINK_ENTITY_TABLE, ['data' => json_encode($parcel)], ['id =? ' => $entity['id']]);
+            }
+        }
+    }
+
+    /**
+     * Returns transformed pricing policies for a given shipping method.
+     *
+     * @param array $method
+     *
+     * @return array
+     */
+    protected function getTransformedPricingPolicies(array $method)
+    {
+        $result = [];
+
+        if (empty($method['pricingPolicy'])) {
+            return $result;
+        }
+
+        switch ($method['pricingPolicy']) {
+            case 1:
+                // Packlink prices.
+                break;
+            case 2:
+                // Percent prices.
+                $pricingPolicy = new ShippingPricePolicy();
+                $pricingPolicy->rangeType = ShippingPricePolicy::RANGE_PRICE_AND_WEIGHT;
+                $pricingPolicy->fromPrice = 0;
+                $pricingPolicy->fromWeight = 0;
+                $pricingPolicy->pricingPolicy = ShippingPricePolicy::POLICY_PACKLINK_ADJUST;
+                $pricingPolicy->increase = $method['percentPricePolicy']['increase'];
+                $pricingPolicy->changePercent = $method['percentPricePolicy']['amount'];
+                $result[] = $pricingPolicy->toArray();
+                break;
+            case 3:
+                // Fixed price by weight.
+                foreach ($method['fixedPriceByWeightPolicy'] as $policy) {
+                    $pricingPolicy = new ShippingPricePolicy();
+                    $pricingPolicy->rangeType = ShippingPricePolicy::RANGE_WEIGHT;
+                    $pricingPolicy->fromWeight = $policy['from'];
+                    $pricingPolicy->toWeight = !empty($policy['to']) ? $policy['to'] : null;
+                    $pricingPolicy->pricingPolicy = ShippingPricePolicy::POLICY_FIXED_PRICE;
+                    $pricingPolicy->fixedPrice = $policy['amount'];
+                    $result[] = $pricingPolicy->toArray();
+                }
+                break;
+            case 4:
+                // Fixed price by price.
+                foreach ($method['fixedPriceByValuePolicy'] as $policy) {
+                    $pricingPolicy = new ShippingPricePolicy();
+                    $pricingPolicy->rangeType = ShippingPricePolicy::RANGE_PRICE;
+                    $pricingPolicy->fromPrice = $policy['from'];
+                    $pricingPolicy->toPrice = !empty($policy['to']) ? $policy['to'] : null;
+                    $pricingPolicy->pricingPolicy = ShippingPricePolicy::POLICY_FIXED_PRICE;
+                    $pricingPolicy->fixedPrice = $policy['amount'];
+                    $result[] = $pricingPolicy->toArray();
+                }
+                break;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns updated carrier logo file path for the given shipping method.
+     *
+     * @param array $method
+     *
+     * @return string
+     */
+    protected function getLogoUrl($method)
+    {
+        if (strpos($method['logoUrl'], '/images/carriers/') === false) {
+            return  $method['logoUrl'];
+        }
+
+        return str_replace('/images/carriers/', '/packlink/images/carriers/', $method['logoUrl']);
     }
 
     /**

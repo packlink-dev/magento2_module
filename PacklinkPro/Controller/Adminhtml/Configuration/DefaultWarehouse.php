@@ -2,19 +2,19 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 
 use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\WarehouseCountryService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration as ConfigService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\LocationsController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\WarehouseController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Location\LocationService;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Warehouse\WarehouseService;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
  * Class DefaultWarehouse
@@ -24,16 +24,31 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 class DefaultWarehouse extends Configuration
 {
     /**
+     * @var WarehouseController
+     */
+    private $baseController;
+    /**
+     * @var LocationsController
+     */
+    private $locationsController;
+    /**
+     * @var Session
+     */
+    private $authSession;
+
+    /**
      * DefaultWarehouse constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
+     * @param \Magento\Backend\Model\Auth\Session $session
      */
     public function __construct(
         Context $context,
         Bootstrap $bootstrap,
-        JsonFactory $jsonFactory
+        JsonFactory $jsonFactory,
+        Session $session
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
@@ -43,6 +58,10 @@ class DefaultWarehouse extends Configuration
             'getSupportedCountries',
             'searchPostalCodes',
         ];
+
+        $this->authSession = $session;
+        $this->baseController = new WarehouseController();
+        $this->locationsController = new LocationsController();
     }
 
     /**
@@ -52,12 +71,9 @@ class DefaultWarehouse extends Configuration
      */
     protected function getDefaultWarehouse()
     {
-        /** @var WarehouseService $warehouseService */
-        $warehouseService = ServiceRegister::getService(WarehouseService::CLASS_NAME);
+        $warehouse = $this->baseController->getWarehouse();
 
-        $warehouse = $warehouseService->getWarehouse();
-
-        return $this->result->setData($warehouse->toArray());
+        return $this->result->setData($warehouse ? $warehouse->toArray() : []);
     }
 
     /**
@@ -73,16 +89,13 @@ class DefaultWarehouse extends Configuration
         $data = $this->getPacklinkPostData();
         $data['default'] = true;
 
-        /** @var WarehouseService $warehouseService */
-        $warehouseService = ServiceRegister::getService(WarehouseService::CLASS_NAME);
-
         try {
-            $warehouse = $warehouseService->updateWarehouseData($data);
-
-            return $this->result->setData($warehouse->toArray());
+            $warehouse = $this->baseController->updateWarehouse($data);
         } catch (FrontDtoValidationException $e) {
             return $this->formatValidationErrorResponse($e->getValidationErrors());
         }
+
+        return $this->result->setData($warehouse->toArray());
     }
 
     /**
@@ -92,15 +105,18 @@ class DefaultWarehouse extends Configuration
      */
     public function getSupportedCountries()
     {
-        /** @var WarehouseCountryService $countryService */
-        $countryService = ServiceRegister::getService(WarehouseCountryService::CLASS_NAME);
-        $supportedCountries = $countryService->getSupportedCountries();
+        $user = $this->authSession->getUser();
 
-        foreach ($supportedCountries as $country) {
-            $country->name = __($country->name);
+        if ($user) {
+            $locale = substr($user->getInterfaceLocale(), 0, 2);
+            ConfigService::setCurrentLanguage(
+                in_array($locale, ['en', 'de', 'es', 'fr', 'it']) ? $locale : 'en'
+            );
         }
 
-        return $this->formatDtoEntitiesResponse($supportedCountries);
+        $countries = $this->baseController->getWarehouseCountries();
+
+        return $this->formatDtoEntitiesResponse($countries);
     }
 
     /**
@@ -116,10 +132,8 @@ class DefaultWarehouse extends Configuration
             return $this->result;
         }
 
-        /** @var LocationService $locationService */
-        $locationService = ServiceRegister::getService(LocationService::CLASS_NAME);
         try {
-            $locations = $locationService->searchLocations($input['country'], $input['query']);
+            $locations = $this->locationsController->searchLocations($input);
         } catch (\Exception $e) {
             return $this->result;
         }

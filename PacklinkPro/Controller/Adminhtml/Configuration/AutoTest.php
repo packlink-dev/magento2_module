@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -12,12 +12,10 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Response\Http\FileFactory;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\AutoTest\AutoTestLogger;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\AutoTest\AutoTestService;
-use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Exceptions\StorageNotAccessibleException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryClassException;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\AutoTestController;
 use Packlink\PacklinkPro\Services\Infrastructure\LoggerService;
 
 /**
@@ -31,6 +29,10 @@ class AutoTest extends Configuration
      * @var \Magento\Framework\App\Response\Http\FileFactory
      */
     private $fileFactory;
+    /**
+     * @var AutoTestController
+     */
+    private $baseController;
 
     /**
      * AutoConfigure constructor.
@@ -50,33 +52,15 @@ class AutoTest extends Configuration
 
         $this->allowedActions = ['start', 'checkStatus', 'exportLogs'];
         $this->fileFactory = $fileFactory;
+        $this->baseController = new AutoTestController();
     }
 
     /**
      * Returns current setup status.
-     *
-     * @return \Magento\Framework\Controller\Result\Json
-     *
-     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
      */
     protected function start()
     {
-        $service = new AutoTestService();
-        try {
-            return $this->result->setData(
-                [
-                    'success' => true,
-                    'itemId' => $service->startAutoTest(),
-                ]
-            );
-        } catch (StorageNotAccessibleException $e) {
-            return $this->result->setData(
-                [
-                    'success' => false,
-                    'error' => __('Database not accessible.'),
-                ]
-            );
-        }
+        return $this->result->setData($this->baseController->start());
     }
 
     /**
@@ -88,24 +72,17 @@ class AutoTest extends Configuration
      */
     protected function checkStatus()
     {
-        $service = new AutoTestService();
-        $status = $service->getAutoTestTaskStatus($this->getRequest()->getParam('queueItemId'));
+        $status = $this->baseController->checkStatus($this->getRequest()->getParam('queueItemId'));
 
-        if ($status->finished) {
-            $service->stopAutoTestMode(
+        if ($status['finished']) {
+            $this->baseController->stop(
                 static function () {
                     return LoggerService::getInstance();
                 }
             );
         }
 
-        return $this->result->setData(
-            [
-                'finished' => $status->finished,
-                'error' => __($status->error, 'packlink-pro-shipping'),
-                'logs' => AutoTestLogger::getInstance()->getLogsArray(),
-            ]
-        );
+        return $this->result->setData($status);
     }
 
     /**
@@ -116,7 +93,7 @@ class AutoTest extends Configuration
      */
     protected function exportLogs()
     {
-        $data = json_encode(AutoTestLogger::getInstance()->getLogsArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $data = json_encode($this->baseController->getLogs(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         return $this->fileFactory->create('auto-test-logs.json', $data, DirectoryList::VAR_DIR);
     }

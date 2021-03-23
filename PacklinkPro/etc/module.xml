@@ -3,10 +3,10 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Packlink_PacklinkPro" setup_version="1.1.8" schema_version="1.1.8"/>
+    <module name="Packlink_PacklinkPro" setup_version="1.2.0" schema_version="1.2.0"/>
 </config>

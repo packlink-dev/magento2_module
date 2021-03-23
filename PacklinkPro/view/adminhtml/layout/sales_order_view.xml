@@ -3,7 +3,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2021 Packlink
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,7 +11,9 @@
     <head>
         <css src="Packlink_PacklinkPro::css/packlink.css"/>
         <css src="Packlink_PacklinkPro::css/font-awesome.min.css"/>
-        <link src="Packlink_PacklinkPro::js/core/AjaxService.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/AjaxService.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/StateUUIDService.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/ResponseService.js"/>
         <link src="Packlink_PacklinkPro::js/MagentoCreateOrderDraft.js"/>
         <link src="Packlink_PacklinkPro::js/MagentoPrintLabel.js"/>
     </head>

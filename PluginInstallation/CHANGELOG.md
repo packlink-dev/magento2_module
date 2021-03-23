@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0](https://github.com/packlink-dev/magento2_module/compare/v1.1.7...1.2.0)
+### Changed
+- Applied the new module design.
+- Changed pricing policies management.
+
 ## [1.1.7](https://github.com/packlink-dev/magento2_module/compare/v1.1.6...v1.1.7)
 ### Changed
 - Fix translations in admin section and storefront.

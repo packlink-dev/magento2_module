@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2019 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -11,9 +11,12 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Response\Http\FileFactory;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\SystemInfoHelper;
+use Packlink\PacklinkPro\Helper\UrlHelper;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DebugController;
 
 /**
  * Class Debug
@@ -31,6 +34,18 @@ class Debug extends Configuration
      * @var \Magento\Framework\App\Response\Http\FileFactory
      */
     private $fileFactory;
+    /**
+     * @var UrlHelper
+     */
+    private $urlHelper;
+    /**
+     * @var FormKey
+     */
+    private $formKey;
+    /**
+     * @var DebugController
+     */
+    private $baseController;
 
     /**
      * Debug constructor.
@@ -46,7 +61,9 @@ class Debug extends Configuration
         Bootstrap $bootstrap,
         JsonFactory $jsonFactory,
         SystemInfoHelper $systemInfoHelper,
-        FileFactory $fileFactory
+        FileFactory $fileFactory,
+        UrlHelper $urlHelper,
+        FormKey $formKey
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
@@ -58,16 +75,31 @@ class Debug extends Configuration
 
         $this->systemInfoHelper = $systemInfoHelper;
         $this->fileFactory = $fileFactory;
+        $this->urlHelper = $urlHelper;
+        $this->formKey = $formKey;
+        $this->baseController = new DebugController();
     }
 
     /**
      * Returns debug mode status.
      *
      * @return \Magento\Framework\Controller\Result\Json
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function getStatus()
     {
-        return $this->result->setData(['status' => $this->getConfigService()->isDebugModeEnabled()]);
+        return $this->result->setData([
+            'status' => $this->baseController->getStatus(),
+            'downloadUrl' => $this->urlHelper->getBackendUrl(
+                'packlink/configuration/debug',
+                [
+                    'action' => 'getSystemInfo',
+                    'ajax' => 1,
+                    'form_key' => $this->formKey->getFormKey(),
+                ]
+            ),
+        ]);
     }
 
     /**
@@ -84,7 +116,7 @@ class Debug extends Configuration
             return $this->result;
         }
 
-        $this->getConfigService()->setDebugModeEnabled((bool)$data['status']);
+        $this->baseController->setStatus((bool)$data['status']);
 
         return $this->result->setData(['status' => $data['status']]);
     }

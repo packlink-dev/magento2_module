@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package    Packlink_PacklinkPro
+ * @author     Packlink Shipping S.L.
+ * @copyright  2021 Packlink
+ */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 
@@ -9,6 +14,11 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Store\Model\ScopeInterface;
 use Packlink\PacklinkPro\Bootstrap;
 
+/**
+ * Class ShippingCountries
+ *
+ * @package Packlink\PacklinkPro\Controller\Adminhtml\Configuration
+ */
 class ShippingCountries extends Configuration
 {
     /**
@@ -41,6 +51,7 @@ class ShippingCountries extends Configuration
         $this->allowedActions = [
             'getAll',
         ];
+
         $this->allowedCountriesManager = $allowedCountriesManager;
         $this->countryCollection = $countryCollection;
     }

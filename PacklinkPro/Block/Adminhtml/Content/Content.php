@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Block\Adminhtml\Content;
@@ -64,5 +64,15 @@ class Content extends Template
                 'form_key' => $this->formKey->getFormKey(),
             ]
         );
+    }
+
+    /**
+     * Retrieves urlHelper.
+     *
+     * @return \Packlink\PacklinkPro\Helper\UrlHelper
+     */
+    public function getUrlHelper()
+    {
+        return $this->urlHelper;
     }
 }

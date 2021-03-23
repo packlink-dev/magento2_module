@@ -10,22 +10,22 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DashboardController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\LoginController;
 
 /**
- * Class Dashboard
+ * Class Login
  *
  * @package Packlink\PacklinkPro\Controller\Adminhtml\Configuration
  */
-class Dashboard extends Configuration
+class Login extends Configuration
 {
     /**
-     * @var DashboardController
+     * @var LoginController
      */
     private $baseController;
 
     /**
-     * Dashboard constructor.
+     * Login constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
@@ -38,22 +38,25 @@ class Dashboard extends Configuration
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
-        $this->allowedActions = ['getStatus'];
+        $this->allowedActions = [
+            'login',
+        ];
 
-        $this->baseController = new DashboardController();
+        $this->baseController = new LoginController();
     }
 
     /**
-     * Returns current setup status.
+     * Attempts to log the user in with the provided Packlink API key.
      *
-     * @return \Magento\Framework\Controller\Result\Json
-     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoNotRegisteredException
-     * @throws \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
      */
-    protected function getStatus()
+    protected function login()
     {
-        $status = $this->baseController->getStatus();
+        $data = $this->getPacklinkPostData();
 
-        return $this->result->setData($status->toArray());
+        $status = $this->baseController->login(!empty($data['apiKey']) ? $data['apiKey'] : '');
+
+        return $this->result->setData(['success' => $status]);
     }
 }

@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
@@ -10,8 +10,8 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\DefaultParcelController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\Exceptions\FrontDtoValidationException;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
 
 /**
  * Class DefaultParcel
@@ -20,6 +20,11 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
  */
 class DefaultParcel extends Configuration
 {
+    /**
+     * @var DefaultParcelController
+     */
+    private $baseController;
+
     /**
      * DefaultParcel constructor.
      *
@@ -38,6 +43,8 @@ class DefaultParcel extends Configuration
             'getDefaultParcel',
             'setDefaultParcel',
         ];
+
+        $this->baseController = new DefaultParcelController();
     }
 
     /**
@@ -47,19 +54,17 @@ class DefaultParcel extends Configuration
      */
     protected function getDefaultParcel()
     {
-        $parcel = $this->getConfigService()->getDefaultParcel();
+        $parcel = $this->baseController->getDefaultParcel();
 
-        if (!$parcel) {
-            return $this->result;
-        }
-
-        return $this->result->setData($parcel->toArray());
+        return $this->result->setData($parcel ? $parcel->toArray() : []);
     }
 
     /**
      * Sets default parcel.
      *
      * @return \Magento\Framework\Controller\Result\Json
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
      */
     protected function setDefaultParcel()
     {
@@ -67,13 +72,11 @@ class DefaultParcel extends Configuration
         $data['default'] = true;
 
         try {
-            $parcelInfo = ParcelInfo::fromArray($data);
+            $this->baseController->setDefaultParcel($data);
         } catch (FrontDtoValidationException $e) {
             return $this->formatValidationErrorResponse($e->getValidationErrors());
         }
 
-        $this->getConfigService()->setDefaultParcel($parcelInfo);
-
-        return $this->result->setData($parcelInfo->toArray());
+        return $this->getDefaultParcel();
     }
 }
