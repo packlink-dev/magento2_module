@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "463e8e69d86387598945ebf0a1d2a43f",
+    "content-hash": "94c04c752b5adb6aa6e4be10dfc67d6f",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "v3.1.1",
+            "version": "dev-feature/multi-currency-support",
             "source": {
                 "type": "git",
-                "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "c3955dae544adc7ffd8502f86e2ca462bbbdd2ae"
+                "url": "git@github.com:logeecom/pl_module_core",
+                "reference": "72346382a5bc4c04cce1265e68847d33758271d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/c3955dae544adc7ffd8502f86e2ca462bbbdd2ae",
-                "reference": "c3955dae544adc7ffd8502f86e2ca462bbbdd2ae",
+                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/72346382a5bc4c04cce1265e68847d33758271d8",
+                "reference": "72346382a5bc4c04cce1265e68847d33758271d8",
                 "shasum": ""
             },
             "require": {
@@ -33,13 +33,15 @@
             "autoload": {
                 "psr-4": {
                     "Logeecom\\Infrastructure\\": "src/Infrastructure",
-                    "Packlink\\BusinessLogic\\": "src/BusinessLogic"
+                    "Packlink\\BusinessLogic\\": "src/BusinessLogic",
+                    "Packlink\\Brands\\": "src/Brands"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
                     "Logeecom\\Tests\\Infrastructure\\": "tests/Infrastructure",
-                    "Logeecom\\Tests\\BusinessLogic\\": "tests/BusinessLogic"
+                    "Logeecom\\Tests\\BusinessLogic\\": "tests/BusinessLogic",
+                    "Logeecom\\Tests\\Brands\\": "tests/Brands"
                 }
             },
             "scripts": {
@@ -54,7 +56,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2021-03-30T09:54:57+00:00"
+            "time": "2021-06-19T17:37:48+00:00"
         }
     ],
     "packages-dev": [
@@ -1239,7 +1241,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "packlink/integration-core": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
