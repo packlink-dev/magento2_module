@@ -108,6 +108,8 @@
                     'my-shipping-services': {
                         'getServicesUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getActive'); ?>",
                         'deleteServiceUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'deactivate'); ?>",
+                        'getCurrencyDetailsUrl': "<?php echo $block->getControllerUrl('SystemInfo', 'get'); ?>",
+                        'systemId': "<?php echo $block->getCurrentStoreId(); ?>",
                     },
                     'pick-shipping-service': {
                         'getActiveServicesUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getActive'); ?>",
@@ -116,12 +118,15 @@
                         'startAutoConfigureUrl': "<?php echo $block->getControllerUrl('AutoConfigure', 'start'); ?>",
                         'disableCarriersUrl':
                             '',
+                        'getCurrencyDetailsUrl': "<?php echo $block->getControllerUrl('SystemInfo', 'get'); ?>",
+                        'systemId': "<?php echo $block->getCurrentStoreId(); ?>",
                     },
                     'edit-service': {
                         'getServiceUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getShippingMethod'); ?>",
                         'saveServiceUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'save'); ?>",
                         'getTaxClassesUrl': '',
                         'getCountriesListUrl': "<?php echo $block->getControllerUrl('ShippingCountries', 'getAll'); ?>",
+                        'getCurrencyDetailsUrl': "<?php echo $block->getControllerUrl('SystemInfo', 'get'); ?>",
                         'hasTaxConfiguration': false,
                         'hasCountryConfiguration': true,
                         'canDisplayCarrierLogos': true,

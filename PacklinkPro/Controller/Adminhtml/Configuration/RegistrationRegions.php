@@ -63,7 +63,7 @@ class RegistrationRegions extends Configuration
 
         if ($user) {
             $locale = substr($user->getInterfaceLocale(), 0, 2);
-            ConfigService::setCurrentLanguage(
+            ConfigService::setUICountryCode(
                 in_array($locale, ['en', 'de', 'es', 'fr', 'it']) ? $locale : 'en'
             );
         }

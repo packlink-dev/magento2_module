@@ -33,6 +33,8 @@ class SystemInfoService implements SystemInfoInterface
      * Returns system information.
      *
      * @return SystemInfo[]
+     *
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSystemDetails()
     {
@@ -41,11 +43,13 @@ class SystemInfoService implements SystemInfoInterface
         $systemDetails = [];
 
         foreach ($stores as $store) {
-            $systemDetails[] = SystemInfo::fromArray([
-               'system_id' => $store->getId(),
-               'system_name' => $store->getName(),
-               'currencies' => [$store->getDefaultCurrencyCode()],
-            ]);
+            if ($store->getGroup()->getCode() !== 'default') {
+                $systemDetails[] = SystemInfo::fromArray([
+                    'system_id' => $store->getGroup()->getId(),
+                    'system_name' => $store->getGroup()->getName(),
+                    'currencies' => [$store->getDefaultCurrencyCode()],
+                ]);
+            }
         }
 
         return $systemDetails;

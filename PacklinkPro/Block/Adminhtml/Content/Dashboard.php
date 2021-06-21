@@ -9,6 +9,7 @@ namespace Packlink\PacklinkPro\Block\Adminhtml\Content;
 
 use Magento\Backend\Block\Template;
 use Magento\Framework\Module\ModuleListInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\UrlHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
@@ -51,6 +52,10 @@ class Dashboard extends Content
      * @var ModuleListInterface
      */
     protected $moduleList;
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
 
     /**
      * Dashboard constructor.
@@ -58,6 +63,7 @@ class Dashboard extends Content
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
      * @param \Packlink\PacklinkPro\Helper\UrlHelper $urlHelper
+     * @param StoreManagerInterface $storeManager
      * @param \Magento\Framework\Module\ModuleListInterface $moduleList
      * @param array $data
      */
@@ -65,12 +71,14 @@ class Dashboard extends Content
         Template\Context $context,
         Bootstrap $bootstrap,
         UrlHelper $urlHelper,
+        StoreManagerInterface $storeManager,
         ModuleListInterface $moduleList,
         array $data = []
     ) {
         parent::__construct($context, $bootstrap, $urlHelper, $data);
 
         $this->moduleList = $moduleList;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -105,6 +113,20 @@ class Dashboard extends Content
     public function getPluginVersion()
     {
         return $this->moduleList->getOne('Packlink_PacklinkPro')['setup_version'];
+    }
+
+    /**
+     * Returns current store ID.
+     *
+     * @return string|null
+     *
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getCurrentStoreId()
+    {
+        $store = $this->storeManager->getStore();
+
+        return ($store !== null) ? (string)$store->getId() : null;
     }
 
     /**

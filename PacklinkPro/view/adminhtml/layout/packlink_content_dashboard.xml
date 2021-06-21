@@ -49,6 +49,8 @@
         <link src="Packlink_PacklinkPro::js/MagentoOrderOverviewDraft.js"/>
         <link src="Packlink_PacklinkPro::js/MagentoPrintLabel.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/ShippingServicesRenderer.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/SingleStorePricePolicyController.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/SettingsButtonService.js"/>
     </head>
     <body>
         <referenceContainer name="page.messages">
