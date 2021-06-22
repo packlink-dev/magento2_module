@@ -23,6 +23,7 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingMethod;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Models\ShippingPricePolicy;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Utility\ShipmentStatus;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\SystemInformation\SystemInfoService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\TaskCleanupTask;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\UpdateShipmentDataTask;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Tasks\UpdateShippingServicesTask;
@@ -80,6 +81,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '1.2.0', '<')) {
             $this->upgradeTo120($setup, $context);
+        }
+
+        if (version_compare($context->getVersion(), '1.3.0', '<')) {
+            $this->upgradeTo130($setup);
         }
     }
 
@@ -219,6 +224,23 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
+     * Runs the upgrade script for v1.3.0.
+     *
+     * @param SchemaSetupInterface $setup
+     *
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\QueueStorageUnavailableException
+     */
+    protected function upgradeTo130(SchemaSetupInterface $setup)
+    {
+        Logger::logInfo('Started executing V1.3.0 update script.');
+
+        $this->updateSystemSpecificShippingMethods($setup);
+        $this->updateShippingServices();
+
+        Logger::logInfo('Update script V1.2.0 has been successfully completed.');
+    }
+
+    /**
      * Updates shipping methods.
      *
      * @param SchemaSetupInterface $setup
@@ -231,13 +253,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         /** @var CarrierService $carrierService */
         $carrierService = ServiceRegister::getService(ShopShippingMethodService::CLASS_NAME);
 
-        $connection = $setup->getConnection();
-
-        $select = $connection->select()
-            ->from(InstallSchema::PACKLINK_ENTITY_TABLE)
-            ->where('type = ?', 'ShippingService');
-
-        $entities = $connection->fetchAll($select);
+        $entities = $this->getShippingMethodRecords($setup);
 
         foreach ($entities as $entity) {
             $data = json_decode($entity['data'], true);
@@ -251,6 +267,54 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $carrierService->update($shippingMethod);
             }
         }
+    }
+
+    /**
+     * Updates system specific shipping methods.
+     *
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $setup
+     *
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Packlink\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException
+     */
+    protected function updateSystemSpecificShippingMethods(SchemaSetupInterface $setup)
+    {
+        $repository = RepositoryRegistry::getRepository(ShippingMethod::getClassName());
+        /** @var \Packlink\PacklinkPro\Services\BusinessLogic\SystemInfoService $systemInfoService */
+        $systemInfoService = ServiceRegister::getService(SystemInfoService::CLASS_NAME);
+        $systemDetails = $systemInfoService->getSystemDetails();
+
+        $entities = $this->getShippingMethodRecords($setup);
+
+        foreach ($entities as $entity) {
+            $data = json_decode($entity['data'], true);
+            $data['currency'] = 'EUR';
+            $data['fixedPrices'] = null;
+            $data['systemDefaults'] = null;
+            $data['pricingPolicies'] = $this->getSystemSpecificPricingPolicies($data, $systemDetails);
+
+            $shippingMethod = ShippingMethod::fromArray($data);
+            $repository->update($shippingMethod);
+        }
+    }
+
+    /**
+     * Returns shipping method records from the entity table.
+     *
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $setup
+     *
+     * @return array
+     */
+    protected function getShippingMethodRecords(SchemaSetupInterface $setup)
+    {
+        $connection = $setup->getConnection();
+
+        $select = $connection->select()
+            ->from(InstallSchema::PACKLINK_ENTITY_TABLE)
+            ->where('type = ?', 'ShippingService');
+
+        return $connection->fetchAll($select);
     }
 
     /**
@@ -291,6 +355,36 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $connection->update(InstallSchema::PACKLINK_ENTITY_TABLE, ['data' => json_encode($parcel)], ['id =? ' => $entity['id']]);
             }
         }
+    }
+
+    /**
+     * Returns system specific pricing policies for a given shipping method.
+     *
+     * @param array $method
+     * @param \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\SystemInfo[] $systemDetails
+     *
+     * @return array
+     *
+     * @throws \Packlink\BusinessLogic\DTO\Exceptions\FrontDtoValidationException
+     */
+    protected function getSystemSpecificPricingPolicies(array $method, $systemDetails)
+    {
+        $policies = [];
+        $isMultistore = count($systemDetails) > 1;
+
+        if (!empty($method['pricingPolicies'])) {
+            foreach ($method['pricingPolicies'] as $policy) {
+                foreach ($systemDetails as $systemInfo) {
+                    $newPolicy = ShippingPricePolicy::fromArray($policy);
+                    $newPolicy->usesDefault = true;
+                    $newPolicy->systemId = $isMultistore ? $systemInfo->systemId : null;
+
+                    $policies[] = $newPolicy->toArray();
+                }
+            }
+        }
+
+        return $policies;
     }
 
     /**
