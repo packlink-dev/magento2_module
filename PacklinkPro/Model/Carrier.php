@@ -12,6 +12,7 @@ namespace Packlink\PacklinkPro\Model;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\Package;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
@@ -44,6 +45,10 @@ class Carrier extends AbstractCarrier implements CarrierInterface
      * @var ShippingMethodService
      */
     private $shippingMethodsService;
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -52,12 +57,14 @@ class Carrier extends AbstractCarrier implements CarrierInterface
         \Magento\Shipping\Model\Rate\ResultFactory $rateFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $methodFactory,
         \Packlink\PacklinkPro\Bootstrap $bootstrap,
+        StoreManagerInterface $storeManager,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
 
         $this->rateMethodFactory = $methodFactory;
         $this->rateResultFactory = $rateFactory;
+        $this->storeManager = $storeManager;
 
         $bootstrap->initInstance();
     }
@@ -226,6 +233,8 @@ class Carrier extends AbstractCarrier implements CarrierInterface
             return [];
         }
 
+        $store = $this->storeManager->getStore();
+
         return ShippingCostCalculator::getShippingCosts(
             $methods,
             $warehouse->country,
@@ -233,7 +242,8 @@ class Carrier extends AbstractCarrier implements CarrierInterface
             $data['dest_country_id'],
             $data['dest_postcode'],
             $this->getPackages($data['package_weight'], $data['package_qty'] ?: 1),
-            $data['package_physical_value']
+            $data['package_physical_value'],
+            ($store !== null) ? (string)$store->getId() : null
         );
     }
 
