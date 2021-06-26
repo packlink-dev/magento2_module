@@ -370,13 +370,12 @@ class UpgradeSchema implements UpgradeSchemaInterface
     protected function getSystemSpecificPricingPolicies(array $method, $systemDetails)
     {
         $policies = [];
-        $isMultistore = count($systemDetails) > 1;
 
         if (!empty($method['pricingPolicies'])) {
             foreach ($method['pricingPolicies'] as $policy) {
                 foreach ($systemDetails as $systemInfo) {
                     $newPolicy = ShippingPricePolicy::fromArray($policy);
-                    $newPolicy->systemId = $isMultistore ? $systemInfo->systemId : null;
+                    $newPolicy->systemId = $systemInfo->systemId;
 
                     $policies[] = $newPolicy->toArray();
                 }
