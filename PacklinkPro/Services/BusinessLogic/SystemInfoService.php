@@ -43,11 +43,11 @@ class SystemInfoService implements SystemInfoInterface
         $systemDetails = [];
 
         foreach ($stores as $store) {
-            if ($store->getGroup()->getCode() !== 'default') {
+            if ($store->getCode() !== 'admin') {
                 $systemDetails[] = SystemInfo::fromArray([
-                    'system_id' => $store->getGroup()->getId(),
-                    'system_name' => $store->getGroup()->getName(),
-                    'currencies' => [$store->getDefaultCurrencyCode()],
+                    'system_id' => $store->getId(),
+                    'system_name' => $store->getName() . ' (' . $store->getWebsite()->getName() . ')',
+                    'currencies' => [$store->getCurrentCurrencyCode()],
                 ]);
             }
         }
@@ -74,8 +74,8 @@ class SystemInfoService implements SystemInfoInterface
 
         return SystemInfo::fromArray([
             'system_id' => $store->getId(),
-            'system_name' => $store->getName(),
-            'currencies' => [$store->getDefaultCurrencyCode()],
+            'system_name' => $store->getName() . ' (' . $store->getWebsite()->getName() . ')',
+            'currencies' => [$store->getCurrentCurrencyCode()],
         ]);
     }
 }
