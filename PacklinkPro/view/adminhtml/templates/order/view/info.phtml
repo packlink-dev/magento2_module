@@ -172,7 +172,7 @@ $draftStatus = $block->getDraftStatus();
                                 <?= $block->escapeQuote(__('Packlink shipping cost')) ?>
                             </label>
                             <span>
-                            <?= $block->escapeHtml($block->getOrderDetails()->getCurrencySymbol()) ?><?= $block->escapeHtml($block->getOrderDetails()->getShippingCost()) ?>
+                            <?= $block->escapeHtml($block->getShippingCurrency()) ?><?= $block->escapeHtml($block->getOrderDetails()->getShippingCost()) ?>
                         </span>
                         </div>
                     <?php endif; ?>

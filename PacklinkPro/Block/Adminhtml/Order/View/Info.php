@@ -25,6 +25,7 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Orde
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\Objects\ShipmentDraftStatus;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShipmentDraft\ShipmentDraftService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Utility\CurrencySymbolService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Utility\TimeProvider;
@@ -275,6 +276,18 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
         }
 
         return $timeProvider->serializeDate($orderDetails->getLastStatusUpdateTime(), 'd.m.Y H:i:s');
+    }
+
+    /**
+     * Returns shipping cost currency.
+     *
+     * @return string
+     */
+    public function getShippingCurrency()
+    {
+        $details = $this->getOrderDetails();
+
+        return CurrencySymbolService::getCurrencySymbol($details ? $details->getCurrency() : '');
     }
 
     /**
