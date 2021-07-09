@@ -47,7 +47,7 @@ class SystemInfoService implements SystemInfoInterface
                 $systemDetails[] = SystemInfo::fromArray([
                     'system_id' => $store->getId(),
                     'system_name' => $store->getName() . ' (' . $store->getWebsite()->getName() . ')',
-                    'currencies' => [$store->getCurrentCurrencyCode()],
+                    'currencies' => [$store->getBaseCurrency()->getCurrencyCode()],
                 ]);
             }
         }
@@ -75,7 +75,7 @@ class SystemInfoService implements SystemInfoInterface
         return SystemInfo::fromArray([
             'system_id' => $store->getId(),
             'system_name' => $store->getName() . ' (' . $store->getWebsite()->getName() . ')',
-            'currencies' => [$store->getCurrentCurrencyCode()],
+            'currencies' => [$store->getBaseCurrency()->getCurrencyCode()],
         ]);
     }
 }
