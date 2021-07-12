@@ -11,7 +11,6 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\DailySchedule;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\HourlySchedule;
@@ -504,12 +503,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 /** @var OrderSendDraftTaskMapService $orderSendDraftTaskMapService */
                 $orderSendDraftTaskMapService = ServiceRegister::getService(OrderSendDraftTaskMapService::CLASS_NAME);
 
-                /** @var CountryService $countryService */
-                $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
-
                 $userInfo = $this->getConfigService()->getUserInfo();
                 $userDomain = 'com';
-                if ($userInfo !== null && $countryService->isBaseCountry($userInfo->country)) {
+                if ($userInfo !== null && in_array($userInfo->country, ['ES', 'DE', 'FR', 'IT'])) {
                     $userDomain = strtolower($userInfo->country);
                 }
 
