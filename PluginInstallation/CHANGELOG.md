@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [1.3.0](https://github.com/packlink-dev/magento2_module/compare/v1.2.0...1.3.0)
 ### Changed
 - Updated to the module white-label changes.
 - Updated to the multi-currency changes.
