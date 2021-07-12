@@ -2,7 +2,7 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 /** @var Packlink\PacklinkPro\Block\Adminhtml\Order\View\Info $block */
@@ -172,7 +172,7 @@ $draftStatus = $block->getDraftStatus();
                                 <?= $block->escapeQuote(__('Packlink shipping cost')) ?>
                             </label>
                             <span>
-                            €<?= $block->escapeHtml($block->getOrderDetails()->getShippingCost()) ?>
+                            <?= $block->escapeHtml($block->getShippingCurrency()) ?><?= $block->escapeHtml($block->getOrderDetails()->getShippingCost()) ?>
                         </span>
                         </div>
                     <?php endif; ?>

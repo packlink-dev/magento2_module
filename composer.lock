@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a5126d24b8602070117b25b08b743d3b",
+    "content-hash": "2796881044504438197d962f44eb3c48",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "v3.1.0",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "627ed381055381ceeb682bf9abdeff8cb4ed0e50"
+                "reference": "f4d3bb7dca8e88611bf5b0a7eb9dbbc3db2af2b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/627ed381055381ceeb682bf9abdeff8cb4ed0e50",
-                "reference": "627ed381055381ceeb682bf9abdeff8cb4ed0e50",
+                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/f4d3bb7dca8e88611bf5b0a7eb9dbbc3db2af2b4",
+                "reference": "f4d3bb7dca8e88611bf5b0a7eb9dbbc3db2af2b4",
                 "shasum": ""
             },
             "require": {
@@ -33,13 +33,15 @@
             "autoload": {
                 "psr-4": {
                     "Logeecom\\Infrastructure\\": "src/Infrastructure",
-                    "Packlink\\BusinessLogic\\": "src/BusinessLogic"
+                    "Packlink\\BusinessLogic\\": "src/BusinessLogic",
+                    "Packlink\\Brands\\": "src/Brands"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
                     "Logeecom\\Tests\\Infrastructure\\": "tests/Infrastructure",
-                    "Logeecom\\Tests\\BusinessLogic\\": "tests/BusinessLogic"
+                    "Logeecom\\Tests\\BusinessLogic\\": "tests/BusinessLogic",
+                    "Logeecom\\Tests\\Brands\\": "tests/Brands"
                 }
             },
             "scripts": {
@@ -54,7 +56,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2020-12-16T13:55:11+00:00"
+            "time": "2021-07-06T10:29:15+00:00"
         }
     ],
     "packages-dev": [
@@ -1248,5 +1250,6 @@
     "platform-dev": [],
     "platform-overrides": {
         "php": "5.6.39"
-    }
+    },
+    "plugin-api-version": "2.0.0"
 }

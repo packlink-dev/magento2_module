@@ -43,6 +43,7 @@ class Configuration extends Action
         'login',
         'registrationregions',
         'registration',
+        'systeminfo',
     ];
     /**
      * Translation messages for fields that are being validated.

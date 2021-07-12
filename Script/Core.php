@@ -28,7 +28,7 @@ class Core
     private static function copyDirectory($src, $dst)
     {
         $dir = opendir($src);
-        @mkdir($dst);
+        @mkdir($dst, 0777, true);
         while (false !== ($file = readdir($dir))) {
             if (($file !== '.') && ($file !== '..')) {
                 if (is_dir($src . '/' . $file)) {
@@ -101,8 +101,12 @@ class Core
             __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/css'
         );
         self::copyDirectory(
-            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/lang',
-            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/lang'
+            __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/countries',
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/countries'
+        );
+        self::copyDirectory(
+            __DIR__ . '/../vendor/packlink/integration-core/src/Brands/Packlink/Resources/countries',
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/brand/countries'
         );
         self::copyDirectory(
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/templates',

@@ -2,17 +2,17 @@
 /**
  * @package    Packlink_PacklinkPro
  * @author     Packlink Shipping S.L.
- * @copyright  2020 Packlink
+ * @copyright  2021 Packlink
  */
 
 namespace Packlink\PacklinkPro\Block\Adminhtml\Content;
 
 use Magento\Backend\Block\Template;
 use Magento\Framework\Module\ModuleListInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Packlink\PacklinkPro\Bootstrap;
 use Packlink\PacklinkPro\Helper\UrlHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
@@ -51,6 +51,10 @@ class Dashboard extends Content
      * @var ModuleListInterface
      */
     protected $moduleList;
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
 
     /**
      * Dashboard constructor.
@@ -58,6 +62,7 @@ class Dashboard extends Content
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
      * @param \Packlink\PacklinkPro\Helper\UrlHelper $urlHelper
+     * @param StoreManagerInterface $storeManager
      * @param \Magento\Framework\Module\ModuleListInterface $moduleList
      * @param array $data
      */
@@ -65,12 +70,14 @@ class Dashboard extends Content
         Template\Context $context,
         Bootstrap $bootstrap,
         UrlHelper $urlHelper,
+        StoreManagerInterface $storeManager,
         ModuleListInterface $moduleList,
         array $data = []
     ) {
         parent::__construct($context, $bootstrap, $urlHelper, $data);
 
         $this->moduleList = $moduleList;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -108,6 +115,20 @@ class Dashboard extends Content
     }
 
     /**
+     * Returns current store ID.
+     *
+     * @return string|null
+     *
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getCurrentStoreId()
+    {
+        $store = $this->storeManager->getStore();
+
+        return ($store !== null) ? (string)$store->getId() : null;
+    }
+
+    /**
      * Returns locale for support URLs.
      *
      * @return string
@@ -116,12 +137,10 @@ class Dashboard extends Content
     {
         /** @var ConfigurationService $configService */
         $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-        /** @var \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Country\CountryService $countryService */
-        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
 
         $userInfo = $configService->getUserInfo();
         $locale = 'EN';
-        if ($userInfo !== null && $countryService->isBaseCountry($userInfo->country)) {
+        if ($userInfo !== null && in_array($userInfo->country, ['ES', 'DE', 'FR', 'IT'])) {
             $locale = $userInfo->country;
         }
 

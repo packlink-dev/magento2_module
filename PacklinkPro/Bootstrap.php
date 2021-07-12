@@ -8,11 +8,15 @@
 namespace Packlink\PacklinkPro;
 
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Module\Dir;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\StoreManagerInterface;
 use Packlink\PacklinkPro\Entity\QuoteCarrierDropOffMapping;
+use Packlink\PacklinkPro\IntegrationCore\Brands\Packlink\PacklinkConfigurationService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\BootstrapComponent;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Brand\BrandConfigurationService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\FileResolver\FileResolverService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\ShopOrderService as ShopOrderServiceInterface;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\Models\OrderShipmentDetails;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Scheduler\Models\Schedule;
@@ -36,11 +40,14 @@ use Packlink\PacklinkPro\Repository\QueueItemRepository;
 use Packlink\PacklinkPro\Services\BusinessLogic\CarrierService;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 use Packlink\PacklinkPro\Services\BusinessLogic\ShopOrderService;
+use Packlink\PacklinkPro\Services\BusinessLogic\SystemInfoService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\SystemInformation\SystemInfoService as SystemInfoInterface;
 use Packlink\PacklinkPro\Services\BusinessLogic\UserAccountService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\User\UserAccountService as BaseUserAccountService;
 use Packlink\PacklinkPro\Services\Infrastructure\LoggerService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Registration\RegistrationInfoService as RegistrationInfoServiceInterface;
 use Packlink\PacklinkPro\Services\BusinessLogic\RegistrationInfoService;
+use Magento\Framework\Module\Dir\Reader;
 
 /**
  * Class Bootstrap
@@ -91,6 +98,14 @@ class Bootstrap extends BootstrapComponent
      * @var StoreManagerInterface
      */
     private $storeManager;
+    /**
+     * @var SystemInfoService
+     */
+    private $systemInfoService;
+    /**
+     * @var Reader
+     */
+    private $moduleReader;
 
     /**
      * Bootstrap constructor.
@@ -104,6 +119,8 @@ class Bootstrap extends BootstrapComponent
      * @param \Magento\Backend\Model\Auth\Session $session
      * @param \Magento\Store\Model\Information $information
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param SystemInfoService $systemInfoService
+     * @param \Magento\Framework\Module\Dir\Reader $moduleReader
      */
     public function __construct(
         CurlHttpClient $httpClientService,
@@ -114,7 +131,9 @@ class Bootstrap extends BootstrapComponent
         UserAccountService $userAccountService,
         Session $session,
         Information $information,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        SystemInfoService $systemInfoService,
+        Reader $moduleReader
     ) {
         $this->httpClientService = $httpClientService;
         $this->loggerService = $loggerService;
@@ -125,6 +144,8 @@ class Bootstrap extends BootstrapComponent
         $this->session = $session;
         $this->information = $information;
         $this->storeManager = $storeManager;
+        $this->systemInfoService = $systemInfoService;
+        $this->moduleReader = $moduleReader;
 
         static::$instance = $this;
     }
@@ -197,6 +218,13 @@ class Bootstrap extends BootstrapComponent
         );
 
         ServiceRegister::registerService(
+            BrandConfigurationService::CLASS_NAME,
+            function () {
+                return new PacklinkConfigurationService();
+            }
+        );
+
+        ServiceRegister::registerService(
             HttpClient::CLASS_NAME,
             function () use ($instance) {
                 return $instance->httpClientService;
@@ -232,6 +260,28 @@ class Bootstrap extends BootstrapComponent
                     $this->information,
                     $this->storeManager
                 );
+            }
+        );
+
+        ServiceRegister::registerService(
+            SystemInfoInterface::CLASS_NAME,
+            function () use ($instance) {
+                return $instance->systemInfoService;
+            }
+        );
+
+        $viewDir = $this->moduleReader->getModuleDir(
+            Dir::MODULE_VIEW_DIR,
+            'Packlink_PacklinkPro'
+        );
+
+        ServiceRegister::registerService(
+            FileResolverService::CLASS_NAME,
+            function () use ($viewDir) {
+                return new FileResolverService([
+                    $viewDir . '/adminhtml/web/packlink/countries',
+                    $viewDir . '/adminhtml/web/packlink/brand/countries',
+                ]);
             }
         );
     }

@@ -15,6 +15,7 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\View\Result\PageFactory;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\CountryLabels\Interfaces\CountryService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Interfaces\TaskRunnerWakeup;
@@ -83,7 +84,7 @@ class Dashboard extends Action
 
         if ($user) {
             $locale = substr($user->getInterfaceLocale(), 0, 2);
-            Configuration::setCurrentLanguage(
+            Configuration::setUICountryCode(
                 in_array($locale, ['en', 'de', 'es', 'fr', 'it']) ? $locale : 'en'
             );
         }
@@ -167,35 +168,17 @@ class Dashboard extends Action
      */
     public function getTranslations()
     {
+        $locale = Configuration::getUICountryCode();
+
+        /** @var \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\CountryLabels\CountryService $countryService */
+        $countryService = ServiceRegister::getService(CountryService::CLASS_NAME);
+        $default = $countryService->getAllLabels('en');
+        $current = $countryService->getAllLabels($locale);
+
         return [
-            'default' => $this->getDefaultTranslations(),
-            'current' => $this->getCurrentTranslations(),
+            'default' => $default['en'],
+            'current' => $current[$locale],
         ];
-    }
-
-    /**
-     * Returns JSON encoded module page translations in the default language and some module-specific translations.
-     *
-     * @return string
-     */
-    private function getDefaultTranslations()
-    {
-        $baseDir = __DIR__ . '/../../../view/adminhtml/web/packlink/lang/';
-
-        return json_decode(file_get_contents($baseDir . 'en.json'), true);
-    }
-
-    /**
-     * Returns JSON encoded module page translations in the current language and some module-specific translations.
-     *
-     * @return string
-     */
-    private function getCurrentTranslations()
-    {
-        $baseDir = __DIR__ . '/../../../view/adminhtml/web/packlink/lang/';
-        $locale = Configuration::getCurrentLanguage();
-
-        return json_decode(file_get_contents($baseDir . $locale . '.json'), true);
     }
 
     /**

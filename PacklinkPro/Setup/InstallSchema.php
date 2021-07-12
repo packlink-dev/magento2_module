@@ -12,7 +12,6 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Sales\Model\Order;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\Helper\LocalizationHelper;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Utility\ShipmentStatus;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
@@ -28,20 +27,14 @@ use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 class InstallSchema implements InstallSchemaInterface
 {
     const PACKLINK_ENTITY_TABLE = 'packlink_entity';
-    /**
-     * @var LocalizationHelper
-     */
-    private $localizationHelper;
 
     /**
      * InstallSchema constructor.
      *
      * @param Bootstrap $bootstrap Bootstrap component.
-     * @param LocalizationHelper $localizationHelper
      */
-    public function __construct(Bootstrap $bootstrap, LocalizationHelper $localizationHelper)
+    public function __construct(Bootstrap $bootstrap)
     {
-        $this->localizationHelper = $localizationHelper;
         $bootstrap->initInstance();
     }
 
@@ -63,7 +56,6 @@ class InstallSchema implements InstallSchemaInterface
         $databaseHandler->dropEntityTable(self::PACKLINK_ENTITY_TABLE);
         $databaseHandler->createEntityTable(self::PACKLINK_ENTITY_TABLE);
         $this->initializePlugin();
-        $this->localizationHelper->copyTranslations();
 
         $installer->endSetup();
     }
