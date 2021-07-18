@@ -40,8 +40,8 @@ removeUnnecessaryFiles() {
   rm -rf packlink/PacklinkPro/IntegrationCore/BusinessLogic/Resources/countries/fromCSV.php
   rm -rf packlink/PacklinkPro/IntegrationCore/BusinessLogic/Resources/countries/toCSV.php
   rm -rf packlink/PacklinkPro/IntegrationCore/Infrastructure/Serializer/Concrete/NativeSerializer.php
-  rm -rf packlink/PacklinkPro/view/adminhtml/web/packlink/lang/fromCSV.php
-  rm -rf packlink/PacklinkPro/view/adminhtml/web/packlink/lang/toCSV.php
+  rm -rf packlink/PacklinkPro/view/adminhtml/web/packlink/countries/fromCSV.php
+  rm -rf packlink/PacklinkPro/view/adminhtml/web/packlink/countries/toCSV.php
 }
 
 createZipArchives() {
