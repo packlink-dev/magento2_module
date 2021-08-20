@@ -7,6 +7,7 @@
 
 namespace Packlink\PacklinkPro\Services\Infrastructure;
 
+use Magento\Framework\App\ObjectManager;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Interfaces\ShopLoggerAdapter;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\LogData;
@@ -94,5 +95,15 @@ class LoggerService extends Singleton implements ShopLoggerAdapter
         }
 
         \call_user_func([$this->logger, self::$logLevelName[$logLevel]], $message);
+    }
+
+    /**
+     * Creates instance of this class.
+     *
+     * @return static
+     */
+    public static function create()
+    {
+        return ObjectManager::getInstance()->create(__CLASS__);
     }
 }
