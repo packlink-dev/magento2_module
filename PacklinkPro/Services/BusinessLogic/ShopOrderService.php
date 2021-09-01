@@ -145,6 +145,7 @@ class ShopOrderService implements ShopOrderServiceInterface
         }
 
         $order->setId((int)$orderId);
+        $order->setOrderNumber($orderId);
         $order->setCustomerId((int)$sourceOrder->getCustomerId());
         $order->setCurrency($sourceOrder->getOrderCurrencyCode());
         $order->setTotalPrice((float)$sourceOrder->getGrandTotal());

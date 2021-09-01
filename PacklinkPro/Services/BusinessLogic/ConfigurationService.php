@@ -7,7 +7,6 @@
 
 namespace Packlink\PacklinkPro\Services\BusinessLogic;
 
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Packlink\PacklinkPro\Helper\UrlHelper;
@@ -179,16 +178,6 @@ class ConfigurationService extends Configuration
     public function getECommerceVersion()
     {
         return $this->productMetadata->getVersion();
-    }
-
-    /**
-     * Creates instance of this class.
-     *
-     * @return static
-     */
-    public static function create()
-    {
-        return ObjectManager::getInstance()->create(__CLASS__);
     }
 
     /**

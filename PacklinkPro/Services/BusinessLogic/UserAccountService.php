@@ -9,7 +9,6 @@ namespace Packlink\PacklinkPro\Services\BusinessLogic;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\ObjectManager;
 use Magento\Shipping\Model\Config;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Information;
@@ -73,16 +72,6 @@ class UserAccountService extends BaseUserAccountService
         $this->scopeConfig = $scopeConfig;
         $this->authSession = $authSession;
         $this->storeInfo = $storeInfo;
-    }
-
-    /**
-     * Creates instance of this class.
-     *
-     * @return static
-     */
-    public static function create()
-    {
-        return ObjectManager::getInstance()->create(__CLASS__);
     }
 
     /**

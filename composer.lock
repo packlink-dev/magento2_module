@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cee3b79b68f4bafe49f819ed6e29e9e",
+    "content-hash": "cb5b315f6cab9c9510eb40d05424c266",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "dev-dev",
+            "version": "3.3.3",
             "source": {
                 "type": "git",
-                "url": "git@github.com:logeecom/pl_module_core.git",
-                "reference": "14b10b13fbf7365541944a55b20bb2e772c4d507"
+                "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
+                "reference": "a63604835b6061085b8c8cf09eb0fabd23777120"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/14b10b13fbf7365541944a55b20bb2e772c4d507",
-                "reference": "14b10b13fbf7365541944a55b20bb2e772c4d507",
+                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/a63604835b6061085b8c8cf09eb0fabd23777120",
+                "reference": "a63604835b6061085b8c8cf09eb0fabd23777120",
                 "shasum": ""
             },
             "require": {
@@ -56,7 +56,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2021-08-19T08:05:44+00:00"
+            "time": "2021-08-27T07:08:59+00:00"
         }
     ],
     "packages-dev": [
@@ -1241,9 +1241,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "packlink/integration-core": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
