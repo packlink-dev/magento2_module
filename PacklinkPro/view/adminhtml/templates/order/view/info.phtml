@@ -16,7 +16,7 @@ $draftStatus = $block->getDraftStatus();
 <section class="admin__page-section order-view-billing-shipping">
     <div class="admin__page-section-item order-shipping-method">
         <div class="admin__page-section-item-title">
-            <span class="title"><?= $block->escapeQuote(__('Shipping and Tracking Information')) ?></span>
+            <span class="title"><?= $block->escapeQuote((string)__('Shipping and Tracking Information')) ?></span>
         </div>
 
         <!-- DEFAULT MAGENTO CONTENT -->
@@ -24,7 +24,7 @@ $draftStatus = $block->getDraftStatus();
             <?= $block->escapeHtml($block->getCurrentOrder()->getShippingDescription()) ?>
         </div>
 
-        <?= $block->escapeQuote(__('Total Shipping Charges')) ?>:
+        <?= $block->escapeQuote((string)__('Total Shipping Charges')) ?>:
         <?= $block->displayShippingPriceInclTax($block->getCurrentOrder()) ?>
 
         <!-- PACKLINK CONTENT -->
@@ -38,7 +38,7 @@ $draftStatus = $block->getDraftStatus();
                     <?php if ($draftStatus->status === QueueItem::FAILED) : ?>
                         <div id="pl-create-draft-error" class="message message-warning warning">
                          <span id="pl-create-draft-error-text">
-                            <?= $block->escapeQuote(__('Error: ')) ?>
+                            <?= $block->escapeQuote((string)__('Error: ')) ?>
                          </span>
                             <span id="pl-create-draft-default-msg">
                             <?= $block->escapeQuote(
@@ -59,16 +59,16 @@ $draftStatus = $block->getDraftStatus();
                                 class="action- scalable primary"
                                 onclick="plCreateOrderDraft(this)"
                         >
-                            <span><?= $block->escapeQuote(__('Create order draft in Packlink PRO')) ?></span>
+                            <span><?= $block->escapeQuote((string)__('Create order draft in Packlink PRO')) ?></span>
                         </button>
                     </div>
                 <?php elseif ($draftStatus->status === QueueItem::IN_PROGRESS) : ?>
-                    <span><?= $block->escapeQuote(__('Draft is currently being created in Packlink PRO')) ?></span>
+                    <span><?= $block->escapeQuote((string)__('Draft is currently being created in Packlink PRO')) ?></span>
                 <?php elseif ($block->getOrderDetails() !== null) : ?>
                     <?php if ($block->labelExists()) : ?>
                         <div class="admin__field">
                             <label for="pl-print-label" class="admin__field-label pl-order-page-item">
-                                <?= $block->escapeQuote(__('Shipment label')) ?>
+                                <?= $block->escapeQuote((string)__('Shipment label')) ?>
                             </label>
                             <button
                                     type="button"
@@ -82,31 +82,31 @@ $draftStatus = $block->getDraftStatus();
                                     onclick="plPrintShipmentLabel(this)"
                             >
                                 <?php if ($block->labelPrinted()) : ?>
-                                    <?= $block->escapeQuote(__('Printed')) ?>
+                                    <?= $block->escapeQuote((string)__('Printed')) ?>
                                 <?php else : ?>
-                                    <?= $block->escapeQuote(__('Print')) ?>
+                                    <?= $block->escapeQuote((string)__('Print')) ?>
                                 <?php endif; ?>
                             </button>
-                            <div class="pl-printed-label" hidden><?= $block->escapeQuote(__('Printed')) ?></div>
+                            <div class="pl-printed-label" hidden><?= $block->escapeQuote((string)__('Printed')) ?></div>
                         </div>
                     <?php endif; ?>
                     <?php if ($block->getShippingMethod() !== null) : ?>
                         <div class="admin__field">
                             <label class="admin__field-label pl-order-page-item">
-                                <?= $block->escapeQuote(__('Shipment details')) ?>
+                                <?= $block->escapeQuote((string)__('Shipment details')) ?>
                             </label>
                             <table class="data-table admin__control-table pl-shipment-details"
                                    id="shipment_tracking_info">
                                 <thead>
                                 <tr class="headings">
                                     <th class="col-carrier-logo">
-                                        <?= $block->escapeQuote(__('Carrier logo')) ?>
+                                        <?= $block->escapeQuote((string)__('Carrier logo')) ?>
                                     </th>
                                     <th class="col-carrier">
-                                        <?= $block->escapeQuote(__('Carrier')) ?>
+                                        <?= $block->escapeQuote((string)__('Carrier')) ?>
                                     </th>
                                     <th class="col-tracking-numbers">
-                                        <?= $block->escapeQuote(__('Carrier tracking numbers')) ?>
+                                        <?= $block->escapeQuote((string)__('Carrier tracking numbers')) ?>
                                     </th>
                                     <th class="col"></th>
                                 </tr>
@@ -130,13 +130,13 @@ $draftStatus = $block->getDraftStatus();
                                     <td class="col">
                                         <?php if (!empty($block->getOrderDetails()->getCarrierTrackingNumbers())) : ?>
                                             <a
-                                                href="<?= $block->escapeHtml(
-                                                    $block->getOrderDetails()->getCarrierTrackingUrl()
-                                                ) ?>"
-                                                target="_blank"
+                                                    href="<?= $block->escapeHtml(
+                                                        $block->getOrderDetails()->getCarrierTrackingUrl()
+                                                    ) ?>"
+                                                    target="_blank"
                                             >
                                                 <button type="button" class="pl-order-page-item">
-                                                    <?= $block->escapeQuote(__('Track it!')) ?>
+                                                    <?= $block->escapeQuote((string)__('Track it!')) ?>
                                                 </button>
                                             </a>
                                         <?php endif; ?>
@@ -149,7 +149,7 @@ $draftStatus = $block->getDraftStatus();
                     <?php if ($block->getOrderDetails()->getShippingStatus()) : ?>
                         <div class="admin__field">
                             <label class="admin__field-label pl-order-page-item">
-                                <?= $block->escapeQuote(__('Status')) ?>
+                                <?= $block->escapeQuote((string)__('Status')) ?>
                             </label>
                             <span style="color: grey">
                             <i class="fa fa-calendar"></i> <?= $block->escapeHtml($block->getLastStatusUpdateTime()) ?>
@@ -159,7 +159,7 @@ $draftStatus = $block->getDraftStatus();
                     <?php if ($block->getOrderDetails()->getReference()) : ?>
                         <div class="admin__field">
                             <label class="admin__field-label pl-order-page-item">
-                                <?= $block->escapeQuote(__('Packlink reference number')) ?>
+                                <?= $block->escapeQuote((string)__('Packlink reference number')) ?>
                             </label>
                             <span>
                             <?= $block->escapeHtml($block->getOrderDetails()->getReference()) ?>
@@ -169,7 +169,7 @@ $draftStatus = $block->getDraftStatus();
                     <?php if ($block->getOrderDetails()->getShippingCost()) : ?>
                         <div class="admin__field">
                             <label class="admin__field-label pl-order-page-item">
-                                <?= $block->escapeQuote(__('Packlink shipping cost')) ?>
+                                <?= $block->escapeQuote((string)__('Packlink shipping cost')) ?>
                             </label>
                             <span>
                             <?= $block->escapeHtml($block->getShippingCurrency()) ?><?= $block->escapeHtml($block->getOrderDetails()->getShippingCost()) ?>
@@ -180,7 +180,7 @@ $draftStatus = $block->getDraftStatus();
                         && !$block->getOrderDetails()->isDeleted()) : ?>
                         <a href="<?= $block->escapeHtml($block->getDraftUrl()) ?>" target="_blank">
                             <button type="button" class="pl-order-page-item">
-                                <?= $block->escapeQuote(__('View on Packlink PRO')) ?>
+                                <?= $block->escapeQuote((string)__('View on Packlink PRO')) ?>
                             </button>
                         </a>
                     <?php endif; ?>
