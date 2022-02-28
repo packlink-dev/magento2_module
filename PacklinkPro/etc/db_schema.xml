@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="packlink_entity" resource="default" engine="innodb" comment="packlink_entity">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Id"/>
+        <column xsi:type="varchar" name="type" nullable="false" length="128" comment="Type"/>
+        <column xsi:type="varchar" name="index_1" nullable="true" length="255" comment="Index1"/>
+        <column xsi:type="varchar" name="index_2" nullable="true" length="255" comment="Index2"/>
+        <column xsi:type="varchar" name="index_3" nullable="true" length="255" comment="Index3"/>
+        <column xsi:type="varchar" name="index_4" nullable="true" length="255" comment="Index4"/>
+        <column xsi:type="varchar" name="index_5" nullable="true" length="255" comment="Index5"/>
+        <column xsi:type="varchar" name="index_6" nullable="true" length="255" comment="Index6"/>
+        <column xsi:type="varchar" name="index_7" nullable="true" length="255" comment="Index7"/>
+        <column xsi:type="varchar" name="index_8" nullable="true" length="255" comment="Index8"/>
+        <column xsi:type="longtext" name="data" nullable="false" comment="Data"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+    </table>
+</schema>
