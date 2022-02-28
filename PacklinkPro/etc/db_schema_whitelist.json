@@ -1,0 +1,20 @@
+{
+    "packlink_entity": {
+        "column": {
+            "id": true,
+            "type": true,
+            "index_1": true,
+            "index_2": true,
+            "index_3": true,
+            "index_4": true,
+            "index_5": true,
+            "index_6": true,
+            "index_7": true,
+            "index_8": true,
+            "data": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}
