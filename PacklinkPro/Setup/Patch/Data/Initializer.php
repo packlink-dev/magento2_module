@@ -1,69 +1,43 @@
 <?php
-/**
- * @package    Packlink_PacklinkPro
- * @author     Packlink Shipping S.L.
- * @copyright  2021 Packlink
- */
 
-namespace Packlink\PacklinkPro\Setup;
+namespace Packlink\PacklinkPro\Setup\Patch\Data;
 
-use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Sales\Model\Order;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Utility\ShipmentStatus;
+use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\Logger;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Exceptions\TaskRunnerStatusStorageUnavailableException;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
 /**
- * Class InstallSchema
+ * Class Initializer
  *
- * @package Packlink\PacklinkPro\Setup
+ * @package Packlink\PacklinkPro\Setup\Patch\Data
  */
-class InstallSchema implements InstallSchemaInterface
+class Initializer implements DataPatchInterface
 {
-    const PACKLINK_ENTITY_TABLE = 'packlink_entity';
-
     /**
-     * InstallSchema constructor.
-     *
-     * @param Bootstrap $bootstrap Bootstrap component.
+     * @param Bootstrap $bootstrap
      */
     public function __construct(Bootstrap $bootstrap)
     {
-        $bootstrap->initInstance();
+        $bootstrap::init();
     }
 
-    /**
-     * Installs DB schema for a module
-     *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     *
-     * @return void
-     *
-     * @throws \Zend_Db_Exception
-     */
-    public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    public static function getDependencies()
     {
-        $installer = $setup->startSetup();
-
-        $databaseHandler = new DatabaseHandler($installer);
-        $databaseHandler->dropEntityTable(self::PACKLINK_ENTITY_TABLE);
-        $databaseHandler->createEntityTable(self::PACKLINK_ENTITY_TABLE);
-        $this->initializePlugin();
-
-        $installer->endSetup();
+        return [];
     }
 
-    /**
-     * Initializes entity table.
-     */
-    private function initializePlugin()
+    public function getAliases()
+    {
+        return [];
+    }
+
+    public function apply()
     {
         try {
             /** @var ConfigurationService $configService */

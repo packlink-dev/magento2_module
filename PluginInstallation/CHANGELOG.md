@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.3.3](https://github.com/packlink-dev/magento2_module/compare/v1.3.2...1.3.3)
+### Added
+- Added carrier logos for Colis Prive and Shop2Shop shipping services.
+
 ## [1.3.2](https://github.com/packlink-dev/magento2_module/compare/v1.3.1...1.3.2)
 ### Changed
 - Updated to the latest Core changes regarding changing the value of the marketing calls flag.
