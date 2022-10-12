@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.3.4](https://github.com/packlink-dev/magento2_module/compare/v1.3.3...1.3.4)
+### Changed
+- Fixed Zip Archive opening for PHP8.1 and updated to the latest Core version regarding new webhook event
+
 ## [1.3.3](https://github.com/packlink-dev/magento2_module/compare/v1.3.2...1.3.3)
 ### Added
 - Added carrier logos for Colis Prive and Shop2Shop shipping services.

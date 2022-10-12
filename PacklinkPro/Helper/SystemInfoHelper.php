@@ -140,7 +140,7 @@ class SystemInfoHelper
         $file = tempnam(sys_get_temp_dir(), 'packlink_system_info');
 
         $zip = new \ZipArchive();
-        $zip->open($file, \ZipArchive::CREATE);
+        $zip->open($file, \ZipArchive::OVERWRITE);
 
         $phpInfo = $this->getPhpInfo();
 
