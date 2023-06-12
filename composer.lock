@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7033c6ae84dd2d7c17910ce4a067c6a0",
+    "content-hash": "742d3ef18be4ad770a61182ec88e3cbb",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "v3.3.11",
+            "version": "v3.3.15",
             "source": {
                 "type": "git",
                 "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "3a7e34b7de864c8b7a849b679edd809388e8364e"
+                "reference": "e3fb931ad8d32c3c58d2a7abb3940e52abe5d0ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/3a7e34b7de864c8b7a849b679edd809388e8364e",
-                "reference": "3a7e34b7de864c8b7a849b679edd809388e8364e",
+                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/e3fb931ad8d32c3c58d2a7abb3940e52abe5d0ec",
+                "reference": "e3fb931ad8d32c3c58d2a7abb3940e52abe5d0ec",
                 "shasum": ""
             },
             "require": {
@@ -56,7 +56,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2022-09-29T08:44:30+00:00"
+            "time": "2023-06-06T08:23:56+00:00"
         }
     ],
     "packages-dev": [
@@ -1368,5 +1368,5 @@
     "platform-overrides": {
         "php": "5.6.39"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
