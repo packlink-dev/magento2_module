@@ -247,7 +247,7 @@ class Config extends Template
         /** @var ProductMetadataInterface $productMetadata */
         $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
 
-        if (version_compare($productMetadata->getVersion(), '2.1.7', '>=')) {
+        if (version_compare($productMetadata->getVersion(), '2.4.7', '>=')) {
             /** @var \Magento\Csp\Helper\CspNonceProvider $cspNonceProvider */
             $cspNonceProvider = $objectManager->get('Magento\Csp\Helper\CspNonceProvider');
 
