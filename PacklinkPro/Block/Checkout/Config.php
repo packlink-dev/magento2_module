@@ -8,13 +8,12 @@
 namespace Packlink\PacklinkPro\Block\Checkout;
 
 use Magento\Checkout\Model\Session;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Quote\Model\Quote\Address;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\Helper\CspNonceProviderFactory;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
@@ -38,10 +37,19 @@ class Config extends Template
     private $carrierService;
 
     /**
+     * @var Template\Context
+     */
+    private $context;
+
+
+    private $nonceProviderFactory;
+
+    /**
      * @param Context $context
      * @param Session $session
      * @param Resolver $locale
      * @param Bootstrap $bootstrap
+     * @param CspNonceProviderFactory $nonceProviderFactory
      * @param array $data
      */
     public function __construct(
@@ -49,12 +57,15 @@ class Config extends Template
         Session $session,
         Resolver $locale,
         Bootstrap $bootstrap,
+        CspNonceProviderFactory $nonceProviderFactory,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->checkoutSession = $session;
         $this->locale = $locale;
+        $this->context = $context;
+        $this->nonceProviderFactory = $nonceProviderFactory;
 
         $bootstrap->initInstance();
     }
@@ -243,14 +254,9 @@ class Config extends Template
      */
     public function getCspNonce()
     {
-        $objectManager = ObjectManager::getInstance();
-        /** @var ProductMetadataInterface $productMetadata */
-        $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        $cspNonceProvider = $this->nonceProviderFactory->create();
 
-        if (version_compare($productMetadata->getVersion(), '2.4.7', '>=')) {
-            /** @var \Magento\Csp\Helper\CspNonceProvider $cspNonceProvider */
-            $cspNonceProvider = $objectManager->get('Magento\Csp\Helper\CspNonceProvider');
-
+        if ($cspNonceProvider) {
             return $cspNonceProvider->generateNonce();
         }
 
