@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.3.7](https://github.com/packlink-dev/magento2_module/compare/v1.3.6...v1.3.8)
+### Added
+- Compatibility with Magento 2.4.7
+### Fixed
+- PacklinkPro zip generation 
+
 ## [1.3.7](https://github.com/packlink-dev/magento2_module/compare/v1.3.6...1.3.7)
 ### Added
 - Compatibility with Magento 2.4.7
