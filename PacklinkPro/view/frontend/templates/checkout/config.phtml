@@ -89,7 +89,7 @@
 <span hidden id="pl-change-drop-off-text"><?= __('Change drop-off location') ?></span>
 
 
-<script>
+<script nonce="<?= $block->getCspNonce() ?>">
     (function () {
         require(
             [

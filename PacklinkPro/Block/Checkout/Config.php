@@ -10,8 +10,10 @@ namespace Packlink\PacklinkPro\Block\Checkout;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 use Magento\Quote\Model\Quote\Address;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\Helper\CspNonceProviderFactory;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Http\DTO\ParcelInfo;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\Interfaces\ShopShippingMethodService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\ShippingMethod\ShippingMethodService;
@@ -19,11 +21,6 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\Services\BusinessLogic\CarrierService;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
 
-/**
- * Class Config.
- *
- * @package Packlink\PacklinkPro\Block\Checkout
- */
 class Config extends Template
 {
     /**
@@ -40,12 +37,19 @@ class Config extends Template
     private $carrierService;
 
     /**
-     * Config constructor.
-     *
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Checkout\Model\Session $session
-     * @param \Magento\Framework\Locale\Resolver $locale
-     * @param \Packlink\PacklinkPro\Bootstrap $bootstrap
+     * @var Template\Context
+     */
+    private $context;
+
+
+    private $nonceProviderFactory;
+
+    /**
+     * @param Context $context
+     * @param Session $session
+     * @param Resolver $locale
+     * @param Bootstrap $bootstrap
+     * @param CspNonceProviderFactory $nonceProviderFactory
      * @param array $data
      */
     public function __construct(
@@ -53,12 +57,15 @@ class Config extends Template
         Session $session,
         Resolver $locale,
         Bootstrap $bootstrap,
+        CspNonceProviderFactory $nonceProviderFactory,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->checkoutSession = $session;
         $this->locale = $locale;
+        $this->context = $context;
+        $this->nonceProviderFactory = $nonceProviderFactory;
 
         $bootstrap->initInstance();
     }
@@ -237,6 +244,28 @@ class Config extends Template
         return $locale ? substr($locale, 0, 2) : 'en';
     }
 
+    /**
+     * Csp nonce is necessary for Magento version 2.1.7 and higher.
+     * Magento\Csp\Helper\CspNonceProvider class does not exist in earlier versions.
+     *
+     * @return string
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getCspNonce()
+    {
+        $cspNonceProvider = $this->nonceProviderFactory->create();
+
+        if ($cspNonceProvider) {
+            return $cspNonceProvider->generateNonce();
+        }
+
+        return '';
+    }
+
+    /**
+     * @return ShopShippingMethodService
+     */
     private function getCarrierService()
     {
         if ($this->carrierService === null) {
