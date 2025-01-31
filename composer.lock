@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "55e5e1154f30606e2e6f8b1705ccbb88",
+    "content-hash": "d3c06dd3d9394924d2a5e32c56a92cbd",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "v3.3.18",
+            "version": "dev-CR-SET-52",
             "source": {
                 "type": "git",
-                "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "4ebea15fcdda986b973bc8d6bc3332f101b852ce"
+                "url": "git@github.com:logeecom/pl_module_core.git",
+                "reference": "bc0694bf0b2dfb06473183b4799c4e4dd4610fa4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/4ebea15fcdda986b973bc8d6bc3332f101b852ce",
-                "reference": "4ebea15fcdda986b973bc8d6bc3332f101b852ce",
+                "url": "https://api.github.com/repos/logeecom/pl_module_core/zipball/bc0694bf0b2dfb06473183b4799c4e4dd4610fa4",
+                "reference": "bc0694bf0b2dfb06473183b4799c4e4dd4610fa4",
                 "shasum": ""
             },
             "require": {
@@ -56,7 +56,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2023-11-06T11:41:12+00:00"
+            "time": "2025-01-31T08:18:20+00:00"
         }
     ],
     "packages-dev": [
@@ -114,8 +114,22 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/instantiator/issues",
-                "source": "https://github.com/doctrine/instantiator/tree/master"
+                "source": "https://github.com/doctrine/instantiator/tree/1.0.5"
             },
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Finstantiator",
+                    "type": "tidelift"
+                }
+            ],
             "time": "2015-06-14T21:17:01+00:00"
         },
         {
@@ -1174,12 +1188,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                },
                 "branch-alias": {
                     "dev-main": "1.19-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
                 }
             },
             "autoload": {
@@ -1358,7 +1372,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "packlink/integration-core": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

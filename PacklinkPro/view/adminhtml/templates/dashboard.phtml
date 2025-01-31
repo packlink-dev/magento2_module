@@ -120,6 +120,8 @@
                             '',
                         'getCurrencyDetailsUrl': "<?php echo $block->getControllerUrl('SystemInfo', 'get'); ?>",
                         'systemId': "<?php echo $block->getCurrentStoreId(); ?>",
+                        'enqueue': "<?php echo $block->getControllerUrl('ManualRefresh', 'refresh'); ?>",
+                        'getTaskStatus': "<?php echo $block->getControllerUrl('ManualRefresh', 'getTaskStatus'); ?>"
                     },
                     'edit-service': {
                         'getServiceUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getShippingMethod'); ?>",
