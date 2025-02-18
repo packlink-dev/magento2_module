@@ -5,7 +5,7 @@ namespace Packlink\PacklinkPro\Controller\Adminhtml\Configuration;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Packlink\PacklinkPro\Bootstrap;
-use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ManualRefreshServiceController;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\ManualRefreshController;
 
 /**
  * Class ManualRefresh
@@ -26,7 +26,7 @@ class ManualRefresh extends Configuration
     ) {
         parent::__construct($context, $bootstrap, $jsonFactory);
 
-        $this->baseController = new ManualRefreshServiceController();
+        $this->baseController = new ManualRefreshController();
         $this->allowedActions = [
             'refresh',
             'getTaskStatus',
@@ -35,7 +35,7 @@ class ManualRefresh extends Configuration
 
     protected function refresh()
     {
-        return $this->result->setData(json_decode($this->baseController->enqueueUpdateTask(), true));
+        return $this->result->setData($this->baseController->enqueueUpdateTask()->toArray());
     }
 
     /**
@@ -46,6 +46,6 @@ class ManualRefresh extends Configuration
      */
     protected function getTaskStatus()
     {
-        return $this->result->setData(json_decode($this->baseController->getTaskStatus(), true));
+        return $this->result->setData($this->baseController->getTaskStatus()->toArray());
     }
 }
