@@ -44,6 +44,7 @@ class Configuration extends Action
         'registrationregions',
         'registration',
         'systeminfo',
+        'manualrefresh'
     ];
     /**
      * Translation messages for fields that are being validated.

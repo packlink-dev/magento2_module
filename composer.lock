@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "55e5e1154f30606e2e6f8b1705ccbb88",
+    "content-hash": "f9cfecf25fc02a84dd69d7dff0a991f9",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "v3.3.18",
+            "version": "v3.5.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "4ebea15fcdda986b973bc8d6bc3332f101b852ce"
+                "reference": "89be76fec554f0f7cf00df6ffcff5d8b1bd05acd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/4ebea15fcdda986b973bc8d6bc3332f101b852ce",
-                "reference": "4ebea15fcdda986b973bc8d6bc3332f101b852ce",
+                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/89be76fec554f0f7cf00df6ffcff5d8b1bd05acd",
+                "reference": "89be76fec554f0f7cf00df6ffcff5d8b1bd05acd",
                 "shasum": ""
             },
             "require": {
@@ -56,7 +56,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2023-11-06T11:41:12+00:00"
+            "time": "2025-03-25T16:09:23+00:00"
         }
     ],
     "packages-dev": [
@@ -114,8 +114,22 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/instantiator/issues",
-                "source": "https://github.com/doctrine/instantiator/tree/master"
+                "source": "https://github.com/doctrine/instantiator/tree/1.0.5"
             },
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Finstantiator",
+                    "type": "tidelift"
+                }
+            ],
             "time": "2015-06-14T21:17:01+00:00"
         },
         {
@@ -1174,12 +1188,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                },
                 "branch-alias": {
                     "dev-main": "1.19-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
                 }
             },
             "autoload": {
