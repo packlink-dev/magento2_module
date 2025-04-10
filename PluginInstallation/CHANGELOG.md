@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.4.1](https://github.com/packlink-dev/magento2_module/compare/v1.4.0...v1.4.1)
+### Added
+- Add security improvements
+### Changed
+- Update core to the latest version
+
 ## [1.3.7](https://github.com/packlink-dev/magento2_module/compare/v1.3.6...v1.3.8)
 ### Added
 - Compatibility with Magento 2.4.7
