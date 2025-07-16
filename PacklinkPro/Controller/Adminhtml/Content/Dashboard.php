@@ -110,10 +110,11 @@ class Dashboard extends Action
     public function getTemplates()
     {
         $baseDir = __DIR__ . '/../../../view/adminhtml/web/packlink/templates/';
+        $baseDirOverride =  __DIR__ . '/../../../view/adminhtml/web/templates/override/';
 
         return [
             'pl-configuration-page' => [
-                'pl-main-page-holder' => file_get_contents($baseDir . 'configuration.html'),
+                'pl-main-page-holder' => file_get_contents($baseDirOverride . 'configuration.html'),
             ],
             'pl-countries-selection-modal' => file_get_contents($baseDir . 'countries-selection-modal.html'),
             'pl-default-parcel-page' => [
