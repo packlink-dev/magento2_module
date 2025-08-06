@@ -55,80 +55,80 @@
     </template>
 </div>
 
-<script src="<?php echo $block->getViewFileUrl('Packlink_PacklinkPro::packlink/js/GridResizerService.js'); ?>"></script>
+<script src="<?= $block->escapeUrl(($block->getViewFileUrl('Packlink_PacklinkPro::packlink/js/GridResizerService.js'))); ?>"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
       rel="stylesheet"/>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
             let ajaxService = Packlink.ajaxService,
-                stateControllerUrl = "<?php echo $block->getControllerUrl('ModuleState', 'getCurrentState'); ?>",
-                baseResourcesUrl = "<?php echo $block->getViewFileUrl('Packlink_PacklinkPro::packlink'); ?>",
+                stateControllerUrl = "<?= $block->escapeUrl($block->getControllerUrl('ModuleState', 'getCurrentState')); ?>",
+                baseResourcesUrl = "<?= $block->escapeUrl($block->getViewFileUrl('Packlink_PacklinkPro::packlink')); ?>",
                 // URLs for AJAX actions have to be loaded here
                 // if URLs are loaded from backend all form keys will not be generated correctly
                 // and all AJAX requests will fail
                 configuration = {
                     'login': {
-                        'submit': "<?php echo $block->getControllerUrl('Login', 'login'); ?>",
-                        'listOfCountriesUrl': "<?php echo $block->getControllerUrl('RegistrationRegions', 'getRegions'); ?>",
+                        'submit': "<?= $block->escapeUrl($block->getControllerUrl('Login', 'login')); ?>",
+                        'listOfCountriesUrl': "<?= $block->escapeUrl($block->getControllerUrl('RegistrationRegions', 'getRegions')); ?>",
                         'logoPath': '',
                     },
                     'register': {
-                        'getRegistrationData': "<?php echo $block->getControllerUrl('Registration', 'getRegisterData'); ?>",
-                        'submit': "<?php echo $block->getControllerUrl('Registration', 'register')?>",
+                        'getRegistrationData': "<?= $block->escapeUrl($block->getControllerUrl('Registration', 'getRegisterData')); ?>",
+                        'submit': "<?= $block->escapeUrl($block->getControllerUrl('Registration', 'register'))?>",
                     },
                     'onboarding-state': {
-                        'getState': "<?php echo $block->getControllerUrl('Onboarding', 'getCurrentState'); ?>",
+                        'getState': "<?= $block->escapeUrl($block->getControllerUrl('Onboarding', 'getCurrentState')); ?>",
                     },
                     'onboarding-welcome': {},
                     'onboarding-overview': {
-                        'defaultParcelGet': "<?php echo $block->getControllerUrl('DefaultParcel', 'getDefaultParcel'); ?>",
-                        'defaultWarehouseGet': "<?php echo $block->getControllerUrl('DefaultWarehouse', 'getDefaultWarehouse'); ?>",
+                        'defaultParcelGet': "<?= $block->escapeUrl($block->getControllerUrl('DefaultParcel', 'getDefaultParcel')); ?>",
+                        'defaultWarehouseGet': "<?= $block->escapeUrl($block->getControllerUrl('DefaultWarehouse', 'getDefaultWarehouse')); ?>",
                     },
                     'default-parcel': {
-                        'getUrl': "<?php echo $block->getControllerUrl('DefaultParcel', 'getDefaultParcel'); ?>",
-                        'submitUrl': "<?php echo $block->getControllerUrl('DefaultParcel', 'setDefaultParcel'); ?>",
+                        'getUrl': "<?= $block->escapeUrl($block->getControllerUrl('DefaultParcel', 'getDefaultParcel')); ?>",
+                        'submitUrl': "<?= $block->escapeUrl($block->getControllerUrl('DefaultParcel', 'setDefaultParcel')); ?>",
                     },
                     'default-warehouse': {
-                        'getUrl': "<?php echo $block->getControllerUrl('DefaultWarehouse', 'getDefaultWarehouse'); ?>",
-                        'getSupportedCountriesUrl': "<?php echo $block->getControllerUrl('DefaultWarehouse', 'getSupportedCountries'); ?>",
-                        'submitUrl': "<?php echo $block->getControllerUrl('DefaultWarehouse', 'setDefaultWarehouse'); ?>",
-                        'searchPostalCodesUrl': "<?php echo $block->getControllerUrl('DefaultWarehouse', 'searchPostalCodes'); ?>",
+                        'getUrl': "<?= $block->escapeUrl($block->getControllerUrl('DefaultWarehouse', 'getDefaultWarehouse')); ?>",
+                        'getSupportedCountriesUrl': "<?= $block->escapeUrl($block->getControllerUrl('DefaultWarehouse', 'getSupportedCountries')); ?>",
+                        'submitUrl': "<?= $block->escapeUrl($block->getControllerUrl('DefaultWarehouse', 'setDefaultWarehouse')); ?>",
+                        'searchPostalCodesUrl': "<?= $block->escapeUrl($block->getControllerUrl('DefaultWarehouse', 'searchPostalCodes')); ?>",
                     },
                     'configuration': {
-                        'getDataUrl': "<?php echo $block->getControllerUrl('Configuration', 'getData'); ?>",
+                        'getDataUrl': "<?= $block->escapeUrl( $block->getControllerUrl('Configuration', 'getData')); ?>",
                     },
                     'system-info': {
-                        'getStatusUrl': "<?php echo $block->getControllerUrl('Debug', 'getStatus'); ?>",
-                        'setStatusUrl': "<?php echo $block->getControllerUrl('Debug', 'setStatus'); ?>",
+                        'getStatusUrl': "<?= $block->escapeUrl($block->getControllerUrl('Debug', 'getStatus')); ?>",
+                        'setStatusUrl': "<?= $block->escapeUrl($block->getControllerUrl('Debug', 'setStatus')); ?>",
                     },
                     'order-status-mapping': {
-                        'getMappingAndStatusesUrl': "<?php echo $block->getControllerUrl('OrderStateMapping', 'getMappingsAndStatuses'); ?>",
-                        'setUrl': "<?php echo $block->getControllerUrl('OrderStateMapping', 'setMappings'); ?>",
+                        'getMappingAndStatusesUrl': "<?= $block->escapeUrl($block->getControllerUrl('OrderStateMapping', 'getMappingsAndStatuses')); ?>",
+                        'setUrl': "<?=$block->escapeUrl($block->getControllerUrl('OrderStateMapping', 'setMappings')); ?>",
                     },
                     'my-shipping-services': {
-                        'getServicesUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getActive'); ?>",
-                        'deleteServiceUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'deactivate'); ?>",
-                        'getCurrencyDetailsUrl': "<?php echo $block->getControllerUrl('SystemInfo', 'get'); ?>",
-                        'systemId': "<?php echo $block->getCurrentStoreId(); ?>",
+                        'getServicesUrl': "<?= $block->escapeUrl($block->getControllerUrl('ShippingMethods', 'getActive')); ?>",
+                        'deleteServiceUrl': "<?= $block->escapeUrl($block->getControllerUrl('ShippingMethods', 'deactivate')); ?>",
+                        'getCurrencyDetailsUrl': "<?= $block->escapeUrl($block->getControllerUrl('SystemInfo', 'get')); ?>",
+                        'systemId': "<?= $block->escapeUrl($block->getCurrentStoreId()); ?>",
                     },
                     'pick-shipping-service': {
-                        'getActiveServicesUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getActive'); ?>",
-                        'getServicesUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getInactive'); ?>",
-                        'getTaskStatusUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getTaskStatus'); ?>",
-                        'startAutoConfigureUrl': "<?php echo $block->getControllerUrl('AutoConfigure', 'start'); ?>",
+                        'getActiveServicesUrl': "<?= $block->escapeUrl($block->getControllerUrl('ShippingMethods', 'getActive')); ?>",
+                        'getServicesUrl': "<?= $block->escapeUrl($block->getControllerUrl('ShippingMethods', 'getInactive')); ?>",
+                        'getTaskStatusUrl': "<?= $block->escapeUrl($block->getControllerUrl('ShippingMethods', 'getTaskStatus')); ?>",
+                        'startAutoConfigureUrl': "<?= $block->escapeUrl($block->getControllerUrl('AutoConfigure', 'start')); ?>",
                         'disableCarriersUrl':
                             '',
-                        'getCurrencyDetailsUrl': "<?php echo $block->getControllerUrl('SystemInfo', 'get'); ?>",
-                        'systemId': "<?php echo $block->getCurrentStoreId(); ?>",
-                        'enqueue': "<?php echo $block->getControllerUrl('ManualRefresh', 'refresh'); ?>",
-                        'getTaskStatus': "<?php echo $block->getControllerUrl('ManualRefresh', 'getTaskStatus'); ?>"
+                        'getCurrencyDetailsUrl': "<?= $block->escapeUrl($block->getControllerUrl('SystemInfo', 'get')); ?>",
+                        'systemId': "<?= $block->escapeUrl($block->getCurrentStoreId()); ?>",
+                        'enqueue': "<?= $block->escapeUrl($block->getControllerUrl('ManualRefresh', 'refresh')); ?>",
+                        'getTaskStatus': "<?= $block->escapeUrl($block->getControllerUrl('ManualRefresh', 'getTaskStatus')); ?>"
                     },
                     'edit-service': {
-                        'getServiceUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'getShippingMethod'); ?>",
-                        'saveServiceUrl': "<?php echo $block->getControllerUrl('ShippingMethods', 'save'); ?>",
+                        'getServiceUrl': "<?= $block->escapeUrl($block->getControllerUrl('ShippingMethods', 'getShippingMethod')); ?>",
+                        'saveServiceUrl': "<?= $block->escapeUrl($block->getControllerUrl('ShippingMethods', 'save')); ?>",
                         'getTaxClassesUrl': '',
-                        'getCountriesListUrl': "<?php echo $block->getControllerUrl('ShippingCountries', 'getAll'); ?>",
-                        'getCurrencyDetailsUrl': "<?php echo $block->getControllerUrl('SystemInfo', 'get'); ?>",
+                        'getCountriesListUrl': "<?=$block->escapeUrl($block->getControllerUrl('ShippingCountries', 'getAll')); ?>",
+                        'getCurrencyDetailsUrl': "<?= $block->escapeUrl($block->getControllerUrl('SystemInfo', 'get')); ?>",
                         'hasTaxConfiguration': false,
                         'hasCountryConfiguration': true,
                         'canDisplayCarrierLogos': true,
@@ -136,10 +136,10 @@
                 };
 
             ajaxService.get(
-                "<?php echo $block->getUrlHelper()->getBackendUrl(
+                "<?= $block->escapeUrl($block->getUrlHelper()->getBackendUrl(
                     'packlink/content/dashboard',
                     ['action' => 'getTranslations']
-                ); ?>",
+                )); ?>",
                 function (response) {
                     Packlink.translations = {
                         default: response['default'],
@@ -150,10 +150,10 @@
 
 
             ajaxService.get(
-                "<?php echo $block->getUrlHelper()->getBackendUrl(
+                "<?= $block->escapeUrl($block->getUrlHelper()->getBackendUrl(
                     'packlink/content/dashboard',
                     ['action' => 'getTemplates']
-                ); ?>",
+                )); ?>",
                 function (response) {
                     Packlink.state = new Packlink.StateController(
                         {

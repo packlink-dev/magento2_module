@@ -14,7 +14,7 @@ use Packlink\PacklinkPro\Block\Adminhtml\Tracking\Popup;
 <?php if ($block->orderShippedWithPacklink()): ?>
     <?php if (!empty($block->getCarrierTrackingUrl())): ?>
         <script>
-            window.location = "<?= $block->getCarrierTrackingUrl() ?>";
+            window.location = "<?= $block->escapeJsQuote($block->getCarrierTrackingUrl()) ?>";
         </script>
     <?php else: ?>
         <div class="page tracking">

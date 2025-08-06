@@ -36,6 +36,7 @@ removeUnnecessaryFiles() {
   rm -rf packlink/PacklinkPro/Test
   rm -rf packlink/PacklinkPro/IntegrationCore/Tests
   rm -rf packlink/PacklinkPro/IntegrationCore/DemoUI
+  rm -rf packlink/PacklinkPro/IntegrationCore/BusinessLogic/OAuth/Services/OAuthService.php
   rm -rf packlink/PacklinkPro/IntegrationCore/BusinessLogic/Resources/countries/translations.csv
   rm -rf packlink/PacklinkPro/IntegrationCore/BusinessLogic/Resources/countries/fromCSV.php
   rm -rf packlink/PacklinkPro/IntegrationCore/BusinessLogic/Resources/countries/toCSV.php
@@ -70,6 +71,11 @@ readVersion() {
   fi
 }
 
+replaceMtRand() {
+  echo -e "\e[32mSTEP X:\e[39m Replacing mt_rand() with random_int()..."
+  find ./packlink -type f -name "*.php" -exec sed -i 's/mt_rand(/random_int(/g' {} +
+}
+
 moveArchivesToDirectory() {
   if [[ "$version" != "" ]]; then
     if [[ ! -d ./PluginInstallation/ ]]; then
@@ -98,6 +104,7 @@ Changes are described in the [Change log](../../CHANGELOG.md)." >"./PluginInstal
 cleanup
 createTempSource
 composerInstall
+replaceMtRand
 removeUnnecessaryFiles
 createZipArchives
 readVersion

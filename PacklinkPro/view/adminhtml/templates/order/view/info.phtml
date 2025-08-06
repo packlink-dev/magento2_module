@@ -25,7 +25,7 @@ $draftStatus = $block->getDraftStatus();
         </div>
 
         <?= $block->escapeQuote((string)__('Total Shipping Charges')) ?>:
-        <?= $block->displayShippingPriceInclTax($block->getCurrentOrder()) ?>
+        <?= $block->escapeHtml($block->displayShippingPriceInclTax($block->getCurrentOrder())) ?>
 
         <!-- PACKLINK CONTENT -->
         <div class="pl-shipping">
@@ -124,7 +124,7 @@ $draftStatus = $block->getDraftStatus();
                                     </td>
                                     <td class="col-tracking-numbers">
                                         <?php if (!empty($block->getOrderDetails()->getCarrierTrackingNumbers())) : ?>
-                                            <?= $block->getCarrierTrackingNumbers() ?>
+                                            <?= $block->escapeHtml($block->getCarrierTrackingNumbers()) ?>
                                         <?php endif; ?>
                                     </td>
                                     <td class="col">

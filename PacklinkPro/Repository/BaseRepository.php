@@ -14,11 +14,6 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Interfaces\Repositor
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\QueryFilter\QueryFilter;
 use Packlink\PacklinkPro\ResourceModel\PacklinkEntity;
 
-/**
- * Class BaseRepository
- *
- * @package Packlink\PacklinkPro\Repository
- */
 class BaseRepository implements RepositoryInterface
 {
     /**
