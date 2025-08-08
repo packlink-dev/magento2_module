@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9ea732bcabebbf8e951f8e39529a8cd",
+    "content-hash": "a31e6585812ef167b9a762db5cc45eb8",
     "packages": [
         {
             "name": "packlink/integration-core",
@@ -1376,7 +1376,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.6"
+        "php": ">=5.6 <8.4"
     },
     "platform-dev": {},
     "platform-overrides": {
