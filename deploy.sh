@@ -76,6 +76,13 @@ replaceMtRand() {
   find ./packlink -type f -name "*.php" -exec sed -i 's/mt_rand(/random_int(/g' {} +
 }
 
+fixNullTypeHints() {
+  echo -e "\e[32mSTEP Z:\e[39m Removing nullable type hints..."
+
+  find ./packlink -type f -name "*.php" -exec sed -i -E \
+    's/([, (])([A-Za-z0-9_\\]+)[[:space:]]+\$([a-zA-Z0-9_]+)[[:space:]]*=\s*null/\1\$\3 = null/g' {} +
+}
+
 moveArchivesToDirectory() {
   if [[ "$version" != "" ]]; then
     if [[ ! -d ./PluginInstallation/ ]]; then
@@ -105,6 +112,7 @@ cleanup
 createTempSource
 composerInstall
 replaceMtRand
+fixNullTypeHints
 removeUnnecessaryFiles
 createZipArchives
 readVersion
