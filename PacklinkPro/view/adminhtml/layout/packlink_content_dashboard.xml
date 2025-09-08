@@ -19,7 +19,7 @@
         <link src="Packlink_PacklinkPro::packlink/js/TemplateService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/AjaxService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/AutoTestController.js"/>
-        <link src="Packlink_PacklinkPro::packlink/js/ConfigurationController.js"/>
+        <link src="Packlink_PacklinkPro::js/override/ConfigurationController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/DefaultParcelController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/TranslationService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/DefaultWarehouseController.js"/>
