@@ -77,19 +77,19 @@
 </location-picker-template>
 
 <button type="button" id="pl-drop-off-button" style="display: none">
-    <span><?= __('Select drop-off location') ?> now</span>
+    <span><?= $block->escapeHtml(__('Select drop-off location')) ?> now</span>
 </button>
 
 <div id="pl-drop-off-details" style="display: none">
-    <span><?= __('Package will be delivered to:') ?></span>
+    <span><?= $block->escapeHtml(__('Package will be delivered to:')) ?></span>
     <span id="pl-drop-off-address"></span>
 </div>
 
-<span hidden id="pl-select-drop-off-text"><?= __('Select drop-off location') ?></span>
-<span hidden id="pl-change-drop-off-text"><?= __('Change drop-off location') ?></span>
+<span hidden id="pl-select-drop-off-text"><?= $block->escapeHtml(__('Select drop-off location')) ?></span>
+<span hidden id="pl-change-drop-off-text"><?= $block->escapeHtml(__('Change drop-off location')) ?></span>
 
 
-<script nonce="<?= $block->getCspNonce() ?>">
+<script nonce="<?= $block->escapeHtmlAttr($block->getCspNonce()) ?>">
     (function () {
         require(
             [
@@ -97,10 +97,10 @@
             ],
             function (quote) {
                 let logos = [];
-                logos['backup'] = '<?= $block->getDefaultCarrierLogoUrl() ?>';
+                logos['backup'] = '<?= $block->escapeHtml($block->getDefaultCarrierLogoUrl()) ?>';
 
                 <?php foreach ($block->getMethodsWithEnabledLogos() as $id => $logoUrl): ?>
-                logos['<?= $id ?>'] = '<?= $logoUrl ?>';
+                logos['<?= $block->escapeHtml($id) ?>'] = '<?= $block->escapeHtml($logoUrl) ?>';
                 <?php endforeach; ?>
 
                 // wait until shipping methods containers are rendered
@@ -115,12 +115,12 @@
                         controller.init(
                             block,
                             quote,
-                            <?= current($block->getQuoteItemWeights()) ?>,
-                            '<?= $block->getUrl('packlink/frontend/location') ?>',
+                            <?= /* @noEscape */ current($block->getQuoteItemWeights()) ?>,
+                            '<?= $block->escapeHtml($block->getUrl('packlink/frontend/location')) ?>',
                             '.actions-toolbar button.continue,.actions-toolbar button.checkout',
                             false,
                             logos,
-                            '<?= $block->getCurrentLanguageCode() ?>'
+                            '<?= $block->escapeHtml($block->getCurrentLanguageCode()) ?>'
                         );
                     }
                 }

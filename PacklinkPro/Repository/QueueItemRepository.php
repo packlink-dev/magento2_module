@@ -15,12 +15,6 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Interfaces
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 use Packlink\PacklinkPro\ResourceModel\QueueItemEntity;
 
-/**
- * Class QueueItemRepository
- *
- * @package Packlink\PacklinkPro\Repository
- * @property QueueItemEntity $resourceEntity
- */
 class QueueItemRepository extends BaseRepository implements QueueItemRepositoryInterface
 {
     /**

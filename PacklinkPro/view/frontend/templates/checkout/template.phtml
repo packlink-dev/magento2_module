@@ -77,13 +77,13 @@
 </location-picker-template>
 
 <button type="button" id="pl-drop-off-button" style="display: none">
-    <span><?= __('Select drop-off location') ?></span>
+    <span><?= $block->escapeHtml(__('Select drop-off location')) ?></span>
 </button>
 
 <div id="pl-drop-off-details" style="display: none">
-    <span><?= __('Package will be delivered to:') ?></span>
+    <span><?=  $block->escapeHtml(__('Package will be delivered to:')) ?></span>
     <span id="pl-drop-off-address"></span>
 </div>
 
-<span hidden id="pl-select-drop-off-text"><?= __('Select drop-off location') ?></span>
-<span hidden id="pl-change-drop-off-text"><?= __('Change drop-off location') ?></span>
+<span hidden id="pl-select-drop-off-text"><?=  $block->escapeHtml(__('Select drop-off location')) ?></span>
+<span hidden id="pl-change-drop-off-text"><?=  $block->escapeHtml(__('Change drop-off location')) ?></span>

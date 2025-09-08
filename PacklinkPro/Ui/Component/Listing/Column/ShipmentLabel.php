@@ -17,11 +17,6 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\OrderService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\OrderShipmentDetails\OrderShipmentDetailsService;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 
-/**
- * Class ShipmentLabel
- *
- * @package Packlink\PacklinkPro\Ui\Component\Listing\Column
- */
 class ShipmentLabel extends Column
 {
     /**
