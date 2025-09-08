@@ -49,11 +49,6 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Registration\Registration
 use Packlink\PacklinkPro\Services\BusinessLogic\RegistrationInfoService;
 use Magento\Framework\Module\Dir\Reader;
 
-/**
- * Class Bootstrap
- *
- * @package Packlink\PacklinkPro
- */
 class Bootstrap extends BootstrapComponent
 {
     /**

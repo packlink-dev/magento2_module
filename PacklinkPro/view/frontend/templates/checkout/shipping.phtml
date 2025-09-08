@@ -77,26 +77,26 @@
 </location-picker-template>
 
 <button type="button" id="pl-drop-off-button" style="display: none">
-    <span><?= __('Select drop-off location') ?></span>
+    <span><?= $block->escapeHtml(__('Select drop-off location')) ?></span>
 </button>
 
 <div id="pl-drop-off-details" style="display: none">
-    <span><?= __('Package will be delivered to:') ?></span>
+    <span><?= $block->escapeHtml(__('Package will be delivered to:')) ?></span>
     <span id="pl-drop-off-address"></span>
 </div>
 
-<span hidden id="pl-select-drop-off-text"><?= __('Select drop-off location') ?></span>
-<span hidden id="pl-change-drop-off-text"><?= __('Change drop-off location') ?></span>
+<span hidden id="pl-select-drop-off-text"><?= $block->escapeHtml(__('Select drop-off location')) ?></span>
+<span hidden id="pl-change-drop-off-text"><?= $block->escapeHtml(__('Change drop-off location')) ?></span>
 
-<script nonce="<?= $block->getCspNonce() ?>">
+<script nonce="<?= $block->escapeHtmlAttr($block->getCspNonce()) ?>">
     (function () {
         let logos = [],
-            quoteItemWeights = <?= json_encode($block->getQuoteItemWeights()) ?>,
-            quoteAddresses = <?= json_encode($block->getQuoteAddresses()) ?>;
+            quoteItemWeights = <?= /* @noEscape */ json_encode($block->getQuoteItemWeights()) ?>,
+            quoteAddresses = <?= /* @noEscape */ json_encode($block->getQuoteAddresses()) ?>;
 
-        logos['backup'] = '<?= $block->getDefaultCarrierLogoUrl() ?>';
+        logos['backup'] = '<?= $block->escapeJs($block->getDefaultCarrierLogoUrl()) ?>';
         <?php foreach ($block->getMethodsWithEnabledLogos() as $id => $logoUrl): ?>
-        logos['<?= $id ?>'] = '<?= $logoUrl ?>';
+        logos['<?= $block->escapeJs($id) ?>'] = '<?= $block->escapeJs($logoUrl) ?>';
         <?php endforeach; ?>
 
         // wait until shipping methods containers are rendered
@@ -119,11 +119,11 @@
                             }
                         },
                         quoteItemWeights[addressId],
-                        '<?= $block->getUrl('packlink/frontend/location') ?>',
+                        '<?= $block->escapeJs($block->getUrl('packlink/frontend/location')) ?>',
                         '.actions-toolbar button.continue',
                         true,
                         logos,
-                        '<?= $block->getCurrentLanguageCode() ?>'
+                        '<?= $block->escapeJs($block->getCurrentLanguageCode()) ?>'
                     );
                 }
             }

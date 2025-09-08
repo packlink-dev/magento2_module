@@ -10,17 +10,17 @@
 
 <div class="container-fluid pl-main-wrapper" id="pl-main-page-holder">
     <div class="pl-logo-wrapper">
-        <img src="<?php echo $block->getViewFileUrl('Packlink_PacklinkPro::images/logo-pl.svg'); ?>"
+        <img src="<?= $block->escapeUrl($block->getViewFileUrl('Packlink_PacklinkPro::images/logo-pl.svg')) ?>"
              class="pl-dashboard-logo"
-             alt="<?php echo $block->escapeQuote((string)__('Packlink PRO Shipping')); ?>">
+             alt="<?= $block->escapeQuote((string)__('Packlink PRO Shipping')); ?>">
     </div>
     <div class="pl-auto-test-panel">
         <div class="pl-auto-test-header">
             <div class="pl-auto-test-title">
-                <?php echo $block->escapeQuote((string)__('PacklinkPRO module auto-test')); ?>
+                <?= $block->escapeQuote((string)__('PacklinkPRO module auto-test')); ?>
             </div>
             <div class="pl-auto-test-subtitle">
-                <?php echo $block->escapeQuote(
+                <?= $block->escapeQuote(
                     (string)__(
                         'Use this page to test the system configuration and PacklinkPRO module services.'
                     )
@@ -30,7 +30,7 @@
 
         <div class="pl-auto-test-content col-10" id="pl-auto-test-progress">
             <button type="button" name="start-test" id="pl-auto-test-start"
-                    class="button button-primary btn-lg"><?php echo $block->escapeQuote((string)__('Start')); ?></button>
+                    class="button button-primary btn-lg"><?= $block->escapeQuote((string)__('Start')); ?></button>
             <div class="pl-auto-test-log-panel" id="pl-auto-test-log-panel">
                 ...
             </div>
@@ -48,7 +48,7 @@
                         <i class="material-icons success">
                         </i>
                         <span id="pl-flash-message-text">
-                            <?php echo $block->escapeQuote((string)__('Auto-test passed successfully!')); ?>
+                            <?= $block->escapeQuote((string)__('Auto-test passed successfully!')); ?>
                         </span>
                     </div>
                 </div>
@@ -57,29 +57,29 @@
                         <i class="material-icons danger">
                         </i>
                         <span id="pl-flash-message-text">
-                            <?php echo $block->escapeQuote((string)__('The test did not complete successfully.')); ?>
+                            <?= $block->escapeQuote((string)__('The test did not complete successfully.')); ?>
                         </span>
                     </div>
                 </div>
             </div>
 
-            <a href="<?php echo $block->getControllerUrl('AutoTest', 'exportLogs'); ?>" value="auto-test-log.json"
+            <a href="<?= $block->escapeHtmlAttr($block->getControllerUrl('AutoTest', 'exportLogs')); ?>" value="auto-test-log.json"
                download>
                 <button type="button" name="download-log"
-                        class="button btn-info btn-lg"><?php echo $block->escapeQuote(
+                        class="button btn-info btn-lg"><?= $block->escapeQuote(
                             (string)__('Download test log')
                         ); ?></button>
             </a>
-            <a href="<?php echo $block->getControllerUrl('Debug', 'getSystemInfo'); ?>" value="packlink-debug-data.zip"
+            <a href="<?= $block->escapeHtmlAttr($block->getControllerUrl('Debug', 'getSystemInfo')); ?>" value="packlink-debug-data.zip"
                download>
                 <button type="button" name="download-system-info-file"
-                        class="button btn-info btn-lg"><?php echo $block->escapeQuote(
+                        class="button btn-info btn-lg"><?= $block->escapeQuote(
                             (string)__('Download system info file')
                         ); ?></button>
             </a>
-            <a href="<?php echo $block->getUrlHelper()->getBackendUrl('packlink/content/dashboard'); ?>">
+            <a href="<?= $block->escapeHtmlAttr($block->getUrlHelper()->getBackendUrl('packlink/content/dashboard')); ?>">
                 <button type="button" name="open-module" class="button btn-success btn-lg">
-                    <?php echo $block->escapeQuote((string)__('Open PacklinkPRO module')); ?>
+                    <?= $block->escapeQuote((string)__('Open PacklinkPRO module')); ?>
                 </button>
             </a>
         </div>
@@ -89,7 +89,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         Packlink.AutoTestController(
-            "<?php echo $block->getControllerUrl('AutoTest', 'start'); ?>",
-            "<?php echo $block->getControllerUrl('AutoTest', 'checkStatus'); ?>");
+            "<?= $block->escapeJs($block->getControllerUrl('AutoTest', 'start')); ?>",
+            "<?= $block->escapeJs($block->getControllerUrl('AutoTest', 'checkStatus')); ?>");
     }, false);
 </script>
