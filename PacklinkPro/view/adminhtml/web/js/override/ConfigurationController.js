@@ -20,7 +20,7 @@ if (!window.Packlink) {
 
         /**
          *
-         * @param {{helpUrl: string, version: string}} response
+         * @param {{helpUrl: string, version: string, hasSubscription: boolean}} response
          */
         const setConfigParams = (response) => {
             const version = templateService.getComponent('pl-version-number'),
@@ -28,6 +28,15 @@ if (!window.Packlink) {
 
             version.innerHTML = 'v' + response.version;
             helpLink.href = response.helpUrl;
+
+
+            if (!response.hasSubscription) {
+                let cod = templateService.getComponent('pl-navigate-cod');
+                if (cod) {
+                    cod.style.display = 'none';
+                }
+            }
+
 
             templateService.getComponent('pl-open-system-info').addEventListener('click', () => {
                 state.goToState('system-info');
@@ -59,6 +68,17 @@ if (!window.Packlink) {
                     'nextState': 'configuration',
                 });
             });
+
+            let cod = mainPage.querySelector('#pl-navigate-cod');
+            if (cod) {
+                cod.addEventListener('click', () => {
+                    state.goToState('cash-on-delivery', {
+                        'code': 'config',
+                        'prevState': 'configuration',
+                        'nextState': 'configuration',
+                    });
+                });
+            }
 
             mainPage.querySelector('#pl-navigate-parcel').addEventListener('click', () => {
                 state.goToState('default-parcel', {

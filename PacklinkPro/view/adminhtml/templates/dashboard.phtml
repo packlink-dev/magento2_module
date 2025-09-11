@@ -94,6 +94,10 @@
                         'submitUrl': "<?= $block->escapeUrl($block->getControllerUrl('DefaultWarehouse', 'setDefaultWarehouse')); ?>",
                         'searchPostalCodesUrl': "<?= $block->escapeUrl($block->getControllerUrl('DefaultWarehouse', 'searchPostalCodes')); ?>",
                     },
+                    'cash-on-delivery': {
+                        'getDataUrl': "<?= $block->escapeUrl($block->getControllerUrl('CashOnDelivery', 'getCashOnDeliveryConfig')); ?>",
+                        'submitDataUrl': "<?= $block->escapeUrl($block->getControllerUrl('CashOnDelivery', 'saveCashOnDeliveryConfig')); ?>",
+                    },
                     'configuration': {
                         'getDataUrl': "<?= $block->escapeUrl( $block->getControllerUrl('Configuration', 'getData')); ?>",
                     },

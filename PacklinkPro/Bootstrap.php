@@ -15,6 +15,7 @@ use Packlink\PacklinkPro\Entity\QuoteCarrierDropOffMapping;
 use Packlink\PacklinkPro\IntegrationCore\Brands\Packlink\PacklinkConfigurationService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\BootstrapComponent;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Brand\BrandConfigurationService;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\CashOnDelivery\Model\CashOnDelivery;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Configuration;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\FileResolver\FileResolverService;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Order\Interfaces\ShopOrderService as ShopOrderServiceInterface;
@@ -182,6 +183,7 @@ class Bootstrap extends BootstrapComponent
         RepositoryRegistry::registerRepository(Entity::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(LogData::CLASS_NAME, BaseRepository::getClassName());
         RepositoryRegistry::registerRepository(OrderSendDraftTaskMap::CLASS_NAME, BaseRepository::getClassName());
+        RepositoryRegistry::registerRepository(CashOnDelivery::getClassName(), BaseRepository::getClassName());
     }
 
     /**

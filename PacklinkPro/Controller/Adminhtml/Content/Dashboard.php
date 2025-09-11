@@ -120,6 +120,9 @@ class Dashboard extends Action
             'pl-default-parcel-page' => [
                 'pl-main-page-holder' => file_get_contents($baseDir . 'default-parcel.html'),
             ],
+            'pl-cod-page' => [
+                'pl-main-page-holder' => file_get_contents($baseDir . 'cash-on-delivery.html'),
+            ],
             'pl-default-warehouse-page' => [
                 'pl-main-page-holder' => file_get_contents($baseDir . 'default-warehouse.html'),
             ],

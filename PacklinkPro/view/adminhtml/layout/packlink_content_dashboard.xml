@@ -21,6 +21,7 @@
         <link src="Packlink_PacklinkPro::packlink/js/AutoTestController.js"/>
         <link src="Packlink_PacklinkPro::js/override/ConfigurationController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/DefaultParcelController.js"/>
+        <link src="Packlink_PacklinkPro::packlink/js/CashOnDeliveryController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/TranslationService.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/DefaultWarehouseController.js"/>
         <link src="Packlink_PacklinkPro::packlink/js/EditServiceController.js"/>

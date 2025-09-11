@@ -14,6 +14,7 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Webapi\Exception;
 use Packlink\PacklinkPro\Bootstrap;
+use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\CashOnDeliveryController;
 use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\DTO\ValidationError;
 use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
@@ -80,6 +81,10 @@ class Configuration extends Action
      * @var ConfigurationController
      */
     private $baseController;
+    /**
+     * @var \Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\CashOnDeliveryController
+     */
+    protected $cashOnDeliveryController;
 
     /**
      * Configuration constructor.
@@ -102,6 +107,7 @@ class Configuration extends Action
         $this->allowedActions = ['getData'];
 
         $bootstrap->initInstance();
+        $this->cashOnDeliveryController = new CashOnDeliveryController();
     }
 
     /**
@@ -138,6 +144,7 @@ class Configuration extends Action
      * Returns data for the configuration page.
      *
      * @return \Magento\Framework\Controller\Result\Json
+     * @throws \Packlink\PacklinkPro\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
      */
     protected function getData()
     {
@@ -145,6 +152,7 @@ class Configuration extends Action
             [
                 'helpUrl' => $this->baseController->getHelpLink(),
                 'version' => $this->getConfigService()->getModuleVersion(),
+                'hasSubscription' => $this->cashOnDeliveryController->getAndUpdateSubscription(),
             ]
         );
     }
