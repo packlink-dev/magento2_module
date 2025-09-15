@@ -19,4 +19,8 @@
     <event name="sales_order_save_after">
         <observer name="packlink_sales_order_save_after" instance="Packlink\PacklinkPro\Observer\SalesOrderSaveAfter"/>
     </event>
+    <event name="payment_method_is_active">
+        <observer name="packlink_filter_payments_by_shipping"
+                  instance="Packlink\PacklinkPro\Observer\FilterPaymentsByShipping"/>
+    </event>
 </config>

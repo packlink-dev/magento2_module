@@ -203,12 +203,20 @@ class Carrier extends AbstractCarrier implements CarrierInterface
      */
     private function getRateMethod(ShippingMethod $activeMethod, $calculatedCost)
     {
+        $title = $activeMethod->getTitle();
+        $services = $activeMethod->getShippingServices();
+        foreach ($services as $service) {
+            if ($service->cashOnDeliveryConfig && $service->cashOnDeliveryConfig->offered) {
+                $title .= ' - Cash on delivery';
+            }
+        }
+
         /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
         $method = $this->rateMethodFactory->create();
         $method->setData('carrier', $this->_code)
             ->setData('carrier_title', $this->getConfigData('title'))
             ->setData('method', $activeMethod->getId())
-            ->setData('method_title', $activeMethod->getTitle())
+            ->setData('method_title', $title)
             ->setData('cost', $calculatedCost)
             ->setPrice($calculatedCost);
 
