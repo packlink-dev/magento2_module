@@ -157,10 +157,38 @@ class ShopOrderService implements ShopOrderServiceInterface
             $this->setShippingMethod($sourceOrder, $order);
         }
 
+        $order->setPaymentId($this->getPaymentMethodCode($sourceOrder));
+
         $order->setShippingAddress($this->getAddress($sourceOrder));
 
         return $order;
     }
+
+    private function getPaymentMethodCode(MagentoOrder $order)
+    {
+        $payment = $order->getPayment();
+        if ($payment && $payment->getMethod()) {
+            return (string)$payment->getMethod();
+        }
+
+        // Fallback: try the quote (useful for very early states)
+        $quoteId = (int)$order->getQuoteId();
+        if ($quoteId > 0) {
+            try {
+                /** @var Quote $quote */
+                $quote = $this->quoteRepository->get($quoteId);
+                $qp = $quote->getPayment();
+                if ($qp && $qp->getMethod()) {
+                    return (string)$qp->getMethod();
+                }
+            } catch (\Exception $e) {
+                // ignore; no payment on quote
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * @inheritDoc

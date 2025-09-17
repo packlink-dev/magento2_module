@@ -142,18 +142,7 @@ class FilterPaymentsByShipping implements ObserverInterface
         }
         // Fallback: non-gateway methods are treated as offline
         $isGateway = method_exists($method, 'isGateway') ? (bool) $method->isGateway() : false;
-        return !$isGateway;
-    }
 
-    private function matchesAny(string $value, array $patterns)
-    {
-        foreach ($patterns as $pattern) {
-            // Simple wildcard match: '*' -> any chars
-            $regex = '/^' . str_replace(['*', '/'], ['.*', '\/'], $pattern) . '$/i';
-            if (preg_match($regex, $value) === 1) {
-                return true;
-            }
-        }
-        return false;
+        return !$isGateway;
     }
 }
