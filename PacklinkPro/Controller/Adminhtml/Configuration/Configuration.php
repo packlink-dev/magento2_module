@@ -152,7 +152,6 @@ class Configuration extends Action
             [
                 'helpUrl' => $this->baseController->getHelpLink(),
                 'version' => $this->getConfigService()->getModuleVersion(),
-                'hasSubscription' => $this->cashOnDeliveryController->getAndUpdateSubscription(),
             ]
         );
     }

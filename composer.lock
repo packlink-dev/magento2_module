@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8e7fe0c6c792ff7e33d9671f029b1953",
+    "content-hash": "188a2d59140df40c5c62295419309642",
     "packages": [
         {
             "name": "packlink/integration-core",
-            "version": "dev-cr-set-56",
+            "version": "v3.7.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:packlink-dev/ecommerce_module_core.git",
-                "reference": "1cd7c0aa10cc737adac16b480e122cdf2c7c8995"
+                "reference": "fc2a9012e503fa4a1402eb377e7984c71c973d23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/1cd7c0aa10cc737adac16b480e122cdf2c7c8995",
-                "reference": "1cd7c0aa10cc737adac16b480e122cdf2c7c8995",
+                "url": "https://api.github.com/repos/packlink-dev/ecommerce_module_core/zipball/fc2a9012e503fa4a1402eb377e7984c71c973d23",
+                "reference": "fc2a9012e503fa4a1402eb377e7984c71c973d23",
                 "shasum": ""
             },
             "require": {
@@ -56,7 +56,7 @@
                 "proprietary"
             ],
             "description": "Packlink integrations core library",
-            "time": "2025-09-03T21:05:52+00:00"
+            "time": "2025-10-14T07:05:43+00:00"
         }
     ],
     "packages-dev": [
@@ -1372,17 +1372,15 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "packlink/integration-core": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": ">=5.6"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "5.6.39"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.2.0"
 }

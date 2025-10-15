@@ -155,8 +155,12 @@ class Surcharge extends AbstractTotal
 
         // Base-currency surcharge via Packlink config
 
-        $defaultSurchage = $codSettings->getAccount()->getCashOnDeliveryFee();
-        $base = !empty($defaultSurchage) ? $defaultSurchage : $this->calculateSurcharge($plMethod, $shippingAddress, $codSettings, $totalPrice);
+        $defaultSurcharge = $codSettings->getAccount()->getCashOnDeliveryFee();
+
+        $base = ($defaultSurcharge === null || $defaultSurcharge === '')
+            ? $this->calculateSurcharge($plMethod, $shippingAddress, $codSettings, $totalPrice)
+            : $defaultSurcharge;
+
         if ($base === null || $base <= 0) {
             return null;
         }

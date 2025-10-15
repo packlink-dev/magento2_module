@@ -12,7 +12,6 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Payment\Model\Config as PaymentConfig;
 use Packlink\PacklinkPro\Bootstrap;
-use Magento\Payment\Model\MethodList;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
