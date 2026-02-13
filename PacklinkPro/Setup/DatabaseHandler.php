@@ -9,6 +9,7 @@ namespace Packlink\PacklinkPro\Setup;
 
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\SetupInterface;
 
 /**
  * Class DatabaseHandler
@@ -18,11 +19,16 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 class DatabaseHandler
 {
     /**
+     * Packlink entity table name
+     */
+    const ENTITY_TABLE = 'packlink_entity';
+
+    /**
      * @var ModuleDataSetupInterface
      */
     private $installer;
 
-    public function __construct(ModuleDataSetupInterface $installer)
+    public function __construct(SetupInterface $installer)
     {
         $this->installer = $installer;
     }
@@ -40,7 +46,7 @@ class DatabaseHandler
      */
     public function addAdditionalIndex()
     {
-        $entityTable = $this->installer->getTable('packlink_entity');
+        $entityTable = $this->installer->getTable(self::ENTITY_TABLE);
 
         if ($this->installer->getConnection()->isTableExists($entityTable)) {
             $this->installer->getConnection()->addColumn(
