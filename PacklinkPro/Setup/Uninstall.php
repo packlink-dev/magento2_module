@@ -10,6 +10,7 @@ namespace Packlink\PacklinkPro\Setup;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UninstallInterface;
+use MagentoFramework\Setup\SetupInterface;
 
 /**
  * Class Uninstall
@@ -31,7 +32,7 @@ class Uninstall implements UninstallInterface
         $installer = $setup->startSetup();
 
         $databaseHandler = new DatabaseHandler($installer);
-        $databaseHandler->dropEntityTable(InstallSchema::PACKLINK_ENTITY_TABLE);
+        $databaseHandler->dropEntityTable(DatabaseHandler::ENTITY_TABLE);
 
         $installer->endSetup();
     }
