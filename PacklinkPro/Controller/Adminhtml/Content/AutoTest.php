@@ -21,6 +21,10 @@ use Packlink\PacklinkPro\Bootstrap;
 class AutoTest extends Action
 {
     /**
+     * ACL resource required to reach this controller.
+     */
+    const ADMIN_RESOURCE = 'Packlink_PacklinkPro::configuration';
+    /**
      * @var PageFactory
      */
     private $resultPageFactory;

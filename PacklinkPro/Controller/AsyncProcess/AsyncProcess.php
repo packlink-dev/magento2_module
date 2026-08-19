@@ -57,16 +57,10 @@ class AsyncProcess extends Action
     public function execute()
     {
         $guid = $this->getRequest()->getParam('guid');
-        $autoTest = $this->getRequest()->getParam('auto-test');
 
-        if ($autoTest) {
-            $autoTestService = new AutoTestService();
-            $autoTestService->setAutoTestMode();
-            Logger::logInfo('Received auto-test async process request.', 'Integration', ['guid' => $guid]);
-        } else {
-            Logger::logDebug('Received async process request.', 'Integration', ['guid' => $guid]);
-        }
-
+        // The guid is validated before anything else: this endpoint is
+        // unauthenticated, so a request that cannot be acted on must not be able
+        // to change module state on its way to being rejected.
         if (!$guid) {
             $result = $this->resultJsonFactory->create();
             $result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
@@ -78,6 +72,14 @@ class AsyncProcess extends Action
             );
 
             return $result;
+        }
+
+        if ($this->getRequest()->getParam('auto-test')) {
+            $autoTestService = new AutoTestService();
+            $autoTestService->setAutoTestMode();
+            Logger::logInfo('Received auto-test async process request.', 'Integration', ['guid' => $guid]);
+        } else {
+            Logger::logDebug('Received async process request.', 'Integration', ['guid' => $guid]);
         }
 
         if ($guid !== 'auto-configure') {

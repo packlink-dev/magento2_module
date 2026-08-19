@@ -51,6 +51,14 @@ class SystemInfoHelper
     const SERVICE_INFO_FILE_NAME = 'services.json';
     const MODULE_NAME = 'Packlink_PacklinkPro';
     /**
+     * Upper bound for each exported log file, in bytes.
+     */
+    const MAX_LOG_SIZE = 5242880;
+    /**
+     * Keys whose values are masked before export.
+     */
+    const MASKED_KEY_PATTERN = '/(token|api[ _-]*key|secret|password|passwd|auth)/i';
+    /**
      * @var ProductMetadataInterface
      */
     protected $productMetadata;
@@ -170,7 +178,10 @@ class SystemInfoHelper
     protected function getPhpInfo()
     {
         ob_start();
-        phpinfo();
+        // INFO_ENVIRONMENT and INFO_VARIABLES are deliberately excluded: they dump
+        // the server environment, which routinely carries database credentials and
+        // the Magento crypt key.
+        phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES);
 
         return ob_get_clean();
     }
@@ -226,7 +237,7 @@ class SystemInfoHelper
     {
         $user = $this->getConfigService()->getUserInfo();
         $result = $user ? $user->toArray() : [];
-        $result['API Key'] = $this->getConfigService()->getAuthorizationToken();
+        $result['API Key'] = $this->maskSecret($this->getConfigService()->getAuthorizationToken());
 
         return json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
@@ -306,7 +317,7 @@ class SystemInfoHelper
             $repository = RepositoryRegistry::getRepository(Entity::CLASS_NAME);
             $entities = $repository->selectAll();
             foreach ($entities as $item) {
-                $result[] = json_decode($item['data'], true);
+                $result[] = $this->maskSecretsRecursively(json_decode($item['data'], true));
             }
         } catch (RepositoryNotRegisteredException $e) {
         } catch (LocalizedException $e) {
@@ -327,8 +338,24 @@ class SystemInfoHelper
     {
         $logs = '';
         $logPath = $this->directoryList->getPath('log') . '/' . $logType . '.log';
+
         if (file_exists($logPath)) {
-            $logs = file_get_contents($logPath);
+            $size = filesize($logPath);
+
+            if ($size > static::MAX_LOG_SIZE) {
+                // Reading a multi-gigabyte log in one call exhausts the memory limit.
+                $handle = fopen($logPath, 'rb');
+
+                if ($handle !== false) {
+                    fseek($handle, -static::MAX_LOG_SIZE, SEEK_END);
+                    $logs = '[truncated - showing the last ' . static::MAX_LOG_SIZE
+                        . ' bytes of ' . $size . ']' . PHP_EOL
+                        . fread($handle, static::MAX_LOG_SIZE);
+                    fclose($handle);
+                }
+            } else {
+                $logs = file_get_contents($logPath);
+            }
         }
 
         return $logs . "\n";
@@ -368,6 +395,55 @@ class SystemInfoHelper
         }
 
         return json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
+    /**
+     * Masks a secret, keeping only the last four characters for identification.
+     *
+     * @param string|null $secret
+     *
+     * @return string
+     */
+    private function maskSecret($secret)
+    {
+        if (empty($secret)) {
+            return '';
+        }
+
+        $secret = (string)$secret;
+        $length = strlen($secret);
+
+        if ($length <= 4) {
+            return str_repeat('*', $length);
+        }
+
+        return str_repeat('*', $length - 4) . substr($secret, -4);
+    }
+
+    /**
+     * Walks a decoded structure and masks any value stored under a secret-like key.
+     *
+     * @param mixed $data
+     *
+     * @return mixed
+     */
+    private function maskSecretsRecursively($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->maskSecretsRecursively($value);
+            } elseif (is_string($key) && is_scalar($value)
+                && preg_match(static::MASKED_KEY_PATTERN, $key)
+            ) {
+                $data[$key] = $this->maskSecret($value);
+            }
+        }
+
+        return $data;
     }
 
     /**

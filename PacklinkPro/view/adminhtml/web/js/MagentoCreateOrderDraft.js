@@ -30,9 +30,9 @@ function plCreateOrderDraft(element) {
         function (response) {
             element.disabled = false;
             errorMsg.hidden = false;
-            errorMsg.innerHTML = defaultErrorMsg.innerText;
+            errorMsg.textContent = defaultErrorMsg.innerText;
             if (response && response.message) {
-                errorMsg.innerHTML += ' ' + errorText.innerText + response.message;
+                errorMsg.textContent += ' ' + errorText.innerText + response.message;
             }
         }
     );

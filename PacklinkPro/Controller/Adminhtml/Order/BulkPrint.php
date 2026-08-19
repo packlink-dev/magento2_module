@@ -33,6 +33,14 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 class BulkPrint extends Action
 {
     /**
+     * ACL resource required to reach this controller.
+     */
+    const ADMIN_RESOURCE = 'Packlink_PacklinkPro::shipments';
+    /**
+     * Seconds to wait for a shipment label download before giving up.
+     */
+    const LABEL_FETCH_TIMEOUT = 30;
+    /**
      * @var string
      */
     private $redirectUrl = '*/*/';
@@ -148,6 +156,10 @@ class BulkPrint extends Action
                 $this->messageManager->addErrorMessage(
                     __('Unable to create bulk labels file. Error: ') . $e->getMessage()
                 );
+            } finally {
+                // Labels carry recipient names and addresses and must not be left
+                // behind in the shared temporary directory.
+                $this->removeFiles($files);
             }
         }
 
@@ -238,7 +250,20 @@ class BulkPrint extends Action
      */
     private function savePDF($link)
     {
-        $data = file_get_contents($link);
+        if (!$this->isFetchableUrl($link)) {
+            Logger::logWarning('Refused to fetch a shipment label from an unsupported URL.', 'Integration');
+
+            return false;
+        }
+
+        $context = stream_context_create(
+            [
+                'http' => ['timeout' => static::LABEL_FETCH_TIMEOUT],
+                'https' => ['timeout' => static::LABEL_FETCH_TIMEOUT],
+            ]
+        );
+
+        $data = file_get_contents($link, false, $context);
 
         if ($data === false) {
             return $data;
@@ -248,6 +273,44 @@ class BulkPrint extends Action
         file_put_contents($file, $data);
 
         return $file;
+    }
+
+    /**
+     * Checks that a label link is a plain HTTP(S) address.
+     *
+     * Label links arrive in an external API response. Without this guard a
+     * "file://" or "php://" value would turn the download into a local file read.
+     *
+     * @param string $link
+     *
+     * @return bool
+     */
+    private function isFetchableUrl($link)
+    {
+        if (!is_string($link) || $link === '') {
+            return false;
+        }
+
+        $scheme = strtolower((string)parse_url($link, PHP_URL_SCHEME));
+
+        return in_array($scheme, ['http', 'https'], true)
+            && filter_var($link, FILTER_VALIDATE_URL) !== false;
+    }
+
+    /**
+     * Deletes temporary label files.
+     *
+     * @param array $files
+     *
+     * @return void
+     */
+    private function removeFiles(array $files)
+    {
+        foreach ($files as $file) {
+            if (is_string($file) && is_file($file)) {
+                unlink($file);
+            }
+        }
     }
 
     /**

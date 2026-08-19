@@ -105,6 +105,32 @@ if (!window['Packlink']) {
         }
 
         /**
+         * Wraps the existing content of a shipping method cell in a carrier logo container.
+         *
+         * @param {HTMLElement|Element} methodCell
+         * @param {string} shippingMethodId
+         * @param {string} logoUrl
+         */
+        function wrapMethodCellWithLogo(methodCell, shippingMethodId, logoUrl) {
+            let logoContainer = document.createElement('div'),
+                logo = document.createElement('img');
+
+            logoContainer.id = 'pl-logo-' + shippingMethodId;
+            logoContainer.className = 'pl-carrier-logo';
+
+            logo.alt = '';
+            logo.src = logoUrl;
+            logo.title = methodCell.innerText;
+            logoContainer.appendChild(logo);
+
+            while (methodCell.firstChild) {
+                logoContainer.appendChild(methodCell.firstChild);
+            }
+
+            methodCell.appendChild(logoContainer);
+        }
+
+        /**
          * Displays carrier logos for all Packlink carriers on checkout page.
          */
         function renderCarrierDetails() {
@@ -123,10 +149,7 @@ if (!window['Packlink']) {
                             ? methodLogos[shippingMethodId] : '';
 
                     if (logoUrl) {
-                        methodCell.innerHTML = '<div id="pl-logo-' + shippingMethodId + '" class="pl-carrier-logo">'
-                            + '<img alt="" src="' + logoUrl + '" title="' + methodCell.innerHTML + '">'
-                            + methodCell.innerHTML
-                            + '</div>';
+                        wrapMethodCellWithLogo(methodCell, shippingMethodId, logoUrl);
                     }
                 }
             }
@@ -158,10 +181,7 @@ if (!window['Packlink']) {
                             ? methodLogos[shippingMethodId] : '';
 
                     if (logoUrl) {
-                        methodCell.innerHTML = '<div id="pl-logo-' + shippingMethodId + '" class="pl-carrier-logo">'
-                            + '<img alt="" src="' + logoUrl + '" title="' + methodCell.innerText + '">'
-                            + methodCell.innerHTML
-                            + '</div>';
+                        wrapMethodCellWithLogo(methodCell, shippingMethodId, logoUrl);
                     }
                 }
             }
@@ -431,17 +451,26 @@ if (!window['Packlink']) {
                     + ',' + dropOffLocation['long'];
 
                 dropOffContainer = document.createElement('div');
-                dropOffContainer.innerHTML = '<div class="pl-drop-off-container">'
-                    + document.querySelector('#pl-drop-off-details > span').innerText
-                    + '<br><a href="' + link + '" target="_blank" style="cursor: pointer;">'
-                    + dropOffLocation['name']
-                    + '<br>'
-                    + dropOffLocation['address']
-                    + '<br>'
-                    + dropOffLocation['zip'] + ', ' + dropOffLocation['city']
-                    + '</a></div>';
+                dropOffContainer.className = 'pl-drop-off-container';
+                dropOffContainer.appendChild(
+                    document.createTextNode(document.querySelector('#pl-drop-off-details > span').innerText)
+                );
+                dropOffContainer.appendChild(document.createElement('br'));
 
-                infoContainer.appendChild(dropOffContainer.firstChild);
+                let dropOffLink = document.createElement('a');
+                dropOffLink.href = link;
+                dropOffLink.target = '_blank';
+                dropOffLink.style.cursor = 'pointer';
+                dropOffLink.appendChild(document.createTextNode(dropOffLocation['name']));
+                dropOffLink.appendChild(document.createElement('br'));
+                dropOffLink.appendChild(document.createTextNode(dropOffLocation['address']));
+                dropOffLink.appendChild(document.createElement('br'));
+                dropOffLink.appendChild(
+                    document.createTextNode(dropOffLocation['zip'] + ', ' + dropOffLocation['city'])
+                );
+
+                dropOffContainer.appendChild(dropOffLink);
+                infoContainer.appendChild(dropOffContainer);
             }
         }
     }

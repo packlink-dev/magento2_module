@@ -23,6 +23,10 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 class OrderDraft extends Action
 {
     /**
+     * ACL resource required to reach this controller.
+     */
+    const ADMIN_RESOURCE = 'Packlink_PacklinkPro::shipments';
+    /**
      * Array of actions which can be processed without secret key validation
      *
      * @var array
@@ -54,7 +58,7 @@ class OrderDraft extends Action
         $result = $this->resultJsonFactory->create();
         $request = json_decode(file_get_contents('php://input'));
 
-        if (property_exists($request, 'orderId')) {
+        if (is_object($request) && property_exists($request, 'orderId')) {
             $orderId = $request->orderId;
 
             /** @var ShipmentDraftService $shipmentDraftService */

@@ -32,6 +32,11 @@ use Packlink\PacklinkPro\Services\BusinessLogic\ConfigurationService;
  */
 class Location extends Action
 {
+    /**
+     * Upper bound for the encoded drop-off payload, in bytes.
+     */
+    const MAX_DROP_OFF_PAYLOAD = 8192;
+
     private static $allowedActions = [
         'getLocations',
         'setDropOff',
@@ -72,7 +77,16 @@ class Location extends Action
      */
     public function execute()
     {
-        Logger::logDebug('Getting locations for service.', 'Integration', $this->getRequest()->getParams());
+        // Request parameters carry the shopper's postcode and chosen pick-up point.
+        // Only the non-identifying fields are logged.
+        Logger::logDebug(
+            'Getting locations for service.',
+            'Integration',
+            [
+                'action' => $this->getRequest()->getParam('action'),
+                'methodId' => $this->getRequest()->getParam('methodId'),
+            ]
+        );
 
         $result = $this->resultJsonFactory->create();
         $action = $this->getRequest()->getParam('action');
@@ -157,9 +171,17 @@ class Location extends Action
      */
     private function setDropOff($methodId, $addressId)
     {
-        $dropOff = json_decode($this->getRequest()->getParam('dropOff'), true);
+        $rawDropOff = (string)$this->getRequest()->getParam('dropOff');
 
-        if (empty($dropOff)) {
+        if ($rawDropOff === '' || strlen($rawDropOff) > static::MAX_DROP_OFF_PAYLOAD) {
+            return;
+        }
+
+        $dropOff = json_decode($rawDropOff, true);
+
+        // This payload is persisted against the quote and forwarded to the carrier,
+        // so anything that is not a location object with an identifier is rejected.
+        if (!is_array($dropOff) || empty($dropOff['id'])) {
             return;
         }
 

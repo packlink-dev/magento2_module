@@ -19,14 +19,14 @@ use Packlink\PacklinkPro\Block\Adminhtml\Tracking\Popup;
     <?php else: ?>
         <div class="page tracking">
             <div class="message info empty">
-                <div><?= $block->escapeQuote((string)__('Carrier did not provide tracking URL.')) ?></div>
+                <div><?= $block->escapeHtml((string)__('Carrier did not provide tracking URL.')) ?></div>
             </div>
             <div class="actions">
                 <button type="button"
-                        title="<?= $block->escapeQuote((string)__('Close Window')) ?>"
+                        title="<?= $block->escapeHtmlAttr((string)__('Close Window')) ?>"
                         class="action close"
                         onclick="window.close(); window.opener.focus();">
-                    <span><?= $block->escapeQuote((string)__('Close Window')) ?></span>
+                    <span><?= $block->escapeHtml((string)__('Close Window')) ?></span>
                 </button>
             </div>
         </div>

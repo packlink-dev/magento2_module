@@ -26,7 +26,7 @@ if (!window.Packlink) {
             const version = templateService.getComponent('pl-version-number'),
                 helpLink = templateService.getComponent('pl-navigate-help');
 
-            version.innerHTML = 'v' + response.version;
+            version.textContent = 'v' + response.version;
             helpLink.href = response.helpUrl;
 
             templateService.getComponent('pl-open-system-info').addEventListener('click', () => {

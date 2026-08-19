@@ -21,6 +21,10 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\QueueItem;
 class DraftStatus extends Action
 {
     /**
+     * ACL resource required to reach this controller.
+     */
+    const ADMIN_RESOURCE = 'Packlink_PacklinkPro::shipments';
+    /**
      * Array of actions which can be processed without secret key validation
      *
      * @var array

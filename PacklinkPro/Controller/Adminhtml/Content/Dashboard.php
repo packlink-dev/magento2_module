@@ -28,6 +28,10 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\TaskExecution\Interfaces
 class Dashboard extends Action
 {
     /**
+     * ACL resource required to reach this controller.
+     */
+    const ADMIN_RESOURCE = 'Packlink_PacklinkPro::configuration';
+    /**
      * @var Http
      */
     private $request;

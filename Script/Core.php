@@ -28,7 +28,11 @@ class Core
     private static function copyDirectory($src, $dst)
     {
         $dir = opendir($src);
-        @mkdir($dst, 0777, true);
+
+        // 0777 would let any local user rewrite PHP that the web server executes.
+        if (!is_dir($dst) && !mkdir($dst, 0755, true) && !is_dir($dst)) {
+            throw new \RuntimeException(sprintf('Unable to create directory "%s".', $dst));
+        }
         while (false !== ($file = readdir($dir))) {
             if (($file !== '.') && ($file !== '..')) {
                 if (is_dir($src . '/' . $file)) {

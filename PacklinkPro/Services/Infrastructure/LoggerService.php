@@ -34,6 +34,13 @@ class LoggerService extends Singleton implements ShopLoggerAdapter
      *
      * @var array
      */
+    private static $maskedContextPattern =
+        '/(token|api[ _-]*key|secret|password|passwd|auth|email|phone|address|zip|postal)/i';
+    /**
+     * Log level names for corresponding log level codes.
+     *
+     * @var array
+     */
     private static $logLevelName = [
         Logger::ERROR => 'error',
         Logger::WARNING => 'warning',
@@ -87,12 +94,29 @@ class LoggerService extends Singleton implements ShopLoggerAdapter
             $message .= '
             Context data: [';
             foreach ($context as $item) {
-                $message .= '"' . $item->getName() . '" => "' . print_r($item->getValue(), true) . '", ';
+                $message .= '"' . $item->getName() . '" => "' . $this->formatContextValue($item) . '", ';
             }
 
             $message .= ']';
         }
 
         \call_user_func([$this->logger, self::$logLevelName[$logLevel]], $message);
+    }
+
+    /**
+     * Renders a log context value, masking anything that looks like a secret or
+     * personal data so it does not reach the log file or the support export.
+     *
+     * @param \Packlink\PacklinkPro\IntegrationCore\Infrastructure\Logger\LogContextData $item
+     *
+     * @return string
+     */
+    private function formatContextValue($item)
+    {
+        if (preg_match(static::$maskedContextPattern, $item->getName())) {
+            return '***';
+        }
+
+        return print_r($item->getValue(), true);
     }
 }

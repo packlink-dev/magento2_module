@@ -131,10 +131,20 @@ class Debug extends Configuration
      */
     protected function getSystemInfo()
     {
-        return $this->fileFactory->create(
-            self::SYSTEM_INFO_FILE_NAME,
-            file_get_contents($this->systemInfoHelper->getSystemInfo()),
-            DirectoryList::VAR_DIR
-        );
+        $filePath = $this->systemInfoHelper->getSystemInfo();
+
+        try {
+            return $this->fileFactory->create(
+                self::SYSTEM_INFO_FILE_NAME,
+                file_get_contents($filePath),
+                DirectoryList::VAR_DIR
+            );
+        } finally {
+            // The archive carries store diagnostics and must not be left behind
+            // in the shared temporary directory once it has been served.
+            if (is_file($filePath)) {
+                unlink($filePath);
+            }
+        }
     }
 }

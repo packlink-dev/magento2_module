@@ -18,6 +18,10 @@ use Packlink\PacklinkPro\IntegrationCore\Infrastructure\ServiceRegister;
 class ShipmentLabels extends Action
 {
     /**
+     * ACL resource required to reach this controller.
+     */
+    const ADMIN_RESOURCE = 'Packlink_PacklinkPro::shipments';
+    /**
      * @var JsonFactory
      */
     private $resultJsonFactory;
@@ -46,7 +50,7 @@ class ShipmentLabels extends Action
         $result = $this->resultJsonFactory->create();
         $request = json_decode(file_get_contents('php://input'));
 
-        if (property_exists($request, 'orderId')) {
+        if (is_object($request) && property_exists($request, 'orderId')) {
             /** @var OrderShipmentDetailsService $orderShipmentDetailsService */
             $orderShipmentDetailsService = ServiceRegister::getService(OrderShipmentDetailsService::CLASS_NAME);
             $orderDetails = $orderShipmentDetailsService->getDetailsByOrderId((string)$request->orderId);

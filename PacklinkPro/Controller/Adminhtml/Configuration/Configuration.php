@@ -28,6 +28,10 @@ use Packlink\PacklinkPro\IntegrationCore\BusinessLogic\Controllers\Configuration
 class Configuration extends Action
 {
     /**
+     * ACL resource required to reach this controller.
+     */
+    const ADMIN_RESOURCE = 'Packlink_PacklinkPro::configuration';
+    /**
      * Array of actions which can be processed without secret key validation
      *
      * @var array
@@ -163,7 +167,9 @@ class Configuration extends Action
      */
     protected function getPacklinkPostData()
     {
-        return json_decode(file_get_contents('php://input'), true);
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        return is_array($data) ? $data : [];
     }
 
     /**
