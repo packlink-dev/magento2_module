@@ -15,6 +15,7 @@ createTempSource() {
   cp -r ./PacklinkPro packlink
   cp -r ./Script packlink
   cp -r ./composer.json packlink
+  cp -r ./composer.lock packlink
   rm -rf packlink/PacklinkPro/IntegrationCore
 }
 

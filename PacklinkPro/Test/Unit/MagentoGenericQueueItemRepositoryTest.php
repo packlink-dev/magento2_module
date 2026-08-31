@@ -26,12 +26,12 @@ class MagentoGenericQueueItemRepositoryTest extends AbstractGenericQueueItemRepo
     /**
      * @inheritdoc
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         $setup = ObjectManager::getInstance()->create(Setup::class);
         $installer = $setup->startSetup();
 
-        $databaseHandler = new DatabaseHandler($installer);
+        $databaseHandler = new TestDatabaseHandler($installer);
         $databaseHandler->dropEntityTable(TestQueueItemRepository::TABLE_NAME);
 
         $installer->endSetup();
@@ -50,7 +50,7 @@ class MagentoGenericQueueItemRepositoryTest extends AbstractGenericQueueItemRepo
      *
      * @throws \Zend_Db_Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $setup = ObjectManager::getInstance()->create(Setup::class);
@@ -59,7 +59,7 @@ class MagentoGenericQueueItemRepositoryTest extends AbstractGenericQueueItemRepo
         $bootstrap->initInstance();
         $installer = $setup->startSetup();
 
-        $databaseHandler = new DatabaseHandler($installer);
+        $databaseHandler = new TestDatabaseHandler($installer);
         $databaseHandler->createEntityTable(TestQueueItemRepository::TABLE_NAME);
 
         $installer->endSetup();
@@ -72,6 +72,16 @@ class MagentoGenericQueueItemRepositoryTest extends AbstractGenericQueueItemRepo
      */
     public function cleanUpStorage()
     {
-        return null;
+        // Was a no-op stub, so rows accumulated across every test in this class and the size
+        // assertions failed with growing multiples (150 vs 50, 76 vs 19, ...). The abstract base
+        // calls this between tests; setUp() recreates the table afterwards.
+        /** @var Setup $setup */
+        $setup = ObjectManager::getInstance()->create(Setup::class);
+        $installer = $setup->startSetup();
+
+        $databaseHandler = new TestDatabaseHandler($installer);
+        $databaseHandler->dropEntityTable(TestQueueItemRepository::TABLE_NAME);
+
+        $installer->endSetup();
     }
 }

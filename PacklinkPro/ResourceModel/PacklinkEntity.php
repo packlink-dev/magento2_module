@@ -265,7 +265,7 @@ class PacklinkEntity extends AbstractDb
                 }
 
                 if (is_int($item)) {
-                    $val = \Logeecom\Infrastructure\ORM\Utility\IndexHelper::castFieldValue($item, 'integer');
+                    $val = IndexHelper::castFieldValue($item, 'integer');
                     return "'{$val}'";
                 }
 

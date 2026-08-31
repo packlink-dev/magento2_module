@@ -37,7 +37,7 @@ class MagentoGenericBaseRepositoryTest extends AbstractGenericStudentRepositoryT
      *
      * @throws \Zend_Db_Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -48,7 +48,7 @@ class MagentoGenericBaseRepositoryTest extends AbstractGenericStudentRepositoryT
         $bootstrap->initInstance();
         $installer = $setup->startSetup();
 
-        $databaseHandler = new DatabaseHandler($installer);
+        $databaseHandler = new TestDatabaseHandler($installer);
         $databaseHandler->createEntityTable(TestRepository::TABLE_NAME);
 
         $installer->endSetup();
@@ -65,7 +65,7 @@ class MagentoGenericBaseRepositoryTest extends AbstractGenericStudentRepositoryT
         $setup = ObjectManager::getInstance()->create(Setup::class);
         $installer = $setup->startSetup();
 
-        $databaseHandler = new DatabaseHandler($installer);
+        $databaseHandler = new TestDatabaseHandler($installer);
         $databaseHandler->dropEntityTable(TestRepository::TABLE_NAME);
 
         $installer->endSetup();
