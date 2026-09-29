@@ -215,30 +215,18 @@ class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Info
     }
 
     /**
-     * Returns rendered HTML output of order carrier tracking numbers.
+     * Returns order carrier tracking numbers.
      *
-     * @return string Rendered HTML output.
+     * @return string[] Carrier tracking numbers.
      */
     public function getCarrierTrackingNumbers()
     {
-        $output = '';
         $orderDetails = $this->getOrderDetails();
         if ($orderDetails === null || empty($orderDetails->getCarrierTrackingNumbers())) {
-            return $output;
+            return [];
         }
 
-        $trackingNumbers = $orderDetails->getCarrierTrackingNumbers();
-        foreach ($trackingNumbers as $index => $trackingNumber) {
-            $output .= '<div>' . $trackingNumber;
-
-            if ($index !== count($trackingNumbers) - 1) {
-                $output .= ',';
-            }
-
-            $output .= '</div>';
-        }
-
-        return $output;
+        return array_values($orderDetails->getCarrierTrackingNumbers());
     }
 
     public function getShippingMethod()

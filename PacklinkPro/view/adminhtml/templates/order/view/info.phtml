@@ -123,9 +123,10 @@ $draftStatus = $block->getDraftStatus();
                                         <?= $block->escapeHtml($block->getShippingMethod()->getTitle()) ?>
                                     </td>
                                     <td class="col-tracking-numbers">
-                                        <?php if (!empty($block->getOrderDetails()->getCarrierTrackingNumbers())) : ?>
-                                            <?= $block->escapeHtml($block->getCarrierTrackingNumbers()) ?>
-                                        <?php endif; ?>
+                                        <?php $trackingNumbers = $block->getCarrierTrackingNumbers(); ?>
+                                        <?php foreach ($trackingNumbers as $index => $trackingNumber) : ?>
+                                            <div><?= $block->escapeHtml($trackingNumber) ?><?= $index < count($trackingNumbers) - 1 ? ',' : '' ?></div>
+                                        <?php endforeach; ?>
                                     </td>
                                     <td class="col">
                                         <?php if (!empty($block->getOrderDetails()->getCarrierTrackingNumbers())) : ?>
