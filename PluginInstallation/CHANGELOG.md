@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.5.5](https://github.com/packlink-dev/magento2_module/compare/v1.5.4...1.5.5)
+### Fixed
+- Fixed tracking numbers being displayed as raw HTML on the admin order details page
+
 ## [1.5.4](https://github.com/packlink-dev/magento2_module/compare/v1.5.3...1.5.4)
 ### Fixed
 - Fixed XSS sinks in the admin interface
