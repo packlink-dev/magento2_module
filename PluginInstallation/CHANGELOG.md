@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [1.5.6](https://github.com/packlink-dev/magento2_module/compare/v1.5.5...1.5.6)
+### Changed
+- Rebrand the module to the new Packlink PRO logo and Figtree font, with black delivery type icons and a black drop-off map pin at checkout
+
 ## [1.5.5](https://github.com/packlink-dev/magento2_module/compare/v1.5.4...1.5.5)
 ### Fixed
 - Fixed tracking numbers being displayed as raw HTML on the admin order details page
