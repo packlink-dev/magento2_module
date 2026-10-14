@@ -42,7 +42,7 @@ class HiddenFields extends Widget
      */
     public function getLogoPath()
     {
-        return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/logo.png');
+        return $this->assetRepo->getUrl('Packlink_PacklinkPro::images/logo.svg');
     }
 
     /**

@@ -97,7 +97,7 @@ class OrderDraft extends Column
                 /** @var ShipmentDraftService $draftService */
                 $draftService = ServiceRegister::getService(ShipmentDraftService::CLASS_NAME);
                 $draftStatus = $draftService->getDraftStatus($item['entity_id']);
-                $logoUrl = $this->assetRepo->getUrl('Packlink_PacklinkPro::images/logo.png');
+                $logoUrl = $this->assetRepo->getUrl('Packlink_PacklinkPro::images/logo.svg');
                 $element = '';
 
                 switch ($draftStatus->status) {

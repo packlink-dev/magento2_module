@@ -1,4 +1,4 @@
-![Packlink logo](https://pro.packlink.es/public-assets/common/images/icons/packlink.svg)
+![Packlink logo](view/adminhtml/web/images/logo.svg)
 
 # Packlink Magento 2 plugin
 

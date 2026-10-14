@@ -1,6 +1,6 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0bafe9b01abc40cda98e6564b6816246)](https://www.codacy.com/gh/packlink-dev/magento2_module?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=packlink-dev/magento2_module&amp;utm_campaign=Badge_Grade)
 
-![Packlink logo](https://cdn.packlink.com/apps/giger/logos/packlink-pro.png)
+![Packlink logo](PacklinkPro/view/adminhtml/web/images/logo-pl.svg)
 
 # Packlink Magento 2 plugin - developer instructions
 

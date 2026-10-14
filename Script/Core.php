@@ -132,5 +132,27 @@ class Core
             __DIR__ . '/../vendor/packlink/integration-core/src/BusinessLogic/Resources/images/carriers',
             __DIR__ . '/../PacklinkPro/view/frontend/web/packlink/images/carriers'
         );
+        self::copyRebrandResources();
+    }
+
+    /**
+     * Overwrites the core resources with the Packlink PRO rebrand (logo, Figtree font, black delivery icons
+     * and map pin), kept in Script/Resources because the module stays on integration core 3.7.6.
+     */
+    private static function copyRebrandResources()
+    {
+        self::copyDirectory(__DIR__ . '/Resources/css', __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/css');
+        self::copyDirectory(
+            __DIR__ . '/Resources/images',
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/images'
+        );
+        self::copyDirectory(
+            __DIR__ . '/Resources/templates',
+            __DIR__ . '/../PacklinkPro/view/adminhtml/web/packlink/templates'
+        );
+        self::copyDirectory(
+            __DIR__ . '/Resources/LocationPicker',
+            __DIR__ . '/../PacklinkPro/view/frontend/web/packlink/location'
+        );
     }
 }
